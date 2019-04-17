@@ -37,7 +37,7 @@ class Motion(Thread):
             self.output_queue.put('capture_jpg')
             print('Motion detected')
         else:
-            self.output_queue.put('No motion')
+            self.output_queue.put('stop_capture_jpg')
             print('No motion')
 
     def run(self):

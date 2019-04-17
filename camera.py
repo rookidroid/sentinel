@@ -53,8 +53,11 @@ class Camera(Thread):
                 motion_command = self.motion2camera.get(
                     block=True, timeout=period)
                 if not motion_command:
-                    self.motion2camera.task_done()
-                    break
+                    if motion_command is 'stop_capture_jpg':
+                        self.motion2camera.task_done()
+                        break
+                    else:
+                        self.motion2camera.task_done()
                 frame_idx += frame_idx
 
     def run(self):
