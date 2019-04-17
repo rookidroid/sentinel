@@ -18,28 +18,37 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
-from queue import Queue
-from threading import Thread
-import motion
-import bot
-import json
+from telegram import Bot
+import datetime
 
-def getConfig():
-    with open("config.json", "r") as read_file:
-        return json.load(read_file)
-
-def main():
-    config=getConfig()
-    q = Queue()
-    t1 = Thread(target=motion.motion, args=(config['motion'],q,))
-    t2 = Thread(target=bot.bot, args=(config['bot'],q,))
-    t1.start()
-    t2.start()
+def bot(config, input_queue):
+    bot = Bot(config['bot_token'])
+    chat_id = config['chat_id']
     
-if __name__ == '__main__':
-    main()
+#    def bop(bot, update):
+#        #url = get_url()
+#        chat_id = update.message.chat_id
+#        print(chat_id)
+#        #bot.send_photo(chat_id=chat_id, photo=url)
+#    
+#    updater = Updater('')
+#    dp = updater.dispatcher
+#    dp.add_handler(CommandHandler('bop',bop))
+#
+#    updater.start_polling()
+#    updater.idle()
 
+    while True:
+        # retrieve data (blocking)
+        data = input_queue.get()
 
+        # do something with the data
+        currentDT = str(datetime.datetime.now())
+        bot.sendMessage(chat_id=chat_id, text=data + ' at ' + currentDT, parse_mode='HTML')
+
+        # indicate data has been consumed
+        input_queue.task_done()
+        
 '''
     Z. Peng
 

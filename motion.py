@@ -18,26 +18,29 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
-from queue import Queue
-from threading import Thread
-import motion
-import bot
-import json
 
-def getConfig():
-    with open("config.json", "r") as read_file:
-        return json.load(read_file)
+import time
+import RPi.GPIO as GPIO
 
-def main():
-    config=getConfig()
-    q = Queue()
-    t1 = Thread(target=motion.motion, args=(config['motion'],q,))
-    t2 = Thread(target=bot.bot, args=(config['bot'],q,))
-    t1.start()
-    t2.start()
+def motion(config, output_queue):
+
+    motion_pin = config['motion_pin']
     
-if __name__ == '__main__':
-    main()
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(motion_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    
+    def motion_handle(pin):
+        if GPIO.input(motion_pin):
+            output_queue.put('Motion detected')
+        else:
+            output_queue.put('No motion')
+    
+    
+    GPIO.add_event_detect(
+        motion_pin, GPIO.BOTH, callback=motion_handle, bouncetime=300)
+    
+    while True:
+        time.sleep(1e6)
 
 
 '''
