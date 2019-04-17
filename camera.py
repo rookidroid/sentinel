@@ -32,6 +32,7 @@ class Camera(Thread):
 
         self.camera = picamera.PiCamera(resolution=(1024, 768))
         self.camera.start_preview()
+        self.max_frames = 10
         time.sleep(2)
 
     def capture_jpg(self, frames, period):
@@ -59,6 +60,9 @@ class Camera(Thread):
                     else:
                         self.motion2camera.task_done()
                 frame_idx += frame_idx
+                
+                if frame_idx >= self.max_frames:
+                    break
 
     def run(self):
         while True:
