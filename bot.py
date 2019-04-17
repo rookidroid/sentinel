@@ -18,37 +18,43 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
+from threading import Thread
 from telegram import Bot
 import datetime
 
-def bot(config, input_queue):
-    bot = Bot(config['bot_token'])
-    chat_id = config['chat_id']
-    
-#    def bop(bot, update):
-#        #url = get_url()
-#        chat_id = update.message.chat_id
-#        print(chat_id)
-#        #bot.send_photo(chat_id=chat_id, photo=url)
-#    
-#    updater = Updater('')
-#    dp = updater.dispatcher
-#    dp.add_handler(CommandHandler('bop',bop))
-#
-#    updater.start_polling()
-#    updater.idle()
 
-    while True:
-        # retrieve data (blocking)
-        data = input_queue.get()
+class MyBot(Thread):
+    def __init__(self, config, input_queue):
+        Thread.__init__(self)
+        self.bot_name = config['bot_name']
+        self.bot = Bot(config['bot_token'])
+        self.chat_id = config['chat_id']
+        self.input_queue = input_queue
 
-        # do something with the data
-        currentDT = str(datetime.datetime.now())
-        bot.sendMessage(chat_id=chat_id, text=data + ' at ' + currentDT, parse_mode='HTML')
+        self.emoji_robot = u'\U0001F916'
 
-        # indicate data has been consumed
-        input_queue.task_done()
-        
+    def run(self):
+        self.bot.sendMessage(
+            chat_id=self.chat_id,
+            text=self.emoji_robot + self.bot_name + self.emoji_robot +
+            ' is running...',
+            parse_mode='HTML')
+
+        while True:
+            # retrieve data (blocking)
+            data = self.input_queue.get()
+
+            # do something with the data
+            currentDT = str(datetime.datetime.now())
+            self.bot.sendMessage(
+                chat_id=self.chat_id,
+                text=data + ' at ' + currentDT,
+                parse_mode='HTML')
+
+            # indicate data has been consumed
+            self.input_queue.task_done()
+
+
 '''
     Z. Peng
 

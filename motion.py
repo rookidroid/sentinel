@@ -18,29 +18,35 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
-
+from threading import Thread
 import time
 import RPi.GPIO as GPIO
 
-def motion(config, output_queue):
 
-    motion_pin = config['motion_pin']
-    
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(motion_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    
-    def motion_handle(pin):
-        if GPIO.input(motion_pin):
-            output_queue.put('Motion detected')
+class Motion(Thread):
+    def __init__(self, config, output_queue):
+        Thread.__init__(self)
+        self.motion_pin = config['motion_pin']
+        self.output_queue = output_queue
+
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.motion_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+    def motion_handle(self, pin):
+        if GPIO.input(pin):
+            self.output_queue.put('Motion detected')
         else:
-            output_queue.put('No motion')
-    
-    
-    GPIO.add_event_detect(
-        motion_pin, GPIO.BOTH, callback=motion_handle, bouncetime=300)
-    
-    while True:
-        time.sleep(1e6)
+            self.output_queue.put('No motion')
+
+    def run(self):
+        GPIO.add_event_detect(
+            self.motion_pin,
+            GPIO.BOTH,
+            callback=self.motion_handle,
+            bouncetime=300)
+
+        while True:
+            time.sleep(1e6)
 
 
 '''

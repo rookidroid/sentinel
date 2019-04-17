@@ -19,27 +19,33 @@
 '''
 
 from queue import Queue
-from threading import Thread
-import motion
-import bot
+from motion import Motion
+from bot import MyBot
 import json
+
 
 def getConfig():
     with open("config.json", "r") as read_file:
         return json.load(read_file)
 
+
 def main():
-    config=getConfig()
+    config = getConfig()
     q = Queue()
-    t1 = Thread(target=motion.motion, args=(config['motion'],q,))
-    t2 = Thread(target=bot.bot, args=(config['bot'],q,))
+    #    t1 = Thread(target=motion.motion, args=(config['motion'],q,))
+    #    t2 = Thread(target=bot.bot, args=(config['bot'],q,))
+    #    t1.start()
+    #    t2.start()
+
+    t = MyBot(config['bot'], q)
+    t1 = Motion(config['motion'], q)
+
+    t.start()
     t1.start()
-    t2.start()
-    
+
+
 if __name__ == '__main__':
     main()
-
-
 '''
     Z. Peng
 
