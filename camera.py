@@ -89,7 +89,6 @@ class Camera(Thread):
 
 
 '''
-    Z. Peng
 
     `                      `
     -:.                  -#:

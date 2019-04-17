@@ -38,7 +38,7 @@ def main():
 
     motion = Motion(config['motion'], motion2camera)
     my_bot = MyBot(config['bot'], camera2bot)
-    camera =  Camera(config['camera'], motion2camera, camera2bot)
+    camera = Camera(config['camera'], motion2camera, camera2bot)
 
     motion.start()
     my_bot.start()
@@ -48,7 +48,6 @@ def main():
 if __name__ == '__main__':
     main()
 '''
-    Z. Peng
 
     `                      `
     -:.                  -#:

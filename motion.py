@@ -57,7 +57,6 @@ class Motion(Thread):
 
 
 '''
-    Z. Peng
 
     `                      `
     -:.                  -#:
