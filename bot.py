@@ -36,10 +36,11 @@ class MyBot(Thread):
         self.emoji_robot = u'\U0001F916'
 
     def sendImage(self, filename):
-        url = 'https://api.telegram.org/bot' + self.token + '/sendPhoto'
-        files = {'photo': open(filename, 'rb')}
-        data = {'chat_id': self.chat_id}
-        r = requests.post(url, files=files, data=data)
+        # url = 'https://api.telegram.org/bot' + self.token + '/sendPhoto'
+        # files = {'photo': open(filename, 'rb')}
+        # data = {'chat_id': self.chat_id}
+        # r = requests.post(url, files=files, data=data)
+        self.bot.sendPhoto(chat_id=self.chat_id, photo=open(filename, 'rb'))
         # print(r.status_code, r.reason, r.content)
 
     def run(self):
