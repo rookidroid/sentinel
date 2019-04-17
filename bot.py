@@ -23,6 +23,7 @@ from telegram import Bot
 import datetime
 import requests
 import os
+import logging
 
 
 class MyBot(Thread):
@@ -42,10 +43,13 @@ class MyBot(Thread):
         # data = {'chat_id': self.chat_id}
         # r = requests.post(url, files=files, data=data)
         self.bot.sendPhoto(chat_id=self.chat_id, photo=open(filename, 'rb'))
+        logging.info('Send photo')
         os.remove(filename)
+        logging.info('Delete photo')
         # print(r.status_code, r.reason, r.content)
 
     def run(self):
+        logging.info('MyBot thread started')
         self.bot.sendMessage(
             chat_id=self.chat_id,
             text=self.emoji_robot + self.bot_name + self.emoji_robot +

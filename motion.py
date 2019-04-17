@@ -22,6 +22,9 @@ from threading import Thread
 import time
 import RPi.GPIO as GPIO
 
+import logging
+logging.basicConfig(filename='app.log', level=logging.DEBUG)
+
 
 class Motion(Thread):
     def __init__(self, config, output_queue):
@@ -35,12 +38,14 @@ class Motion(Thread):
     def motion_handle(self, pin):
         if GPIO.input(pin):
             self.output_queue.put('capture_jpg')
-            print('Motion detected')
+            logging.info('Motion detected')
+
         else:
             self.output_queue.put('stop_capture_jpg')
-            print('No motion')
+            logging.info('No motion')
 
     def run(self):
+        logging.info('Motion thread started')
         GPIO.add_event_detect(
             self.motion_pin,
             GPIO.BOTH,

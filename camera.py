@@ -22,6 +22,7 @@ from threading import Thread
 import time
 import picamera
 import datetime
+import logging
 
 
 class Camera(Thread):
@@ -50,27 +51,35 @@ class Camera(Thread):
                 name_str = './photos/' + str(
                     frame_idx) + '_' + datetime_str + '.jpg'
                 self.camera.capture(name_str)
+                logging.info('Capture ' + name_str)
+
                 self.camera2bot.put(name_str)
                 motion_command = self.motion2camera.get(
                     block=True, timeout=period)
                 if not motion_command:
                     if motion_command is 'stop_capture_jpg':
                         self.motion2camera.task_done()
+
+                        logging.info('Stop capturing')
                         break
                     else:
                         self.motion2camera.task_done()
+                        logging.warning('Wrong command, continue capturing')
                 frame_idx += frame_idx
-                
+
                 if frame_idx >= self.max_frames:
+                    logging.warning('Reach to maximum frame')
                     break
 
     def run(self):
+        logging.info('Camera thread started')
         while True:
             # retrieve data (blocking)
             motion_command = self.motion2camera.get()
             if motion_command is 'capture_jpg':
                 self.motion2camera.task_done()
                 self.capture_jpg(0, 15)
+                logging.info('Start to capture photos')
                 # print('Capturing photo')
                 # datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
                 # self.camera.capture('./photos/' + datetime_str + '.jpg')
