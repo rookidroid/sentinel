@@ -21,27 +21,28 @@
 from queue import Queue
 from motion import Motion
 from bot import MyBot
+from camera import Camera
 import json
 
 
-def getConfig():
+def get_config():
     with open("config.json", "r") as read_file:
         return json.load(read_file)
 
 
 def main():
-    config = getConfig()
-    q = Queue()
-    #    t1 = Thread(target=motion.motion, args=(config['motion'],q,))
-    #    t2 = Thread(target=bot.bot, args=(config['bot'],q,))
-    #    t1.start()
-    #    t2.start()
+    config = get_config()
+    motion2bot_queue = Queue()
+    motion2camera = Queue()
+    camera2bot = Queue()
 
-    t = MyBot(config['bot'], q)
-    t1 = Motion(config['motion'], q)
+    motion = Motion(config['motion'], motion2camera)
+    my_bot = MyBot(config['bot'], camera2bot)
+    camera =  Camera(config['camera'], motion2camera, camera2bot)
 
-    t.start()
-    t1.start()
+    motion.start()
+    my_bot.start()
+    camera.start()
 
 
 if __name__ == '__main__':

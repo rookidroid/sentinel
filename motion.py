@@ -34,9 +34,11 @@ class Motion(Thread):
 
     def motion_handle(self, pin):
         if GPIO.input(pin):
-            self.output_queue.put('Motion detected')
+            self.output_queue.put('capture_jpg')
+            print('Motion detected')
         else:
             self.output_queue.put('No motion')
+            print('No motion')
 
     def run(self):
         GPIO.add_event_detect(

@@ -21,24 +21,32 @@
 from threading import Thread
 from telegram import Bot
 import datetime
+import requests
 
 
 class MyBot(Thread):
     def __init__(self, config, input_queue):
         Thread.__init__(self)
         self.bot_name = config['bot_name']
+        self.token = config['bot_token']
         self.bot = Bot(config['bot_token'])
         self.chat_id = config['chat_id']
         self.input_queue = input_queue
 
         self.emoji_robot = u'\U0001F916'
 
+    def sendImage(self, filename):
+        url = 'https://api.telegram.org/bot' + self.token + '/sendPhoto'
+        files = {'photo': open(filename, 'rb')}
+        data = {'chat_id': self.chat_id}
+        r = requests.post(url, files=files, data=data)
+        # print(r.status_code, r.reason, r.content)
+
     def run(self):
         self.bot.sendMessage(
             chat_id=self.chat_id,
             text=self.emoji_robot + self.bot_name + self.emoji_robot +
-            ' is running...',
-            parse_mode='HTML')
+            ' is running...')
 
         while True:
             # retrieve data (blocking)
@@ -47,9 +55,8 @@ class MyBot(Thread):
             # do something with the data
             currentDT = str(datetime.datetime.now())
             self.bot.sendMessage(
-                chat_id=self.chat_id,
-                text=data + ' at ' + currentDT,
-                parse_mode='HTML')
+                chat_id=self.chat_id, text=data + ' at ' + currentDT)
+            self.sendImage(data)
 
             # indicate data has been consumed
             self.input_queue.task_done()
