@@ -42,3 +42,4 @@ class Camera(Thread):
                 datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
                 self.camera.capture('./photos/' + datetime_str + '.jpg')
                 self.camera2bot.put('./photos/' + datetime_str + '.jpg')
+            self.motion2camera.task_done()
