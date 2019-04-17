@@ -32,7 +32,6 @@ def get_config():
 
 def main():
     config = get_config()
-    motion2bot_queue = Queue()
     motion2camera = Queue()
     camera2bot = Queue()
 
