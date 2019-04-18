@@ -22,6 +22,7 @@ from threading import Thread
 import time
 import picamera
 import datetime
+import queue
 import logging
 
 
@@ -31,7 +32,7 @@ class Camera(Thread):
         self.motion2camera = motion2camera
         self.camera2bot = camera2bot
 
-        self.camera = picamera.PiCamera(resolution=(1024, 768))
+        self.camera = picamera.PiCamera(resolution=(1280, 720))
         self.camera.start_preview()
         self.max_frames = 10
         time.sleep(2)
@@ -54,17 +55,21 @@ class Camera(Thread):
                 logging.info('Capture ' + name_str)
 
                 self.camera2bot.put(name_str)
-                motion_command = self.motion2camera.get(
-                    block=True, timeout=period)
-                if not motion_command:
+                try:
+                    motion_command = self.motion2camera.get(
+                        block=True, timeout=period)
+                except queue.Empty:
+                    # Handle empty queue here
+                    pass
+                else:
                     if motion_command is 'stop_capture_jpg':
                         self.motion2camera.task_done()
-
                         logging.info('Stop capturing')
                         break
                     else:
                         self.motion2camera.task_done()
                         logging.warning('Wrong command, continue capturing')
+
                 frame_idx += frame_idx
 
                 if frame_idx >= self.max_frames:
@@ -78,12 +83,9 @@ class Camera(Thread):
             motion_command = self.motion2camera.get()
             if motion_command is 'capture_jpg':
                 self.motion2camera.task_done()
-                self.capture_jpg(0, 15)
+                self.capture_jpg(0, 30)
                 logging.info('Start to capture photos')
-                # print('Capturing photo')
-                # datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-                # self.camera.capture('./photos/' + datetime_str + '.jpg')
-                # self.camera2bot.put('./photos/' + datetime_str + '.jpg')
+
             else:
                 self.motion2camera.task_done()
 

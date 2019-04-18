@@ -38,15 +38,10 @@ class MyBot(Thread):
         self.emoji_robot = u'\U0001F916'
 
     def sendImage(self, filename):
-        # url = 'https://api.telegram.org/bot' + self.token + '/sendPhoto'
-        # files = {'photo': open(filename, 'rb')}
-        # data = {'chat_id': self.chat_id}
-        # r = requests.post(url, files=files, data=data)
         self.bot.sendPhoto(chat_id=self.chat_id, photo=open(filename, 'rb'))
         logging.info('Send photo')
         os.remove(filename)
         logging.info('Delete photo')
-        # print(r.status_code, r.reason, r.content)
 
     def run(self):
         logging.info('MyBot thread started')
@@ -61,8 +56,8 @@ class MyBot(Thread):
 
             # do something with the data
             currentDT = str(datetime.datetime.now())
-            self.bot.sendMessage(
-                chat_id=self.chat_id, text=data + ' at ' + currentDT)
+            # self.bot.sendMessage(
+            #     chat_id=self.chat_id, text=data + ' at ' + currentDT)
             self.sendImage(data)
 
             # indicate data has been consumed
