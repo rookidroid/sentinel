@@ -63,6 +63,13 @@ class MessageBot(Thread):
             # indicate data has been consumed
             self.input_queue.task_done()
 
+# class CommandBot(Thread):
+#     def __init__(self, config, input_queue):
+#         Thread.__init__(self)
+
+#     def run(self):
+#         while True:
+
 
 '''
 
