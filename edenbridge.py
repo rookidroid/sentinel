@@ -20,7 +20,7 @@
 
 from queue import Queue
 from motion import Motion
-from bot import MyBot
+from bot import MessageBot
 from camera import Camera
 import json
 
@@ -36,7 +36,7 @@ def main():
     camera2bot = Queue()
 
     motion = Motion(config['motion'], motion2camera)
-    my_bot = MyBot(config['bot'], camera2bot)
+    my_bot = MessageBot(config['bot'], camera2bot)
     camera = Camera(config['camera'], motion2camera, camera2bot)
 
     motion.start()

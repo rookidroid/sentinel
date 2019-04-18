@@ -26,7 +26,7 @@ import os
 import logging
 
 
-class MyBot(Thread):
+class MessageBot(Thread):
     def __init__(self, config, input_queue):
         Thread.__init__(self)
         self.bot_name = config['bot_name']
