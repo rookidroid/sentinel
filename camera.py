@@ -32,10 +32,10 @@ class Camera(Thread):
         self.motion2camera = motion2camera
         self.camera2mbot = camera2mbot
 
-        self.camera = picamera.PiCamera(resolution=(1640, 1232))
-        self.camera.start_preview()
+        self.camera = picamera.PiCamera(resolution=(1280, 960))
+        # self.camera.start_preview()
         self.max_frames = 10
-        time.sleep(2)
+        # time.sleep(2)
 
     def capture_jpg(self, frames, period):
         datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
