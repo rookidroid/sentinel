@@ -33,11 +33,11 @@ def get_config():
 def main():
     config = get_config()
     motion2camera = Queue()
-    camera2bot = Queue()
+    camera2mbot = Queue()
 
     motion = Motion(config['motion'], motion2camera)
-    my_bot = MessageBot(config['bot'], camera2bot)
-    camera = Camera(config['camera'], motion2camera, camera2bot)
+    my_bot = MessageBot(config['bot'], camera2mbot)
+    camera = Camera(config['camera'], motion2camera, camera2mbot)
 
     motion.start()
     my_bot.start()

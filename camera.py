@@ -27,10 +27,10 @@ import logging
 
 
 class Camera(Thread):
-    def __init__(self, config, motion2camera, camera2bot):
+    def __init__(self, config, motion2camera, camera2mbot):
         Thread.__init__(self)
         self.motion2camera = motion2camera
-        self.camera2bot = camera2bot
+        self.camera2mbot = camera2mbot
 
         self.camera = picamera.PiCamera(resolution=(1280, 720))
         self.camera.start_preview()
@@ -44,7 +44,7 @@ class Camera(Thread):
                 name_str = './photos/' + str(
                     frame_idx) + '_' + datetime_str + '.jpg'
                 self.camera.capture(name_str)
-                self.camera2bot.put(name_str)
+                self.camera2mbot.put(name_str)
                 time.sleep(period)
         else:
             frame_idx = 0
@@ -54,7 +54,7 @@ class Camera(Thread):
                 self.camera.capture(name_str)
                 logging.info('Capture ' + name_str)
 
-                self.camera2bot.put(name_str)
+                self.camera2mbot.put(name_str)
                 try:
                     motion_command = self.motion2camera.get(
                         block=True, timeout=period)

@@ -27,13 +27,13 @@ import logging
 
 
 class MessageBot(Thread):
-    def __init__(self, config, input_queue):
+    def __init__(self, config, camera2mbot):
         Thread.__init__(self)
         self.bot_name = config['bot_name']
         self.token = config['bot_token']
         self.bot = Bot(config['bot_token'])
         self.chat_id = config['chat_id']
-        self.input_queue = input_queue
+        self.camera2mbot = camera2mbot
 
         self.emoji_robot = u'\U0001F916'
 
@@ -52,7 +52,7 @@ class MessageBot(Thread):
 
         while True:
             # retrieve data (blocking)
-            data = self.input_queue.get()
+            data = self.camera2mbot.get()
 
             # do something with the data
             currentDT = str(datetime.datetime.now())
@@ -61,10 +61,10 @@ class MessageBot(Thread):
             self.sendImage(data)
 
             # indicate data has been consumed
-            self.input_queue.task_done()
+            self.camera2mbot.task_done()
 
 # class CommandBot(Thread):
-#     def __init__(self, config, input_queue):
+#     def __init__(self, config, camera2mbot):
 #         Thread.__init__(self)
 
 #     def run(self):
