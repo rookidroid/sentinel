@@ -32,7 +32,7 @@ class Camera(Thread):
         self.motion2camera = motion2camera
         self.camera2mbot = camera2mbot
 
-        self.camera = picamera.PiCamera(resolution=(1280, 720))
+        self.camera = picamera.PiCamera(resolution=(1640, 1232))
         self.camera.start_preview()
         self.max_frames = 10
         time.sleep(2)
