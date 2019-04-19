@@ -31,10 +31,11 @@ class Camera(Thread):
         Thread.__init__(self)
         self.motion2camera = motion2camera
         self.camera2mbot = camera2mbot
-        self.camera = picamera.PiCamera(resolution=(1280, 960))
-        self.max_frames = 10
+        self.camera = picamera.PiCamera(resolution=config['resolution'])
+        self.max_photo_number = config['max_photo_number']
+        self.period = config['period']
 
-    def capture_jpg(self, frames, period):
+    def capture_jpg(self, period):
         datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         try:
             for frame_idx, filename in enumerate(
@@ -42,9 +43,8 @@ class Camera(Thread):
                         './photos/image{counter:02d}' + '_' + datetime_str +
                         '.jpg')):
 
-                if (frame_idx >= frames
-                        and frames > 0) or (frame_idx >= self.max_frames):
-                    logging.warning('Reach to maximum frame')
+                if frame_idx >= self.max_photo_number:
+                    logging.warning('Reach to maximum number of photos')
                     break
 
                 logging.info('Capture ' + filename)
@@ -74,7 +74,7 @@ class Camera(Thread):
             motion_command = self.motion2camera.get()
             if motion_command is 'capture_jpg':
                 self.motion2camera.task_done()
-                self.capture_jpg(0, 30)
+                self.capture_jpg(self.period)
                 logging.info('Start to capture photos')
 
             else:
