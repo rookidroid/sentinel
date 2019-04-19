@@ -31,30 +31,25 @@ class Camera(Thread):
         Thread.__init__(self)
         self.motion2camera = motion2camera
         self.camera2mbot = camera2mbot
-
         self.camera = picamera.PiCamera(resolution=(1280, 960))
-        # self.camera.start_preview()
         self.max_frames = 10
-        # time.sleep(2)
 
     def capture_jpg(self, frames, period):
         datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        if frames > 0:
-            for frame_idx in frames:
-                name_str = './photos/' + str(
-                    frame_idx) + '_' + datetime_str + '.jpg'
-                self.camera.capture(name_str)
-                self.camera2mbot.put(name_str)
-                time.sleep(period)
-        else:
-            frame_idx = 0
-            while True:
-                name_str = './photos/' + str(
-                    frame_idx) + '_' + datetime_str + '.jpg'
-                self.camera.capture(name_str)
-                logging.info('Capture ' + name_str)
+        try:
+            for frame_idx, filename in enumerate(
+                    self.camera.capture_continuous(
+                        './photos/image{counter:02d}' + '_' + datetime_str +
+                        '.jpg')):
 
-                self.camera2mbot.put(name_str)
+                if (frame_idx >= frames
+                        and frames > 0) or (frame_idx >= self.max_frames):
+                    logging.warning('Reach to maximum frame')
+                    break
+
+                logging.info('Capture ' + filename)
+                self.camera2mbot.put(filename)
+
                 try:
                     motion_command = self.motion2camera.get(
                         block=True, timeout=period)
@@ -69,12 +64,8 @@ class Camera(Thread):
                     else:
                         self.motion2camera.task_done()
                         logging.warning('Wrong command, continue capturing')
-
-                frame_idx += frame_idx
-
-                if frame_idx >= self.max_frames:
-                    logging.warning('Reach to maximum frame')
-                    break
+        finally:
+            pass
 
     def run(self):
         logging.info('Camera thread started')
