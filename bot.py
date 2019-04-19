@@ -20,8 +20,6 @@
 
 from threading import Thread
 from telegram import Bot
-import datetime
-import requests
 import os
 import logging
 
@@ -38,7 +36,8 @@ class MessageBot(Thread):
         self.emoji_robot = u'\U0001F916'
 
     def sendImage(self, filename):
-        self.bot.sendPhoto(chat_id=self.chat_id, photo=open(filename, 'rb'))
+        self.bot.sendPhoto(
+            chat_id=self.chat_id, photo=open(filename, 'rb'), caption=filename)
         logging.info('Send photo')
         os.remove(filename)
         logging.info('Delete photo')
@@ -52,23 +51,16 @@ class MessageBot(Thread):
 
         while True:
             # retrieve data (blocking)
-            data = self.camera2mbot.get()
+            msg = self.camera2mbot.get()
 
             # do something with the data
-            currentDT = str(datetime.datetime.now())
             # self.bot.sendMessage(
             #     chat_id=self.chat_id, text=data + ' at ' + currentDT)
-            self.sendImage(data)
+            if msg['cmd'] is 'send_image':
+                self.sendImage(msg['arg'])
 
             # indicate data has been consumed
             self.camera2mbot.task_done()
-
-# class CommandBot(Thread):
-#     def __init__(self, config, camera2mbot):
-#         Thread.__init__(self)
-
-#     def run(self):
-#         while True:
 
 
 '''

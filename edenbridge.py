@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python3
 '''
     Project Edenbridge
@@ -23,6 +22,7 @@ from motion import Motion
 from bot import MessageBot
 from camera import Camera
 import json
+from telegram.ext import Updater, InlineQueryHandler, CommandHandler
 
 
 def get_config():
@@ -32,16 +32,36 @@ def get_config():
 
 def main():
     config = get_config()
-    motion2camera = Queue()
-    camera2mbot = Queue()
+    token = config['bot']['bot_token']
+    chat_id = config['bot']['chat_id']
+    q2camera = Queue()
+    q2mbot = Queue()
 
-    motion = Motion(config['motion'], motion2camera)
-    my_bot = MessageBot(config['bot'], camera2mbot)
-    camera = Camera(config['camera'], motion2camera, camera2mbot)
+    def hello(bot, update):
+        user_id = update.message.chat_id
+        if user_id == chat_id:
+            bot.sendMessage(chat_id=user_id, text='Hello!')
+
+    def get_photo(bot, update):
+        user_id = update.message.chat_id
+        if user_id == chat_id:
+            q2camera.put({'cmd': 'capture_jpg', 'arg': 1})
+
+    motion = Motion(config['motion'], q2camera)
+    my_bot = MessageBot(config['bot'], q2mbot)
+    camera = Camera(config['camera'], q2camera, q2mbot)
 
     motion.start()
     my_bot.start()
     camera.start()
+
+    updater = Updater(token)
+    dp = updater.dispatcher
+    dp.add_handler(CommandHandler('hello', hello))
+    dp.add_handler(CommandHandler('photo', get_photo))
+
+    updater.start_polling()
+    updater.idle()
 
 
 if __name__ == '__main__':

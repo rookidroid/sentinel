@@ -35,7 +35,7 @@ class Camera(Thread):
         self.max_photo_number = config['max_photo_number']
         self.period = config['period']
 
-    def capture_jpg(self, period):
+    def capture_jpg(self, counts, period):
         datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         try:
             for frame_idx, filename in enumerate(
@@ -43,21 +43,21 @@ class Camera(Thread):
                         './photos/image{counter:02d}' + '_' + datetime_str +
                         '.jpg')):
 
-                if frame_idx >= self.max_photo_number:
+                if (counts > 0 and frame_idx >= counts) or (
+                        frame_idx >= self.max_photo_number):
                     logging.warning('Reach to maximum number of photos')
                     break
 
                 logging.info('Capture ' + filename)
-                self.camera2mbot.put(filename)
+                self.camera2mbot.put({'cmd': 'send_image', 'arg': filename})
 
                 try:
-                    motion_command = self.motion2camera.get(
-                        block=True, timeout=period)
+                    msg = self.motion2camera.get(block=True, timeout=period)
                 except queue.Empty:
                     # Handle empty queue here
                     pass
                 else:
-                    if motion_command is 'stop_capture_jpg':
+                    if msg['cmd'] is 'stop':
                         self.motion2camera.task_done()
                         logging.info('Stop capturing')
                         break
@@ -71,10 +71,10 @@ class Camera(Thread):
         logging.info('Camera thread started')
         while True:
             # retrieve data (blocking)
-            motion_command = self.motion2camera.get()
-            if motion_command is 'capture_jpg':
+            msg = self.motion2camera.get()
+            if msg['cmd'] is 'capture_jpg':
                 self.motion2camera.task_done()
-                self.capture_jpg(self.period)
+                self.capture_jpg(msg['arg'], self.period)
                 logging.info('Start to capture photos')
 
             else:

@@ -31,17 +31,19 @@ class Motion(Thread):
         Thread.__init__(self)
         self.motion_pin = config['motion_pin']
         self.output_queue = output_queue
+        self.msg_capture_jpg = {'cmd': 'capture_jpg', 'arg': 0}
+        self.msg_stop = {'cmd': 'stop', 'arg': 0}
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.motion_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     def motion_handle(self, pin):
         if GPIO.input(pin):
-            self.output_queue.put('capture_jpg')
+            self.output_queue.put(self.msg_capture_jpg)
             logging.info('Motion detected')
 
         else:
-            self.output_queue.put('stop_capture_jpg')
+            self.output_queue.put(self.msg_stop)
             logging.info('No motion')
 
     def run(self):
