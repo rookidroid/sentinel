@@ -50,16 +50,11 @@ class MessageBot(Thread):
             ' is running...')
 
         while True:
-            # retrieve data (blocking)
             msg = self.camera2mbot.get()
 
-            # do something with the data
-            # self.bot.sendMessage(
-            #     chat_id=self.chat_id, text=data + ' at ' + currentDT)
             if msg['cmd'] is 'send_image':
                 self.sendImage(msg['arg'])
 
-            # indicate data has been consumed
             self.camera2mbot.task_done()
 
 
