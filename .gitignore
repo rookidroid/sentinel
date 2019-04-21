@@ -103,8 +103,10 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-config\.json
+*.json
 
 \.vscode/
 
 \.idea/
+
+*.pickle
