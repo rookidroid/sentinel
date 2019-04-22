@@ -61,25 +61,21 @@ class GDrive():
             body=file_metadata, fields='name, id').execute()
         return file
 
-    def upload(self, localfile, mimetype, name_on_gdrive, parents=None):
-        if parents is not None:
-            file_metadata = {'name': name_on_gdrive, 'parents': [parents]}
-        else:
-            file_metadata = {'name': name_on_gdrive}
+    def upload(self, localfile, mimetype, name, parents='root'):
+        file_metadata = {'name': name, 'parents': [parents]}
         media = MediaFileUpload(localfile, mimetype=mimetype)
         file = self.service.files().create(
             body=file_metadata, media_body=media, fields='name, id').execute()
         return file
-    
-    def download(self):
-        file_id = '0BwwA4oUTeiV1UVNwOHItT0xfa2M'
+
+    def download(self, file_id):
         request = self.service.files().get_media(fileId=file_id)
         fh = io.BytesIO()
         downloader = MediaIoBaseDownload(fh, request)
         done = False
         while done is False:
             status, done = downloader.next_chunk()
-            print( "Download %d%%." % int(status.progress() * 100))
+            print("Download %d%%." % int(status.progress() * 100))
 
 
 def main():
