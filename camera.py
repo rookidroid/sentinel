@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python3
-'''
+"""
     Project Edenbridge
     Copyright (C) 2019  Zhengyu Peng
 
@@ -16,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-'''
+"""
 
 from threading import Thread
 import picamera
