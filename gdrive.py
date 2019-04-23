@@ -1,4 +1,3 @@
-from __future__ import print_function
 import pickle
 import os.path
 import io
@@ -33,13 +32,17 @@ class GDrive():
 
         self.service = build('drive', 'v3', credentials=creds)
 
-    def get_file_list(self):
+    def get_file_list(self, parent):
+        """
+        parent: 'root' or file id
+        """
+
         filelist = []
         page_token = None
 
         while True:
             response = self.service.files().list(
-                q="trashed = False and 'root' in parents",
+                q='trashed = False and \'' + parent+ '\' in parents',
                 fields='nextPageToken, files(name, id, mimeType)',
                 pageToken=page_token).execute()
 
@@ -80,18 +83,18 @@ class GDrive():
 
 def main():
     gdrive = GDrive()
-    #gdrive.upload('edenbridge.py', 'plain/text', 'edenbridge.py')
+    # gdrive.upload('edenbridge.py', 'plain/text', 'edenbridge.py')
 
-    items = gdrive.get_file_list()
+    items = gdrive.get_file_list('root')
 
     folder = gdrive.creat_folder()
     #
-    if not items:
-        print('No files found.')
-    else:
-        print('Files:')
-        for item in items:
-            print(u'{0} ({1})'.format(item['name'], item['id']))
+    # if not items:
+    #     print('No files found.')
+    # else:
+    #     print('Files:')
+    #     for item in items:
+    #         print(u'{0} ({1})'.format(item['name'], item['id']))
 
 
 if __name__ == '__main__':
