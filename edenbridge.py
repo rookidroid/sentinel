@@ -46,6 +46,11 @@ def main():
         user_id = update.message.chat_id
         if user_id == chat_id:
             q2camera.put({'cmd': 'capture_jpg', 'arg': 1})
+    
+    def get_video(bot, update):
+        user_id = update.message.chat_id
+        if user_id == chat_id:
+            q2camera.put({'cmd': 'record_video', 'arg': 1})
 
     motion = Motion(config['motion'], q2camera)
     my_bot = MessageBot(config['bot'], q2mbot)
@@ -59,6 +64,7 @@ def main():
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('hello', hello))
     dp.add_handler(CommandHandler('photo', get_photo))
+    dp.add_handler(CommandHandler('video', get_video))
 
     updater.start_polling()
     updater.idle()

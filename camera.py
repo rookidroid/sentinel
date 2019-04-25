@@ -31,7 +31,9 @@ class Camera(Thread):
         self.camera2mbot = camera2mbot
         self.camera = picamera.PiCamera(resolution=config['resolution'])
         self.max_photo_number = config['max_photo_number']
+        self.max_video_number = 2
         self.period = config['period']
+        self.video_length = 30
 
     def capture_jpg(self, counts, period):
         datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -62,6 +64,33 @@ class Camera(Thread):
                     else:
                         self.motion2camera.task_done()
                         logging.warning('Wrong command, continue capturing')
+                    pass
+        finally:
+            pass
+
+    def capture_video(self):
+        datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        try:
+            for filename in self.camera.record_sequence('./videos/%d.h264' % i for i in range(0, self.max_video_number)):
+                #self.camera.wait_recording(5)
+
+                try:
+                    msg = self.motion2camera.get(block=True, timeout=self.video_length)
+                except queue.Empty:
+                    # Handle empty queue here
+                    pass
+                else:
+                    if msg['cmd'] is 'stop':
+                        self.camera.stop_recording()
+                        self.motion2camera.task_done()
+                        #self.camera2mbot.put({'cmd': 'send_image', 'arg': filename})
+                        logging.info('Stop recording')
+                        break
+                    else:
+                        self.motion2camera.task_done()
+                        logging.warning('Wrong command, continue recording')
+                    pass
+
         finally:
             pass
 
@@ -74,7 +103,10 @@ class Camera(Thread):
                 self.motion2camera.task_done()
                 self.capture_jpg(msg['arg'], self.period)
                 logging.info('Start to capture photos')
-
+            elif msg['cmd'] is 'record_video':
+                self.motion2camera.task_done()
+                self.capture_video()
+                logging.info('Start to record videos')
             else:
                 self.motion2camera.task_done()
 
