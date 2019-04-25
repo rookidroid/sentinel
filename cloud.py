@@ -33,3 +33,7 @@ class Cloud(Thread):
         while True:
             # retrieve data (blocking)
             msg = self.q2cloud.get()
+            if msg['cmd'] is 'upload_file':
+                #self.gdrive.upload(msg['arg'], mimetype, name, parents='root')
+
+                self.q2cloud.task_done()

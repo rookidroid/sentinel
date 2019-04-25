@@ -54,11 +54,11 @@ class GDrive():
 
         return filelist
 
-    def creat_folder(self):
+    def creat_folder(self, name, parent):
         file_metadata = {
-            'name': 'edenbridge',
+            'name': name,
             'mimeType': 'application/vnd.google-apps.folder',
-            'parents': ['root']
+            'parents': [parent]
         }
         file = self.service.files().create(
             body=file_metadata, fields='name, id').execute()
