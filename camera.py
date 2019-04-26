@@ -25,10 +25,10 @@ import logging
 
 
 class Camera(Thread):
-    def __init__(self, config, motion2camera, camera2mbot):
+    def __init__(self, config, q2camera, q2mbot, q2cloud):
         Thread.__init__(self)
-        self.motion2camera = motion2camera
-        self.camera2mbot = camera2mbot
+        self.motion2camera = q2camera
+        self.camera2mbot = q2mbot
         self.camera = picamera.PiCamera(resolution=config['resolution'])
         self.max_photo_number = config['max_photo_number']
         self.max_video_number = 2

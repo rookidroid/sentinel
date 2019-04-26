@@ -36,6 +36,7 @@ def main():
     chat_id = config['bot']['chat_id']
     q2camera = Queue()
     q2mbot = Queue()
+    q2cloud = Queue()
 
     def hello(bot, update):
         user_id = update.message.chat_id
@@ -54,7 +55,7 @@ def main():
 
     motion = Motion(config['motion'], q2camera)
     my_bot = MessageBot(config['bot'], q2mbot)
-    camera = Camera(config['camera'], q2camera, q2mbot)
+    camera = Camera(config['camera'], q2camera, q2mbot, q2cloud)
 
     motion.start()
     my_bot.start()

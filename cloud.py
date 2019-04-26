@@ -19,6 +19,7 @@
 
 from gdrive import GDrive
 from threading import Thread
+from subprocess import call
 import logging
 
 
@@ -27,6 +28,12 @@ class Cloud(Thread):
         Thread.__init__(self)
         self.q2cloud=q2cloud
         self.gdrive = GDrive()
+
+    def h264_to_mp4(self):
+        retcode = call(["MP4Box", "-add", input_video, output_video])
+        if retcode != 0:
+            # It went wrong...
+            print("Couldn't convert", input_video)
 
     def run(self):
         logging.info('Camera thread started')
