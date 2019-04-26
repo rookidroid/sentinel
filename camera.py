@@ -115,6 +115,7 @@ class Camera(Thread):
             # process video
 
         else:
+            self.camera.stop_recording()
             self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':ready_filename})
 
     def run(self):

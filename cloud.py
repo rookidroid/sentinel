@@ -29,11 +29,11 @@ class Cloud(Thread):
         self.q2cloud=q2cloud
         self.gdrive = GDrive()
 
-    def h264_to_mp4(self):
-        retcode = call(["MP4Box", "-add", input_video, output_video])
+    def h264_to_mp4(self, input, output):
+        retcode = call(["MP4Box", "-add", input, output])
         if retcode != 0:
             # It went wrong...
-            print("Couldn't convert", input_video)
+            print("Couldn't convert", input)
 
     def run(self):
         logging.info('Camera thread started')

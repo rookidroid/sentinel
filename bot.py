@@ -50,7 +50,7 @@ class MessageBot(Thread):
         while True:
             msg = self.camera2mbot.get()
 
-            if msg['cmd'] is 'send_image':
+            if msg['cmd'] is 'send_photo':
                 self.sendImage(msg['arg'])
 
             self.camera2mbot.task_done()
