@@ -70,31 +70,33 @@ class Camera(Thread):
             pass
 
     def take_video(self, count):
+        def take_photo_during_recording(filename):
+            for photo_idx in range(0, int(self.video_length/self.period)):
+                try:
+                    msg = self.motion2camera.get(block=True,
+                                                timeout=self.period)
+                except queue.Empty:
+                    # take a photo from video port
+                    # send out through bot
+                    pass
+                else:
+                    if msg['cmd'] is 'stop':
+                        self.camera.stop_recording()
+                        self.motion2camera.task_done()
+                        self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':filename})
+                        #self.camera2mbot.put({'cmd': 'send_image', 'arg': filename})
+                        # process video
+                        logging.info('Stop recording')
+                        break
+                    else:
+                        self.motion2camera.task_done()
+                        logging.warning('Wrong command, continue recording')
+                    pass
+
         datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         ready_filename = './videos/video0_' + datetime_str + '.h264'
         self.camera.start_recording(ready_filename)
-
-        for photo_idx in range(0, int(self.video_length/self.period)):
-            try:
-                msg = self.motion2camera.get(block=True,
-                                            timeout=self.period)
-            except queue.Empty:
-                # take a photo from video port
-                # send out through bot
-                pass
-            else:
-                if msg['cmd'] is 'stop':
-                    self.camera.stop_recording()
-                    self.motion2camera.task_done()
-                    self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':filename})
-                    #self.camera2mbot.put({'cmd': 'send_image', 'arg': filename})
-                    # process video
-                    logging.info('Stop recording')
-                    break
-                else:
-                    self.motion2camera.task_done()
-                    logging.warning('Wrong command, continue recording')
-                pass
+        take_photo_during_recording(ready_filename)
         
         if count > 1:
 
@@ -105,27 +107,7 @@ class Camera(Thread):
                 self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':ready_filename})
                 ready_filename=file_name
 
-                for photo_idx in range(0, int(self.video_length/self.period)):
-                    try:
-                        msg = self.motion2camera.get(block=True,
-                                                    timeout=self.period)
-                    except queue.Empty:
-                        # take a photo from video port
-                        # send out through bot
-                        pass
-                    else:
-                        if msg['cmd'] is 'stop':
-                            self.camera.stop_recording()
-                            self.motion2camera.task_done()
-                            self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':ready_filename})
-                            #self.camera2mbot.put({'cmd': 'send_image', 'arg': filename})
-                            # process video
-                            logging.info('Stop recording')
-                            return
-                        else:
-                            self.motion2camera.task_done()
-                            logging.warning('Wrong command, continue recording')
-                        pass
+                take_photo_during_recording(ready_filename)
 
             self.camera.stop_recording()
             self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':ready_filename})
