@@ -73,20 +73,20 @@ class Camera(Thread):
         datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         ready_filename = './videos/video0_' + datetime_str + '.h264'
 
-        def take_photo_during_recording(filename):
+        def take_photo_during_recording(video_filename, photo_filename):
             for photo_idx in range(0, int(self.video_length/self.period)):
                 try:
                     msg = self.motion2camera.get(block=True,
                                                 timeout=self.period)
                 except queue.Empty:
-                    # take a photo from video port
-                    # send out through bot
+                    self.camera.capture(photo_filename, use_video_port=True)
+                    self.camera2mbot.put({'cmd': 'send_photo', 'arg': photo_filename})
                     pass
                 else:
                     if msg['cmd'] is 'stop':
                         self.camera.stop_recording()
                         self.motion2camera.task_done()
-                        self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':filename})
+                        self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':video_filename})
                         #self.camera2mbot.put({'cmd': 'send_image', 'arg': filename})
                         # process video
                         logging.info('Stop recording')
@@ -97,7 +97,7 @@ class Camera(Thread):
                     pass
 
         self.camera.start_recording(ready_filename)
-        take_photo_during_recording(ready_filename)
+        take_photo_during_recording(ready_filename, './photos/image0_' + datetime_str + '.jpg')
         
         if count > 1:
 
@@ -108,7 +108,7 @@ class Camera(Thread):
                 self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':ready_filename})
                 ready_filename=file_name
 
-                take_photo_during_recording(ready_filename)
+                take_photo_during_recording(ready_filename, './photos/image'+ str(video_idx)+'_' + datetime_str + '.jpg')
 
             self.camera.stop_recording()
             self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':ready_filename})
