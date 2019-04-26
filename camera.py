@@ -29,27 +29,28 @@ class Camera(Thread):
         Thread.__init__(self)
         self.motion2camera = q2camera
         self.camera2mbot = q2mbot
+        self.q2cloud = q2cloud
         self.camera = picamera.PiCamera(resolution=config['resolution'])
-        self.max_photo_number = config['max_photo_number']
-        self.max_video_number = 2
+        self.max_photo_count = config['max_photo_count']
+        self.max_video_count = 2
         self.period = config['period']
         self.video_length = 30
 
-    def capture_jpg(self, counts, period):
+    def take_photo(self, counts, period):
         datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         try:
             for frame_idx, filename in enumerate(
                     self.camera.capture_continuous(
-                        './photos/image{counter:02d}' + '_' + datetime_str +
+                        './photos/photo{counter:d}' + '_' + datetime_str +
                         '.jpg')):
 
                 if (counts > 0 and frame_idx >= counts) or (
-                        frame_idx >= self.max_photo_number):
+                        frame_idx >= self.max_photo_count):
                     logging.warning('Reach to maximum number of photos')
                     break
 
                 logging.info('Capture ' + filename)
-                self.camera2mbot.put({'cmd': 'send_image', 'arg': filename})
+                self.camera2mbot.put({'cmd': 'send_photo', 'arg': filename})
 
                 try:
                     msg = self.motion2camera.get(block=True, timeout=period)
@@ -68,44 +69,84 @@ class Camera(Thread):
         finally:
             pass
 
-    def capture_video(self):
+    def take_video(self, count):
         datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        try:
-            for filename in self.camera.record_sequence('./videos/%d.h264' % i for i in range(0, self.max_video_number)):
-                #self.camera.wait_recording(5)
+        ready_filename = './videos/video0_' + datetime_str + '.h264'
+        self.camera.start_recording(ready_filename)
 
-                try:
-                    msg = self.motion2camera.get(block=True, timeout=self.video_length)
-                except queue.Empty:
-                    # Handle empty queue here
-                    pass
+        for photo_idx in range(0, int(self.video_length/self.period)):
+            try:
+                msg = self.motion2camera.get(block=True,
+                                            timeout=self.period)
+            except queue.Empty:
+                # take a photo from video port
+                # send out through bot
+                pass
+            else:
+                if msg['cmd'] is 'stop':
+                    self.camera.stop_recording()
+                    self.motion2camera.task_done()
+                    self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':filename})
+                    #self.camera2mbot.put({'cmd': 'send_image', 'arg': filename})
+                    # process video
+                    logging.info('Stop recording')
+                    break
                 else:
-                    if msg['cmd'] is 'stop':
-                        self.camera.stop_recording()
-                        self.motion2camera.task_done()
-                        #self.camera2mbot.put({'cmd': 'send_image', 'arg': filename})
-                        logging.info('Stop recording')
-                        break
-                    else:
-                        self.motion2camera.task_done()
-                        logging.warning('Wrong command, continue recording')
-                    pass
+                    self.motion2camera.task_done()
+                    logging.warning('Wrong command, continue recording')
+                pass
+        
+        if count > 1:
 
-        finally:
-            pass
+            for video_idx in range(1, count):
+                file_name = './videos/video'+ str(video_idx)+'_' + datetime_str + '.h264'
+
+                self.camera.split_recording(file_name)
+                self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':ready_filename})
+                ready_filename=file_name
+
+                for photo_idx in range(0, int(self.video_length/self.period)):
+                    try:
+                        msg = self.motion2camera.get(block=True,
+                                                    timeout=self.period)
+                    except queue.Empty:
+                        # take a photo from video port
+                        # send out through bot
+                        pass
+                    else:
+                        if msg['cmd'] is 'stop':
+                            self.camera.stop_recording()
+                            self.motion2camera.task_done()
+                            self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':ready_filename})
+                            #self.camera2mbot.put({'cmd': 'send_image', 'arg': filename})
+                            # process video
+                            logging.info('Stop recording')
+                            return
+                        else:
+                            self.motion2camera.task_done()
+                            logging.warning('Wrong command, continue recording')
+                        pass
+
+            self.camera.stop_recording()
+            self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':ready_filename})
+            # process video
+
+
+        else:
+            self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':ready_filename})
 
     def run(self):
         logging.info('Camera thread started')
         while True:
             # retrieve data (blocking)
             msg = self.motion2camera.get()
-            if msg['cmd'] is 'capture_jpg':
+            if msg['cmd'] is 'take_photo':
                 self.motion2camera.task_done()
-                self.capture_jpg(msg['arg'], self.period)
+                self.take_photo(msg['count'], self.period)
                 logging.info('Start to capture photos')
-            elif msg['cmd'] is 'record_video':
+            elif msg['cmd'] is 'take_video':
                 self.motion2camera.task_done()
-                self.capture_video()
+                self.take_video()
                 logging.info('Start to record videos')
             else:
                 self.motion2camera.task_done()
