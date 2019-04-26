@@ -70,6 +70,9 @@ class Camera(Thread):
             pass
 
     def take_video(self, count):
+        datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        ready_filename = './videos/video0_' + datetime_str + '.h264'
+
         def take_photo_during_recording(filename):
             for photo_idx in range(0, int(self.video_length/self.period)):
                 try:
@@ -93,8 +96,6 @@ class Camera(Thread):
                         logging.warning('Wrong command, continue recording')
                     pass
 
-        datetime_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        ready_filename = './videos/video0_' + datetime_str + '.h264'
         self.camera.start_recording(ready_filename)
         take_photo_during_recording(ready_filename)
         
@@ -112,7 +113,6 @@ class Camera(Thread):
             self.camera.stop_recording()
             self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':ready_filename})
             # process video
-
 
         else:
             self.q2cloud.put({'cmd':'upload_file', 'file_type':'H264', 'file_name':ready_filename})
