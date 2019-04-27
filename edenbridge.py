@@ -48,7 +48,7 @@ def main():
         user_id = update.message.chat_id
         if user_id == chat_id:
             q2camera.put({'cmd': 'take_photo', 'count': 1})
-    
+
     def take_video(bot, update):
         user_id = update.message.chat_id
         if user_id == chat_id:

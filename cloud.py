@@ -20,20 +20,22 @@
 from gdrive import GDrive
 from threading import Thread
 from subprocess import call
+import os
 import logging
 
 
 class Cloud(Thread):
     def __init__(self, config, q2cloud):
         Thread.__init__(self)
-        self.q2cloud=q2cloud
+        self.q2cloud = q2cloud
         self.gdrive = GDrive()
 
     def h264_to_mp4(self, input, output):
         retcode = call(["MP4Box", "-add", input, output])
         if retcode != 0:
-            # It went wrong...
             print("Couldn't convert", input)
+        else:
+            os.remove(input)
 
     def run(self):
         logging.info('Camera thread started')
@@ -41,6 +43,9 @@ class Cloud(Thread):
             # retrieve data (blocking)
             msg = self.q2cloud.get()
             if msg['cmd'] is 'upload_file':
+                if msg['file_type'] is 'H264':
+                    self.h264_to_mp4(msg['file_name'],
+                                     msg['file_name'][:-4] + 'mp4')
                 #self.gdrive.upload(msg['arg'], mimetype, name, parents='root')
 
                 self.q2cloud.task_done()

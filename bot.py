@@ -35,17 +35,18 @@ class MessageBot(Thread):
         self.emoji_robot = u'\U0001F916'
 
     def sendImage(self, filename):
-        self.bot.sendPhoto(
-            chat_id=self.chat_id, photo=open(filename, 'rb'), caption=filename)
+        self.bot.sendPhoto(chat_id=self.chat_id,
+                           photo=open(filename, 'rb'),
+                           caption=filename)
         logging.info('Send photo')
         os.remove(filename)
         logging.info('Delete photo')
 
     def run(self):
         logging.info('MyBot thread started')
-        self.bot.sendMessage(
-            chat_id=self.chat_id,
-            text=self.emoji_robot + self.bot_name + self.emoji_robot + ' is running...')
+        self.bot.sendMessage(chat_id=self.chat_id,
+                             text=self.emoji_robot + self.bot_name +
+                             self.emoji_robot + ' is running...')
 
         while True:
             msg = self.camera2mbot.get()
