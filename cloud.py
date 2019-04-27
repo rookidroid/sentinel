@@ -29,6 +29,16 @@ class Cloud(Thread):
         Thread.__init__(self)
         self.q2cloud = q2cloud
         self.gdrive = GDrive()
+        self.target_folder = self.get_folder_id('edenbridge')
+
+    def get_folder_id(self, folder_name):
+        file_list = self.gdrive.get_file_list('root')
+
+        for file in file_list:
+            if (file['name'] is 'folder_name') and (file['mimeType'] is 'application/vnd.google-apps.folder'):
+                return file
+
+        return self.gdrive.create_folder(folder_name, 'root')
 
     def h264_to_mp4(self, input, output):
         retcode = call(["MP4Box", "-add", input, output])
@@ -38,13 +48,13 @@ class Cloud(Thread):
             os.remove(input)
 
     def run(self):
-        logging.info('Camera thread started')
+        logging.info('Cloud thread started')
         while True:
             msg = self.q2cloud.get()
             if msg['cmd'] is 'upload_file':
                 if msg['file_type'] is 'H264':
                     self.h264_to_mp4(msg['file_name'],
                                      msg['file_name'][:-4] + 'mp4')
-                #self.gdrive.upload(msg['arg'], mimetype, name, parents='root')
+                    self.gdrive.upload(msg['file_name'][:-4] + 'mp4', 'video/mp4', 'test', parents=self.target_folder['id'])
 
                 self.q2cloud.task_done()

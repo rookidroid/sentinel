@@ -54,7 +54,7 @@ class GDrive():
 
         return filelist
 
-    def creat_folder(self, name, parent):
+    def create_folder(self, name, parent):
         file_metadata = {
             'name': name,
             'mimeType': 'application/vnd.google-apps.folder',
@@ -81,21 +81,27 @@ class GDrive():
             print("Download %d%%." % int(status.progress() * 100))
 
 
-def main():
-    gdrive = GDrive()
-    # gdrive.upload('edenbridge.py', 'plain/text', 'edenbridge.py')
+# def main():
+#     #gdrive = GDrive()
+#     # gdrive.upload('edenbridge.py', 'plain/text', 'edenbridge.py')
 
-    items = gdrive.get_file_list('root')
-
-    folder = gdrive.creat_folder()
-    #
-    # if not items:
-    #     print('No files found.')
-    # else:
-    #     print('Files:')
-    #     for item in items:
-    #         print(u'{0} ({1})'.format(item['name'], item['id']))
+#     # items = gdrive.get_file_list('root')
+#     # for folder in items:
+#     #     if folder['name'] is '' and folder['mimeType'] is 'application/vnd.google-apps.folder':
+#     #         return folder
+#     #
+#     # return self.create_folder(name, parent)
 
 
-if __name__ == '__main__':
-    main()
+#     # folder = gdrive.creat_folder('test', 'root')
+#     #
+#     # if not items:
+#     #     print('No files found.')
+#     # else:
+#     #     print('Files:')
+#     #     for item in items:
+#     #         print(u'{0} ({1})'.format(item['name'], item['id']))
+
+
+# if __name__ == '__main__':
+#     main()
