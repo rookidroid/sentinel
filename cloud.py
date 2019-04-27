@@ -35,7 +35,7 @@ class Cloud(Thread):
         file_list = self.gdrive.get_file_list('root')
 
         for file in file_list:
-            if (file['name'] is 'folder_name') and (file['mimeType'] is 'application/vnd.google-apps.folder'):
+            if (file['name'] == folder_name) and (file['mimeType'] == 'application/vnd.google-apps.folder'):
                 return file
 
         return self.gdrive.create_folder(folder_name, 'root')
@@ -55,6 +55,6 @@ class Cloud(Thread):
                 if msg['file_type'] is 'H264':
                     self.h264_to_mp4(msg['file_name'],
                                      msg['file_name'][:-4] + 'mp4')
-                    self.gdrive.upload(msg['file_name'][:-4] + 'mp4', 'video/mp4', 'test', parents=self.target_folder['id'])
+                    self.gdrive.upload(msg['file_name'][:-4] + 'mp4', 'video/mp4', 'test')
 
                 self.q2cloud.task_done()
