@@ -40,7 +40,6 @@ class Cloud(Thread):
     def run(self):
         logging.info('Camera thread started')
         while True:
-            # retrieve data (blocking)
             msg = self.q2cloud.get()
             if msg['cmd'] is 'upload_file':
                 if msg['file_type'] is 'H264':

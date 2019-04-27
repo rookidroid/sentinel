@@ -30,7 +30,7 @@ class Motion(Thread):
         Thread.__init__(self)
         self.motion_pin = config['motion_pin']
         self.output_queue = output_queue
-        self.msg_capture_jpg = {'cmd': 'capture_jpg', 'arg': 0}
+        self.msg_capture_jpg = {'cmd': 'take_photo', 'count': 0}
         self.msg_stop = {'cmd': 'stop', 'arg': 0}
 
         GPIO.setmode(GPIO.BCM)
