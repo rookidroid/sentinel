@@ -52,7 +52,7 @@ def main():
     def take_video(bot, update):
         user_id = update.message.chat_id
         if user_id == chat_id:
-            q2camera.put({'cmd': 'take_video', 'count': 1})
+            q2camera.put({'cmd': 'take_video', 'count': 2})
 
     motion = Motion(config['motion'], q2camera)
     my_bot = MessageBot(config['bot'], q2mbot)
