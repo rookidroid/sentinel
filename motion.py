@@ -31,6 +31,7 @@ class Motion(Thread):
         self.motion_pin = config['motion_pin']
         self.output_queue = output_queue
         self.msg_capture_jpg = {'cmd': 'take_photo', 'count': 0}
+        self.cmd_take_video = {'cmd': 'take_video', 'count': 0}
         self.msg_stop = {'cmd': 'stop', 'arg': 0}
 
         GPIO.setmode(GPIO.BCM)
@@ -38,7 +39,7 @@ class Motion(Thread):
 
     def motion_handle(self, pin):
         if GPIO.input(pin):
-            self.output_queue.put(self.msg_capture_jpg)
+            self.output_queue.put(self.cmd_take_video)
             logging.info('Motion detected')
 
         else:

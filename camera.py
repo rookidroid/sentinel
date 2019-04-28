@@ -35,9 +35,9 @@ class Camera(Thread):
         self.q2cloud = q2cloud
         self.camera = picamera.PiCamera(resolution=config['resolution'])
         self.max_photo_count = config['max_photo_count']
-        self.max_video_count = 10
+        self.max_video_count = config['max_video_count']
         self.period = config['period']
-        self.video_length = 30
+        self.video_length = config['video_length']
         self.video_path = str(self.cwd) + '/videos/'
         self.photo_path = str(self.cwd) + '/photos/'
 
@@ -72,8 +72,9 @@ class Camera(Thread):
 
             self.cmd_send_jpg['date'] = date_str
             self.cmd_send_jpg['time'] = time_str
-            self.cmd_send_jpg['file_name'] = 'photo' + str(
-                photo_idx) + '_' + date_str + '_' + time_str
+            self.cmd_send_jpg[
+                'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(
+                    photo_idx)
 
             self.camera.capture(self.cmd_send_jpg['path'] +
                                 self.cmd_send_jpg['file_name'] +
@@ -95,6 +96,9 @@ class Camera(Thread):
                 pass
 
     def take_video(self, count):
+        if count == 0 or count > self.max_video_count:
+            count = self.max_video_count
+
         def take_photo_during_recording(video_idx, date, time):
             for photo_idx in range(0, int(self.video_length / self.period)):
                 try:
@@ -103,10 +107,10 @@ class Camera(Thread):
                 except queue.Empty:
                     date_str = datetime.datetime.now().strftime('%Y-%m-%d')
                     time_str = datetime.datetime.now().strftime('%H-%M-%S')
-                    self.cmd_send_jpg['file_name'] = 'photo' + str(
-                        int(1 + photo_idx +
-                            video_idx * int(self.video_length / self.period))
-                    ) + '_' + date_str + '_' + time_str
+                    self.cmd_send_jpg[
+                        'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(
+                            int(1 + photo_idx + video_idx *
+                                int(self.video_length / self.period)))
                     self.cmd_send_jpg['date'] = date_str
                     self.cmd_send_jpg['time'] = time_str
                     self.camera.capture(self.cmd_send_jpg['path'] +
@@ -131,13 +135,13 @@ class Camera(Thread):
 
         date_str = datetime.datetime.now().strftime('%Y-%m-%d')
         time_str = datetime.datetime.now().strftime('%H-%M-%S')
-        self.cmd_upload_h264['file_name'] = 'video' + str(
-            0) + '_' + date_str + '_' + time_str
+        self.cmd_upload_h264[
+            'file_name'] = time_str + '_' + 'video' + str(0)
         self.cmd_upload_h264['date'] = date_str
         self.cmd_upload_h264['time'] = time_str
 
-        self.cmd_send_jpg['file_name'] = 'photo' + str(
-            0) + '_' + date_str + '_' + time_str
+        self.cmd_send_jpg[
+            'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(0)
         self.cmd_send_jpg['date'] = date_str
         self.cmd_send_jpg['time'] = time_str
 
@@ -160,8 +164,9 @@ class Camera(Thread):
 
                 temp_cmd = copy.deepcopy(self.cmd_upload_h264)
 
-                self.cmd_upload_h264['file_name'] = 'video' + str(
-                    video_idx) + '_' + date_str + '_' + time_str
+                self.cmd_upload_h264[
+                    'file_name'] = time_str + '_' + 'video' + str(
+                        video_idx)
                 self.cmd_upload_h264['date'] = date_str
                 self.cmd_upload_h264['time'] = time_str
                 self.camera.split_recording(self.cmd_upload_h264['path'] +
