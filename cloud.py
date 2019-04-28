@@ -35,6 +35,9 @@ class Cloud(Thread):
             print("Couldn't convert", input)
         else:
             os.remove(input)
+    
+    def upload_to_gdrive(self, file_name, gdrive_folder):
+        call(["rclone", "-v", "move", "/home/pi/edenbridge/videos", "gdrive:edenbridge", "--delete-after", "--include", "*.mp4"])
 
     def run(self):
         logging.info('Cloud thread started')
@@ -44,6 +47,6 @@ class Cloud(Thread):
                 if msg['file_type'] is 'H264':
                     self.h264_to_mp4(msg['file_name'],
                                      msg['file_name'][:-4] + 'mp4')
-                    #self.gdrive.upload(msg['file_name'][:-4] + 'mp4', 'video/mp4', 'test')
+                    self.upload_to_gdrive(msg['file_name'][:-4] + 'mp4', 'edenbridge')
 
                 self.q2cloud.task_done()
