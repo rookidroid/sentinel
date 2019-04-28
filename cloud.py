@@ -17,7 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from gdrive import GDrive
 from threading import Thread
 from subprocess import call
 import os
@@ -28,17 +27,7 @@ class Cloud(Thread):
     def __init__(self, config, q2cloud):
         Thread.__init__(self)
         self.q2cloud = q2cloud
-        self.gdrive = GDrive()
-        self.target_folder = self.get_folder_id('edenbridge')
-
-    def get_folder_id(self, folder_name):
-        file_list = self.gdrive.get_file_list('root')
-
-        for file in file_list:
-            if (file['name'] == folder_name) and (file['mimeType'] == 'application/vnd.google-apps.folder'):
-                return file
-
-        return self.gdrive.create_folder(folder_name, 'root')
+        self.target_folder = 'edenbridge'
 
     def h264_to_mp4(self, input, output):
         retcode = call(["MP4Box", "-add", input, output])
@@ -55,6 +44,6 @@ class Cloud(Thread):
                 if msg['file_type'] is 'H264':
                     self.h264_to_mp4(msg['file_name'],
                                      msg['file_name'][:-4] + 'mp4')
-                    self.gdrive.upload(msg['file_name'][:-4] + 'mp4', 'video/mp4', 'test')
+                    #self.gdrive.upload(msg['file_name'][:-4] + 'mp4', 'video/mp4', 'test')
 
                 self.q2cloud.task_done()
