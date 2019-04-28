@@ -19,6 +19,7 @@
 
 from threading import Thread
 from pathlib import Path
+import os
 import picamera
 import datetime
 import queue
@@ -40,6 +41,16 @@ class Camera(Thread):
         self.video_length = config['video_length']
         self.video_path = str(self.cwd) + '/videos/'
         self.photo_path = str(self.cwd) + '/photos/'
+
+        try:
+            os.makedirs(self.video_path)
+        except FileExistsError:
+            pass
+
+        try:
+            os.makedirs(self.photo_path)
+        except FileExistsError:
+            pass
 
         self.cmd_upload_h264 = {
             'cmd': 'upload_file',
