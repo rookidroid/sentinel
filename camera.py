@@ -146,8 +146,7 @@ class Camera(Thread):
 
         date_str = datetime.datetime.now().strftime('%Y-%m-%d')
         time_str = datetime.datetime.now().strftime('%H-%M-%S')
-        self.cmd_upload_h264[
-            'file_name'] = time_str + '_' + 'video' + str(0)
+        self.cmd_upload_h264['file_name'] = time_str + '_' + 'video' + str(0)
         self.cmd_upload_h264['date'] = date_str
         self.cmd_upload_h264['time'] = time_str
 
@@ -176,8 +175,7 @@ class Camera(Thread):
                 temp_cmd = copy.deepcopy(self.cmd_upload_h264)
 
                 self.cmd_upload_h264[
-                    'file_name'] = time_str + '_' + 'video' + str(
-                        video_idx)
+                    'file_name'] = time_str + '_' + 'video' + str(video_idx)
                 self.cmd_upload_h264['date'] = date_str
                 self.cmd_upload_h264['time'] = time_str
                 self.camera.split_recording(self.cmd_upload_h264['path'] +
