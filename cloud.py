@@ -39,7 +39,7 @@ class Cloud(Thread):
 
     def upload_to_gdrive(self, file_name, gdrive_folder):
         Popen([
-            "rclone", "-v", "move", self.video_path, "gdrive:edenbridge",
+            "rclone", "move", self.video_path, "gdrive:edenbridge",
             "--delete-after", "--include", file_name
         ])
 
@@ -56,3 +56,29 @@ class Cloud(Thread):
                                           'edenbridge')
 
                 self.q2cloud.task_done()
+
+
+'''
+
+    `                      `
+    -:.                  -#:
+    -//:.              -###:
+    -////:.          -#####:
+    -/:.://:.      -###++##:
+    ..   `://:-  -###+. :##:
+           `:/+####+.   :##:
+    .::::::::/+###.     :##:
+    .////-----+##:    `:###:
+     `-//:.   :##:  `:###/.
+       `-//:. :##:`:###/.
+         `-//:+######/.
+           `-/+####/.
+             `+##+.
+              :##:
+              :##:
+              :##:
+              :##:
+              :##:
+               .+:
+
+'''
