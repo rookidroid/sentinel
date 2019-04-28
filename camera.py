@@ -98,9 +98,12 @@ class Camera(Thread):
                         self.camera.stop_recording()
                         self.motion2camera.task_done()
                         self.q2cloud.put({
-                            'cmd': 'upload_file',
-                            'file_type': 'H264',
-                            'file_name': video_filename
+                            'cmd':
+                            'upload_file',
+                            'file_type':
+                            'H264',
+                            'file_name':
+                            'video' + str(video_idx) + '_' + video_timestamp,
                         })
                         #self.q2mbot.put({'cmd': 'send_image', 'arg': filename})
                         # process video
@@ -131,9 +134,12 @@ class Camera(Thread):
 
                 self.camera.split_recording(video_name)
                 self.q2cloud.put({
-                    'cmd': 'upload_file',
-                    'file_type': 'H264',
-                    'file_name': video_ready_name
+                    'cmd':
+                    'upload_file',
+                    'file_type':
+                    'H264',
+                    'file_name':
+                    'video' + str(0) + '_' + datetime_str
                 })
 
                 video_ready_name = video_name
@@ -142,9 +148,12 @@ class Camera(Thread):
 
             self.camera.stop_recording()
             self.q2cloud.put({
-                'cmd': 'upload_file',
-                'file_type': 'H264',
-                'file_name': video_ready_name
+                'cmd':
+                'upload_file',
+                'file_type':
+                'H264',
+                'file_name':
+                'video' + str(video_idx) + '_' + datetime_str
             })
             # process video
 
@@ -153,7 +162,7 @@ class Camera(Thread):
             self.q2cloud.put({
                 'cmd': 'upload_file',
                 'file_type': 'H264',
-                'file_name': video_ready_name
+                'file_name': 'video' + str(0) + '_' + datetime_str
             })
 
     def run(self):

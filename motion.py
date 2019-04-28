@@ -47,11 +47,10 @@ class Motion(Thread):
 
     def run(self):
         logging.info('Motion thread started')
-        GPIO.add_event_detect(
-            self.motion_pin,
-            GPIO.BOTH,
-            callback=self.motion_handle,
-            bouncetime=300)
+        GPIO.add_event_detect(self.motion_pin,
+                              GPIO.BOTH,
+                              callback=self.motion_handle,
+                              bouncetime=300)
 
         while True:
             time.sleep(1e6)

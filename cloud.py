@@ -18,7 +18,7 @@
 """
 
 from threading import Thread
-from subprocess import call
+from subprocess import call, Popen
 import os
 import logging
 
@@ -26,6 +26,7 @@ import logging
 class Cloud(Thread):
     def __init__(self, config, q2cloud):
         Thread.__init__(self)
+        self.video_path = '/home/pi/edenbridge/videos/'
         self.q2cloud = q2cloud
         self.target_folder = 'edenbridge'
 
@@ -35,9 +36,12 @@ class Cloud(Thread):
             print("Couldn't convert", input)
         else:
             os.remove(input)
-    
+
     def upload_to_gdrive(self, file_name, gdrive_folder):
-        call(["rclone", "-v", "move", "/home/pi/edenbridge/videos", "gdrive:edenbridge", "--delete-after", "--include", "*.mp4"])
+        Popen([
+            "rclone", "-v", "move", self.video_path, "gdrive:edenbridge",
+            "--delete-after", "--include", file_name
+        ])
 
     def run(self):
         logging.info('Cloud thread started')
@@ -45,8 +49,10 @@ class Cloud(Thread):
             msg = self.q2cloud.get()
             if msg['cmd'] is 'upload_file':
                 if msg['file_type'] is 'H264':
-                    self.h264_to_mp4(msg['file_name'],
-                                     msg['file_name'][:-4] + 'mp4')
-                    self.upload_to_gdrive(msg['file_name'][:-4] + 'mp4', 'edenbridge')
+                    self.h264_to_mp4(
+                        self.video_path + msg['file_name'] + '.h264',
+                        self.video_path + msg['file_name'] + '.mp4')
+                    self.upload_to_gdrive(msg['file_name'] + '.mp4',
+                                          'edenbridge')
 
                 self.q2cloud.task_done()
