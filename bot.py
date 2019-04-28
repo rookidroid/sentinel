@@ -24,22 +24,23 @@ import logging
 
 
 class MessageBot(Thread):
-    def __init__(self, config, camera2mbot):
+    def __init__(self, config, q2mbot):
         Thread.__init__(self)
         self.bot_name = config['bot_name']
         self.token = config['bot_token']
         self.bot = Bot(config['bot_token'])
         self.chat_id = config['chat_id']
-        self.camera2mbot = camera2mbot
+        self.q2mbot = q2mbot
 
         self.emoji_robot = u'\U0001F916'
 
-    def sendImage(self, filename):
+    def sendImage(self, msg):
+        file = msg['path'] + msg['file_name'] + msg['extension']
         self.bot.sendPhoto(chat_id=self.chat_id,
-                           photo=open(filename, 'rb'),
-                           caption=filename)
+                           photo=open(file, 'rb'),
+                           caption=msg['file_name'])
         logging.info('Send photo')
-        os.remove(filename)
+        os.remove(file)
         logging.info('Delete photo')
 
     def run(self):
@@ -49,12 +50,12 @@ class MessageBot(Thread):
                              self.emoji_robot + ' is running...')
 
         while True:
-            msg = self.camera2mbot.get()
+            msg = self.q2mbot.get()
 
             if msg['cmd'] is 'send_photo':
-                self.sendImage(msg['arg'])
+                self.sendImage(msg)
 
-            self.camera2mbot.task_done()
+            self.q2mbot.task_done()
 
 
 '''
