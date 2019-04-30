@@ -22,7 +22,7 @@ import time
 import RPi.GPIO as GPIO
 
 import logging
-logging.basicConfig(filename='edenbridge.log', level=logging.DEBUG)
+logging.basicConfig(filename='edenbridge.log', level=logging.ERROR)
 
 
 class Motion(Thread):
