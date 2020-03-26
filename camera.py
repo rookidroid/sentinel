@@ -362,8 +362,8 @@ class Camera(Thread):
             print(status)
             # retrieve data (blocking)
             # msg = self.motion2camera.get()
-            if status == 'Occupied':
-                self.take_photo(1, self.period)
+            # if status == 'Occupied':
+            #     self.take_photo(1, self.period)
 
             time.sleep(5)
             # if msg['cmd'] is 'take_photo':
