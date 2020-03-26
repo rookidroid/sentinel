@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
     Project Edenbridge
-    Copyright (C) 2019  Zhengyu Peng
+    Copyright (C) 2019 - 2020  Zhengyu Peng
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,12 +18,13 @@
 """
 
 from queue import Queue
-from motion import Motion
+# from motion import Motion
 from bot import MessageBot
 from camera import Camera
 from cloud import Cloud
 import json
-from telegram.ext import Updater, CallbackContext, InlineQueryHandler, CommandHandler
+from telegram.ext import Updater, CallbackContext
+from telegram.ext import InlineQueryHandler, CommandHandler
 import time
 
 
@@ -45,35 +46,30 @@ def main():
         if user_id == chat_id:
             context.bot.sendMessage(chat_id=user_id, text='Hello!')
 
-    def take_photo(bot, update):
+    def take_photo(update, context):
         user_id = update.message.chat_id
         if user_id == chat_id:
             q2camera.put({'cmd': 'take_photo', 'count': 1})
 
-    def take_video(bot, update):
+    def take_video(update, context):
         user_id = update.message.chat_id
         if user_id == chat_id:
             q2camera.put({'cmd': 'take_video', 'count': 1})
 
-    # motion = Motion(config['motion'], q2camera)
     my_bot = MessageBot(config['bot'], q2mbot)
     camera = Camera(config['camera'], q2camera, q2mbot, q2cloud)
     # cloud = Cloud(config['cloud'], q2cloud)
 
-    # motion.start()
     my_bot.start()
     camera.start()
     # cloud.start()
-
-    while True:
-        time.sleep(1)
 
     updater = Updater(token, use_context=True)
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler('hello', hello))
-    # dp.add_handler(CommandHandler('photo', take_photo))
-    # dp.add_handler(CommandHandler('video', take_video))
+    dp.add_handler(CommandHandler('photo', take_photo))
+    dp.add_handler(CommandHandler('video', take_video))
 
     updater.start_polling()
     updater.idle()
@@ -81,6 +77,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 '''
 
     `                      `

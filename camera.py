@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
     Project Edenbridge
-    Copyright (C) 2019  Zhengyu Peng
+    Copyright (C) 2019 - 2020  Zhengyu Peng
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ class Camera(Thread):
         self.motion2camera = q2camera
         self.q2mbot = q2mbot
         self.q2cloud = q2cloud
-        
+
         self.max_photo_count = config['max_photo_count']
         self.max_video_count = config['max_video_count']
         self.period = config['period']
@@ -48,21 +48,28 @@ class Camera(Thread):
         self.video_path = str(self.cwd) + '/videos/'
         self.photo_path = str(self.cwd) + '/photos/'
 
+        self.det_resolution = config['detection_resolution']
+        self.rec_resolution = config['record_resolution']
+
+        self.delta_thresh = config['delta_thresh']
+        self.min_area = config['min_area']
+        self.motion_frame_counter = 0
 
         # initialize the camera and grab a reference to the raw camera capture
-        # camera = PiCamera()
         # camera.resolution = tuple(conf["resolution"])
         # camera.framerate = conf["fps"]
-        self.camera = picamera.PiCamera(resolution=config['resolution'])
-        self.rawCapture = PiRGBArray(self.camera, size=tuple(config['resolution']))
+        self.camera = picamera.PiCamera(resolution=self.rec_resolution)
+        self.raw_capture = PiRGBArray(
+            self.camera,
+            size=tuple(self.det_resolution))
 
         # allow the camera to warmup, then initialize the average frame, last
         # uploaded timestamp, and frame motion counter
         print("[INFO] warming up...")
         time.sleep(config["camera_warmup_time"])
-        self.avg = None
+        self.avg_capture = None
         # lastUploaded = datetime.datetime.now()
-        self.motionCounter = 0
+        # self.motionCounter = 0
 
         try:
             os.makedirs(self.video_path)
@@ -220,19 +227,16 @@ class Camera(Thread):
             self.q2cloud.put(copy.deepcopy(self.cmd_upload_h264))
 
     def motion_detection(self):
-        self.avg = None
-        # initialize the camera and grab a reference to the raw camera capture
-        # camera = PiCamera()
-        # camera.resolution = tuple(conf["resolution"])
-        # camera.framerate = conf["fps"]
-        # rawCapture = PiRGBArray(camera, size=tuple(conf["resolution"]))
+        # self.camera.resolution = tuple(conf["resolution"])
+        self.avg_capture = None
+        self.motion_frame_counter = 0
 
         # capture frames from the camera
-        for f in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
+        for f in self.camera.capture_continuous(
+                self.raw_capture, format="bgr", use_video_port=True):
             # grab the raw NumPy array representing the image and initialize
             # the timestamp and occupied/unoccupied text
             frame = f.array
-            timestamp = datetime.datetime.now()
             text = "Unoccupied"
 
             # resize the frame, convert it to grayscale, and blur it
@@ -241,22 +245,23 @@ class Camera(Thread):
             gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
             # if the average frame is None, initialize it
-            if self.avg is None:
+            if self.avg_capture is None:
                 print("[INFO] starting background model...")
-                self.avg = gray.copy().astype("float")
-                self.rawCapture.truncate(0)
+                self.avg_capture = gray.copy().astype("float")
+                self.raw_capture.truncate(0)
                 continue
 
             # accumulate the weighted average between the current frame and
             # previous frames, then compute the difference between the current
             # frame and running average
-            cv2.accumulateWeighted(gray, self.avg, 0.5)
-            frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(self.avg))
+            cv2.accumulateWeighted(gray, self.avg_capture, 0.5)
+            frame_delta = cv2.absdiff(
+                gray, cv2.convertScaleAbs(self.avg_capture))
 
             # threshold the delta image, dilate the thresholded image to fill
             # in holes, then find contours on thresholded image
-            thresh = cv2.threshold(frameDelta, self.config["delta_thresh"], 255,
-                                cv2.THRESH_BINARY)[1]
+            thresh = cv2.threshold(frame_delta, self.delta_thresh, 255,
+                                   cv2.THRESH_BINARY)[1]
             thresh = cv2.dilate(thresh, None, iterations=2)
             cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
                                     cv2.CHAIN_APPROX_SIMPLE)
@@ -265,7 +270,7 @@ class Camera(Thread):
             # loop over the contours
             for c in cnts:
                 # if the contour is too small, ignore it
-                if cv2.contourArea(c) < self.config["min_area"]:
+                if cv2.contourArea(c) < self.min_area:
                     continue
 
                 # compute the bounding box for the contour, draw it on the frame,
@@ -276,11 +281,17 @@ class Camera(Thread):
                 print(text)
 
             # draw the text and timestamp on the frame
+            timestamp = datetime.datetime.now()
             ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
             cv2.putText(frame, "Room Status: {}".format(text), (10, 20),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
             cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
                         0.35, (0, 0, 255), 1)
+
+            self.motion_frame_counter += 1
+
+            if self.motion_frame_counter >= 10:
+                return text
 
             # check to see if the room is occupied
             # if text == "Occupied":
@@ -326,14 +337,14 @@ class Camera(Thread):
             #         break
 
             # clear the stream in preparation for the next frame
-            self.rawCapture.truncate(0)
-
+            self.raw_capture.truncate(0)
 
     def run(self):
         logging.info('Camera thread started')
         print('Camera thread started')
         while True:
-            self.motion_detection()
+            status = self.motion_detection()
+            print(status)
             # retrieve data (blocking)
             # msg = self.motion2camera.get()
             # if msg['cmd'] is 'take_photo':
