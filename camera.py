@@ -334,6 +334,7 @@ class Camera(Thread):
 
     def run(self):
         logging.info('Camera thread started')
+        print('Camera thread started')
         while True:
             self.motion_detection()
             # retrieve data (blocking)
