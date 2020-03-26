@@ -29,6 +29,7 @@ import logging
 
 import imutils
 import cv2
+import time
 
 
 class Camera(Thread):
