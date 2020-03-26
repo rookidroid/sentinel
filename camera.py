@@ -136,7 +136,7 @@ class Camera(Thread):
                     logging.warning('Wrong command, continue capturing')
                 pass
 
-    def take_video(self, count):
+    def take_video(self, count, init_photo=True):
         self.camera.resolution = self.rec_resolution
         if count == 0 or count > self.max_video_count:
             count = self.max_video_count
@@ -149,10 +149,14 @@ class Camera(Thread):
                 except queue.Empty:
                     date_str = datetime.datetime.now().strftime('%Y-%m-%d')
                     time_str = datetime.datetime.now().strftime('%H-%M-%S')
-                    self.cmd_send_jpg[
-                        'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(
-                            int(1 + photo_idx + video_idx *
-                                int(self.video_length / self.period)))
+                    self.cmd_send_jpg['file_name'] = date_str + \
+                        '_' + \
+                        time_str + \
+                        '_' + \
+                        'photo' + \
+                        str(
+                        int(1 + photo_idx + video_idx *
+                            int(self.video_length / self.period)))
                     self.cmd_send_jpg['date'] = date_str
                     self.cmd_send_jpg['time'] = time_str
                     self.camera.capture(self.cmd_send_jpg['path'] +
@@ -190,11 +194,12 @@ class Camera(Thread):
         self.camera.start_recording(self.cmd_upload_h264['path'] +
                                     self.cmd_upload_h264['file_name'] +
                                     self.cmd_upload_h264['extension'])
-        self.camera.capture(self.cmd_send_jpg['path'] +
-                            self.cmd_send_jpg['file_name'] +
-                            self.cmd_send_jpg['extension'],
-                            use_video_port=True)
-        self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
+        if init_photo:
+            self.camera.capture(self.cmd_send_jpg['path'] +
+                                self.cmd_send_jpg['file_name'] +
+                                self.cmd_send_jpg['extension'],
+                                use_video_port=True)
+            self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
         if take_photo_during_recording(0, date_str, time_str) == 1:
             return
@@ -315,7 +320,7 @@ class Camera(Thread):
             status = self.motion_detection()
             print(status)
             if status:
-                self.take_video(1)
+                self.take_video(1, init_photo=False)
             else:
                 time.sleep(3)
             # retrieve data (blocking)
