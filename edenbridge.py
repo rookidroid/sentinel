@@ -58,11 +58,11 @@ def main():
 
     my_bot = MessageBot(config['bot'], q2mbot)
     camera = Camera(config['camera'], q2camera, q2mbot, q2cloud)
-    # cloud = Cloud(config['cloud'], q2cloud)
+    cloud = Cloud(config['cloud'], q2cloud)
 
     my_bot.start()
     camera.start()
-    # cloud.start()
+    cloud.start()
 
     updater = Updater(token, use_context=True)
     dp = updater.dispatcher
