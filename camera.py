@@ -233,11 +233,11 @@ class Camera(Thread):
         is_occupied = False
 
         # capture frames from the camera
-        for f in self.camera.capture_continuous(
+        for frm in self.camera.capture_continuous(
                 self.raw_capture, format="bgr", use_video_port=True):
             # grab the raw NumPy array representing the image and initialize
             # the timestamp and occupied/unoccupied text
-            frame = f.array
+            frame = frm.array
 
             # clear the stream in preparation for the next frame
             self.raw_capture.truncate(0)
@@ -267,35 +267,31 @@ class Camera(Thread):
             thresh = cv2.threshold(frame_delta, self.delta_thresh, 255,
                                    cv2.THRESH_BINARY)[1]
             thresh = cv2.dilate(thresh, None, iterations=2)
-            cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-                                    cv2.CHAIN_APPROX_SIMPLE)
-            cnts = imutils.grab_contours(cnts)
-
-            # self.raw_capture.truncate(0)
+            contours = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+                                        cv2.CHAIN_APPROX_SIMPLE)
+            contours = imutils.grab_contours(contours)
 
             # loop over the contours
-            for c in cnts:
+            for contr in contours:
                 # if the contour is too small, ignore it
-                if cv2.contourArea(c) < self.min_area:
+                if cv2.contourArea(contr) < self.min_area:
                     continue
 
                 date_str = datetime.datetime.now().strftime('%Y-%m-%d')
                 time_str = datetime.datetime.now().strftime('%H-%M-%S')
                 # draw box and timestamp on frame
-                (x, y, w, h) = cv2.boundingRect(c)
+                (x, y, w, h) = cv2.boundingRect(contr)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 1)
                 cv2.putText(frame, 'Front Door', (10, 20),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                            cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 255), 2)
                 cv2.putText(frame, date_str + '_' + time_str,
                             (10, frame.shape[0] - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX,
-                            0.35, (0, 0, 255), 1)
+                            cv2.FONT_HERSHEY_DUPLEX,
+                            0.5, (0, 0, 255), 1)
 
                 self.cmd_send_jpg['date'] = date_str
                 self.cmd_send_jpg['time'] = time_str
-                self.cmd_send_jpg[
-                    'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(
-                        0)
+                self.cmd_send_jpg['file_name'] = date_str + '_' + time_str
 
                 cv2.imwrite(self.cmd_send_jpg['path'] +
                             self.cmd_send_jpg['file_name'] +
@@ -304,8 +300,6 @@ class Camera(Thread):
                 self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
                 is_occupied = True
-                # text = "Occupied"
-                # print(text)
                 return is_occupied
 
             self.motion_frame_counter += 1
