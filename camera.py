@@ -267,6 +267,9 @@ class Camera(Thread):
                                     cv2.CHAIN_APPROX_SIMPLE)
             cnts = imutils.grab_contours(cnts)
 
+            # clear the stream in preparation for the next frame
+            self.raw_capture.truncate(0)
+
             # loop over the contours
             for c in cnts:
                 # if the contour is too small, ignore it
@@ -288,9 +291,6 @@ class Camera(Thread):
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
             cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
                         0.35, (0, 0, 255), 1)
-
-            # clear the stream in preparation for the next frame
-            self.raw_capture.truncate(0)
 
             self.motion_frame_counter += 1
             if self.motion_frame_counter >= 10:
