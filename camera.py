@@ -244,7 +244,7 @@ class Camera(Thread):
             if self.avg is None:
                 print("[INFO] starting background model...")
                 avg = gray.copy().astype("float")
-                rawCapture.truncate(0)
+                self.rawCapture.truncate(0)
                 continue
 
             # accumulate the weighted average between the current frame and
@@ -329,7 +329,7 @@ class Camera(Thread):
                     break
 
             # clear the stream in preparation for the next frame
-            rawCapture.truncate(0)
+            self.rawCapture.truncate(0)
 
 
     def run(self):
