@@ -234,7 +234,6 @@ class Camera(Thread):
             frame = f.array
             timestamp = datetime.datetime.now()
             text = "Unoccupied"
-            print(text)
 
             # resize the frame, convert it to grayscale, and blur it
             frame = imutils.resize(frame, width=500)
@@ -274,6 +273,7 @@ class Camera(Thread):
                 (x, y, w, h) = cv2.boundingRect(c)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 text = "Occupied"
+                print(text)
 
             # draw the text and timestamp on the frame
             ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
@@ -281,10 +281,6 @@ class Camera(Thread):
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
             cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
                         0.35, (0, 0, 255), 1)
-
-            if text == "Occupied":
-                print('Occupied')
-                break
 
             # check to see if the room is occupied
             # if text == "Occupied":
