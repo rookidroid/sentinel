@@ -237,6 +237,7 @@ class Camera(Thread):
             # grab the raw NumPy array representing the image and initialize
             # the timestamp and occupied/unoccupied text
             frame = f.array
+            self.raw_capture.truncate(0)
             text = "Unoccupied"
 
             # resize the frame, convert it to grayscale, and blur it
@@ -248,7 +249,7 @@ class Camera(Thread):
             if self.avg_capture is None:
                 print("[INFO] starting background model...")
                 self.avg_capture = gray.copy().astype("float")
-                self.raw_capture.truncate(0)
+                # self.raw_capture.truncate(0)
                 continue
 
             # accumulate the weighted average between the current frame and
@@ -268,7 +269,7 @@ class Camera(Thread):
             cnts = imutils.grab_contours(cnts)
 
             # clear the stream in preparation for the next frame
-            self.raw_capture.truncate(0)
+            # self.raw_capture.truncate(0)
 
             # loop over the contours
             for c in cnts:
@@ -310,49 +311,6 @@ class Camera(Thread):
             self.motion_frame_counter += 1
             if self.motion_frame_counter >= 10:
                 return text
-
-            # check to see if the room is occupied
-            # if text == "Occupied":
-            #     # check to see if enough time has passed between uploads
-            #     if (timestamp - lastUploaded).seconds >= conf["min_upload_seconds"]:
-            #         # increment the motion counter
-            #         motionCounter += 1
-
-            #         # check to see if the number of frames with consistent motion is
-            #         # high enough
-            #         if motionCounter >= conf["min_motion_frames"]:
-            #             # check to see if dropbox sohuld be used
-            #             print('occupied')
-            #             # if conf["use_dropbox"]:
-            #             #     # write the image to temporary file
-            #             #     t = TempImage()
-            #             #     cv2.imwrite(t.path, frame)
-
-            #             #     # upload the image to Dropbox and cleanup the tempory image
-            #             #     print("[UPLOAD] {}".format(ts))
-            #             #     path = "/{base_path}/{timestamp}.jpg".format(
-            #             #         base_path=conf["dropbox_base_path"], timestamp=ts)
-            #             #     client.files_upload(open(t.path, "rb").read(), path)
-            #             #     t.cleanup()
-
-            #             # update the last uploaded timestamp and reset the motion
-            #             # counter
-            #             lastUploaded = timestamp
-            #             motionCounter = 0
-
-            # # otherwise, the room is not occupied
-            # else:
-            #     motionCounter = 0
-
-            # check to see if the frames should be displayed to screen
-            # if self.config["show_video"]:
-            #     # display the security feed
-            #     cv2.imshow("Security Feed", frame)
-            #     key = cv2.waitKey(1) & 0xFF
-
-            #     # if the `q` key is pressed, break from the lop
-            #     if key == ord("q"):
-            #         break
 
     def run(self):
         logging.info('Camera thread started')
