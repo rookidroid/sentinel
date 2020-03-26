@@ -40,10 +40,10 @@ def main():
     q2mbot = Queue()
     q2cloud = Queue()
 
-    def hello(bot, update):
+    def hello(update: Update, context: CallbackContext):
         user_id = update.message.chat_id
         if user_id == chat_id:
-            bot.sendMessage(chat_id=user_id, text='Hello!')
+            context.bot.sendMessage(chat_id=user_id, text='Hello!')
 
     def take_photo(bot, update):
         user_id = update.message.chat_id
@@ -68,7 +68,7 @@ def main():
     while True:
         time.sleep(1)
 
-    updater = Updater(token)
+    updater = Updater(token, use_context=True)
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler('hello', hello))
