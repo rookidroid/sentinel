@@ -56,27 +56,27 @@ def main():
             q2camera.put({'cmd': 'take_video', 'count': 1})
 
     # motion = Motion(config['motion'], q2camera)
-    # my_bot = MessageBot(config['bot'], q2mbot)
+    my_bot = MessageBot(config['bot'], q2mbot)
     camera = Camera(config['camera'], q2camera, q2mbot, q2cloud)
     # cloud = Cloud(config['cloud'], q2cloud)
 
     # motion.start()
-    # my_bot.start()
+    my_bot.start()
     camera.start()
     # cloud.start()
 
     while True:
         time.sleep(1)
 
-    # updater = Updater(token)
-    # dp = updater.dispatcher
+    updater = Updater(token)
+    dp = updater.dispatcher
 
-    # dp.add_handler(CommandHandler('hello', hello))
-    # # dp.add_handler(CommandHandler('photo', take_photo))
-    # # dp.add_handler(CommandHandler('video', take_video))
+    dp.add_handler(CommandHandler('hello', hello))
+    # dp.add_handler(CommandHandler('photo', take_photo))
+    # dp.add_handler(CommandHandler('video', take_video))
 
-    # updater.start_polling()
-    # updater.idle()
+    updater.start_polling()
+    updater.idle()
 
 
 if __name__ == '__main__':
