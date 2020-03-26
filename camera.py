@@ -58,7 +58,7 @@ class Camera(Thread):
         # initialize the camera and grab a reference to the raw camera capture
         # camera.resolution = tuple(conf["resolution"])
         # camera.framerate = conf["fps"]
-        self.camera = picamera.PiCamera(resolution=self.rec_resolution)
+        self.camera = picamera.PiCamera(resolution=self.det_resolution)
         self.raw_capture = PiRGBArray(
             self.camera,
             size=tuple(self.det_resolution))
