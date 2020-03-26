@@ -48,8 +48,8 @@ class Camera(Thread):
         self.video_path = str(self.cwd) + '/videos/'
         self.photo_path = str(self.cwd) + '/photos/'
 
-        self.det_resolution = config['detection_resolution']
-        self.rec_resolution = config['record_resolution']
+        self.det_resolution = tuple(config['detection_resolution'])
+        self.rec_resolution = tuple(config['record_resolution'])
 
         self.delta_thresh = config['delta_thresh']
         self.min_area = config['min_area']
