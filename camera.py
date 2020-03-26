@@ -234,6 +234,7 @@ class Camera(Thread):
             frame = f.array
             timestamp = datetime.datetime.now()
             text = "Unoccupied"
+            print(text)
 
             # resize the frame, convert it to grayscale, and blur it
             frame = imutils.resize(frame, width=500)
@@ -319,14 +320,14 @@ class Camera(Thread):
             #     motionCounter = 0
 
             # check to see if the frames should be displayed to screen
-            if self.config["show_video"]:
-                # display the security feed
-                cv2.imshow("Security Feed", frame)
-                key = cv2.waitKey(1) & 0xFF
+            # if self.config["show_video"]:
+            #     # display the security feed
+            #     cv2.imshow("Security Feed", frame)
+            #     key = cv2.waitKey(1) & 0xFF
 
-                # if the `q` key is pressed, break from the lop
-                if key == ord("q"):
-                    break
+            #     # if the `q` key is pressed, break from the lop
+            #     if key == ord("q"):
+            #         break
 
             # clear the stream in preparation for the next frame
             self.rawCapture.truncate(0)
