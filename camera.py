@@ -290,6 +290,7 @@ class Camera(Thread):
 
             self.motion_frame_counter += 1
 
+            self.raw_capture.truncate(0)
             if self.motion_frame_counter >= 10:
                 return text
 
@@ -337,7 +338,7 @@ class Camera(Thread):
             #         break
 
             # clear the stream in preparation for the next frame
-            self.raw_capture.truncate(0)
+            
 
     def run(self):
         logging.info('Camera thread started')
