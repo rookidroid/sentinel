@@ -243,15 +243,15 @@ class Camera(Thread):
             # if the average frame is None, initialize it
             if self.avg is None:
                 print("[INFO] starting background model...")
-                avg = gray.copy().astype("float")
+                self.avg = gray.copy().astype("float")
                 self.rawCapture.truncate(0)
                 continue
 
             # accumulate the weighted average between the current frame and
             # previous frames, then compute the difference between the current
             # frame and running average
-            cv2.accumulateWeighted(gray, avg, 0.5)
-            frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(avg))
+            cv2.accumulateWeighted(gray, self.avg, 0.5)
+            frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(self.avg))
 
             # threshold the delta image, dilate the thresholded image to fill
             # in holes, then find contours on thresholded image
