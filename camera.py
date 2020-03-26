@@ -282,6 +282,21 @@ class Camera(Thread):
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 text = "Occupied"
                 print(text)
+
+                date_str = datetime.datetime.now().strftime('%Y-%m-%d')
+                time_str = datetime.datetime.now().strftime('%H-%M-%S')
+
+                self.cmd_send_jpg['date'] = date_str
+                self.cmd_send_jpg['time'] = time_str
+                self.cmd_send_jpg[
+                    'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(
+                        photo_idx)
+
+                cv2.imwrite(self.cmd_send_jpg['path'] +
+                                self.cmd_send_jpg['file_name'] +
+                                self.cmd_send_jpg['extension'], 
+                                frame)
+                self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
                 return text
 
             # draw the text and timestamp on the frame
