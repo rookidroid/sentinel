@@ -1,3 +1,3 @@
 #!/bin/sh
 
-python3 edenbridge.ph &
+python3 edenbridge.py &
