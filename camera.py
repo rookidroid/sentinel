@@ -290,12 +290,12 @@ class Camera(Thread):
                 self.cmd_send_jpg['time'] = time_str
                 self.cmd_send_jpg[
                     'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(
-                        photo_idx)
+                        0)
 
                 cv2.imwrite(self.cmd_send_jpg['path'] +
-                                self.cmd_send_jpg['file_name'] +
-                                self.cmd_send_jpg['extension'], 
-                                frame)
+                            self.cmd_send_jpg['file_name'] +
+                            self.cmd_send_jpg['extension'],
+                            frame)
                 self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
                 return text
 
@@ -354,9 +354,6 @@ class Camera(Thread):
             #     if key == ord("q"):
             #         break
 
-            
-            
-
     def run(self):
         logging.info('Camera thread started')
         print('Camera thread started')
@@ -367,7 +364,7 @@ class Camera(Thread):
             # msg = self.motion2camera.get()
             if status == 'Occupied':
                 self.take_photo(1, self.period)
-            
+
             time.sleep(5)
             # if msg['cmd'] is 'take_photo':
             #     self.motion2camera.task_done()
