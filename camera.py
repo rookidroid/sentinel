@@ -279,6 +279,7 @@ class Camera(Thread):
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 text = "Occupied"
                 print(text)
+                return text
 
             # draw the text and timestamp on the frame
             timestamp = datetime.datetime.now()
@@ -288,9 +289,10 @@ class Camera(Thread):
             cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
                         0.35, (0, 0, 255), 1)
 
-            self.motion_frame_counter += 1
-
+            # clear the stream in preparation for the next frame
             self.raw_capture.truncate(0)
+
+            self.motion_frame_counter += 1
             if self.motion_frame_counter >= 10:
                 return text
 
@@ -337,7 +339,7 @@ class Camera(Thread):
             #     if key == ord("q"):
             #         break
 
-            # clear the stream in preparation for the next frame
+            
             
 
     def run(self):
@@ -348,6 +350,10 @@ class Camera(Thread):
             print(status)
             # retrieve data (blocking)
             # msg = self.motion2camera.get()
+            if status == 'Occupied':
+                self.take_photo(1, self.period)
+            
+            time.sleep(5)
             # if msg['cmd'] is 'take_photo':
             #     self.motion2camera.task_done()
             #     self.take_photo(msg['count'], self.period)
