@@ -282,8 +282,8 @@ class Camera(Thread):
                 # draw box and timestamp on frame
                 (x, y, w, h) = cv2.boundingRect(contr)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 1)
-                cv2.putText(frame, 'Front Door', (10, 20),
-                            cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 255), 2)
+                cv2.putText(frame, 'Front Door', (10, 25),
+                            cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 255), 1.5)
                 cv2.putText(frame, date_str + '_' + time_str,
                             (10, frame.shape[0] - 10),
                             cv2.FONT_HERSHEY_DUPLEX,
