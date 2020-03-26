@@ -102,6 +102,7 @@ class Camera(Thread):
         }
 
     def take_photo(self, counts, period):
+        self.camera.resolution = self.rec_resolution
 
         if counts == 0 or counts > self.max_photo_count:
             counts = self.max_photo_count
@@ -136,6 +137,7 @@ class Camera(Thread):
                 pass
 
     def take_video(self, count):
+        self.camera.resolution = self.rec_resolution
         if count == 0 or count > self.max_video_count:
             count = self.max_video_count
 
@@ -227,7 +229,7 @@ class Camera(Thread):
             self.q2cloud.put(copy.deepcopy(self.cmd_upload_h264))
 
     def motion_detection(self):
-        # self.camera.resolution = tuple(conf["resolution"])
+        self.camera.resolution = self.det_resolution
         self.avg_capture = None
         self.motion_frame_counter = 0
         is_occupied = False
@@ -283,10 +285,10 @@ class Camera(Thread):
                 (x, y, w, h) = cv2.boundingRect(contr)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 1)
                 cv2.putText(frame, 'Front Door', (10, 25),
-                            cv2.FONT_HERSHEY_DUPLEX, 0.6, (0, 0, 255), 1)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1)
                 cv2.putText(frame, date_str + '_' + time_str,
                             (10, frame.shape[0] - 10),
-                            cv2.FONT_HERSHEY_DUPLEX,
+                            cv2.FONT_HERSHEY_SIMPLEX,
                             0.5, (0, 0, 255), 1)
 
                 self.cmd_send_jpg['date'] = date_str
@@ -312,12 +314,15 @@ class Camera(Thread):
         while True:
             status = self.motion_detection()
             print(status)
+            if status:
+                self.take_video(1)
+            else:
+                time.sleep(3)
             # retrieve data (blocking)
             # msg = self.motion2camera.get()
             # if status == 'Occupied':
             #     self.take_photo(1, self.period)
 
-            time.sleep(5)
             # if msg['cmd'] is 'take_photo':
             #     self.motion2camera.task_done()
             #     self.take_photo(msg['count'], self.period)
