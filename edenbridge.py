@@ -23,7 +23,7 @@ from bot import MessageBot
 from camera import Camera
 from cloud import Cloud
 import json
-from telegram.ext import Updater, InlineQueryHandler, CommandHandler
+from telegram.ext import Updater, CallbackContext, InlineQueryHandler, CommandHandler
 import time
 
 
@@ -40,7 +40,7 @@ def main():
     q2mbot = Queue()
     q2cloud = Queue()
 
-    def hello(update: Update, context: CallbackContext):
+    def hello(update, context):
         user_id = update.message.chat_id
         if user_id == chat_id:
             context.bot.sendMessage(chat_id=user_id, text='Hello!')
