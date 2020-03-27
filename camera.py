@@ -318,7 +318,7 @@ class Camera(Thread):
             status = self.motion_detection()
             print(status)
             if status:
-                self.take_video(1, init_photo=False)
+                self.take_video(init_photo=False)
             else:
                 # retrieve data (blocking)
                 try:
