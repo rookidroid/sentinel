@@ -48,8 +48,8 @@ class Camera(Thread):
         self.video_path = str(self.cwd) + '/videos/'
         self.photo_path = str(self.cwd) + '/photos/'
 
-        self.det_resolution = tuple(config['detection_resolution'])
-        self.rec_resolution = tuple(config['record_resolution'])
+        self.det_resolution = config['detection_resolution']
+        self.rec_resolution = config['record_resolution']
 
         self.delta_thresh = config['delta_thresh']
         self.min_area = config['min_area']
@@ -61,7 +61,7 @@ class Camera(Thread):
         self.camera = picamera.PiCamera(resolution=self.det_resolution)
         self.raw_capture = PiRGBArray(
             self.camera,
-            size=tuple(self.det_resolution))
+            size=self.det_resolution)
 
         # allow the camera to warmup, then initialize the average frame, last
         # uploaded timestamp, and frame motion counter
@@ -146,14 +146,7 @@ class Camera(Thread):
                                 use_video_port=True)
             self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
-        # if take_photo_during_recording(0, date_str, time_str) == 1:
-        #     return
-
         for photo_idx in range(0, int(self.video_length / self.period)):
-            # try:
-            #     msg = self.q2camera.get(block=True,
-            #                             timeout=self.period)
-            # except queue.Empty:
             time.sleep(self.period)
             date_str = datetime.datetime.now().strftime('%Y-%m-%d')
             time_str = datetime.datetime.now().strftime('%H-%M-%S')
