@@ -322,22 +322,22 @@ class Camera(Thread):
             if status:
                 self.take_video(1, init_photo=False)
             else:
-                time.sleep(3)
-            # retrieve data (blocking)
-            # msg = self.motion2camera.get()
-            # if status == 'Occupied':
-            #     self.take_photo(1, self.period)
-
-            # if msg['cmd'] is 'take_photo':
-            #     self.motion2camera.task_done()
-            #     self.take_photo(msg['count'], self.period)
-            #     logging.info('Start to capture photos')
-            # elif msg['cmd'] is 'take_video':
-            #     self.motion2camera.task_done()
-            #     self.take_video(msg['count'])
-            #     logging.info('Start to record videos')
-            # else:
-            #     self.motion2camera.task_done()
+                # time.sleep(3)
+                # retrieve data (blocking)
+                try:
+                    msg = self.motion2camera.get(block=True, timeout=None)
+                    if msg['cmd'] is 'take_photo':
+                        self.motion2camera.task_done()
+                        self.take_photo(msg['count'], self.period)
+                        logging.info('Start to capture photos')
+                    elif msg['cmd'] is 'take_video':
+                        self.motion2camera.task_done()
+                        self.take_video(msg['count'])
+                        logging.info('Start to record videos')
+                    else:
+                        self.motion2camera.task_done()
+                except queue.Empty:
+                    pass
 
 
 '''
