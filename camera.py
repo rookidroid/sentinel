@@ -124,47 +124,6 @@ class Camera(Thread):
 
     def take_video(self, init_photo=True):
         self.camera.resolution = self.rec_resolution
-        # if count == 0 or count > self.max_video_count:
-        #     count = self.max_video_count
-
-        # def take_photo_during_recording(video_idx, date, time):
-        #     for photo_idx in range(0, int(self.video_length / self.period)):
-        #         try:
-        #             msg = self.q2camera.get(block=True,
-        #                                     timeout=self.period)
-        #         except queue.Empty:
-        #             date_str = datetime.datetime.now().strftime('%Y-%m-%d')
-        #             time_str = datetime.datetime.now().strftime('%H-%M-%S')
-        #             self.cmd_send_jpg['file_name'] = date_str + \
-        #                 '_' + \
-        #                 time_str + \
-        #                 '_' + \
-        #                 'photo' + \
-        #                 str(
-        #                 int(1 + photo_idx + video_idx *
-        #                     int(self.video_length / self.period)))
-        #             self.cmd_send_jpg['date'] = date_str
-        #             self.cmd_send_jpg['time'] = time_str
-        #             self.camera.capture(self.cmd_send_jpg['path'] +
-        #                                 self.cmd_send_jpg['file_name'] +
-        #                                 self.cmd_send_jpg['extension'],
-        #                                 use_video_port=True)
-        #             self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
-        #             pass
-        #         else:
-        #             if msg['cmd'] is 'stop':
-        #                 self.camera.stop_recording()
-        #                 self.q2camera.task_done()
-
-        #                 self.q2cloud.put(copy.deepcopy(self.cmd_upload_h264))
-
-        #                 logging.info('Stop recording')
-        #                 return 1
-        #             else:
-        #                 self.q2camera.task_done()
-        #                 logging.warning('Wrong command, continue recording')
-        #             pass
-        #     return 0
 
         date_str = datetime.datetime.now().strftime('%Y-%m-%d')
         time_str = datetime.datetime.now().strftime('%H-%M-%S')
@@ -212,21 +171,6 @@ class Camera(Thread):
                                 self.cmd_send_jpg['extension'],
                                 use_video_port=True)
             self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
-        #     pass
-        #     else:
-        #         if msg['cmd'] is 'stop':
-        #             self.camera.stop_recording()
-        #             self.q2camera.task_done()
-
-        #             self.q2cloud.put(copy.deepcopy(self.cmd_upload_h264))
-
-        #             logging.info('Stop recording')
-        #             return 1
-        #         else:
-        #             self.q2camera.task_done()
-        #             logging.warning('Wrong command, continue recording')
-        #         pass
-        # return 0
 
         self.camera.stop_recording()
         self.q2cloud.put(copy.deepcopy(self.cmd_upload_h264))

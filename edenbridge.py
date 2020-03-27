@@ -18,7 +18,6 @@
 """
 
 from queue import Queue
-# from motion import Motion
 from bot import MessageBot
 from camera import Camera
 from cloud import Cloud
