@@ -325,7 +325,7 @@ class Camera(Thread):
                 # time.sleep(3)
                 # retrieve data (blocking)
                 try:
-                    msg = self.motion2camera.get(block=True, timeout=None)
+                    msg = self.motion2camera.get(block=True, timeout=3)
                     if msg['cmd'] is 'take_photo':
                         self.motion2camera.task_done()
                         self.take_photo(msg['count'], self.period)
