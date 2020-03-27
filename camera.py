@@ -37,7 +37,7 @@ class Camera(Thread):
         Thread.__init__(self)
         self.config = config
         self.cwd = Path().absolute()
-        self.motion2camera = q2camera
+        self.q2camera = q2camera
         self.q2mbot = q2mbot
         self.q2cloud = q2cloud
 
@@ -101,7 +101,7 @@ class Camera(Thread):
             'time': ''
         }
 
-    def take_photo(self, counts, period):
+    def take_photo(self, counts):
         self.camera.resolution = self.rec_resolution
 
         if counts == 0 or counts > self.max_photo_count:
@@ -122,20 +122,6 @@ class Camera(Thread):
                                 self.cmd_send_jpg['extension'])
             self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
-            try:
-                msg = self.motion2camera.get(block=True, timeout=period)
-            except queue.Empty:
-                pass
-            else:
-                if msg['cmd'] is 'stop':
-                    self.motion2camera.task_done()
-                    logging.info('Stop capturing')
-                    break
-                else:
-                    self.motion2camera.task_done()
-                    logging.warning('Wrong command, continue capturing')
-                pass
-
     def take_video(self, count, init_photo=True):
         self.camera.resolution = self.rec_resolution
         if count == 0 or count > self.max_video_count:
@@ -144,7 +130,7 @@ class Camera(Thread):
         def take_photo_during_recording(video_idx, date, time):
             for photo_idx in range(0, int(self.video_length / self.period)):
                 try:
-                    msg = self.motion2camera.get(block=True,
+                    msg = self.q2camera.get(block=True,
                                                  timeout=self.period)
                 except queue.Empty:
                     date_str = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -168,14 +154,14 @@ class Camera(Thread):
                 else:
                     if msg['cmd'] is 'stop':
                         self.camera.stop_recording()
-                        self.motion2camera.task_done()
+                        self.q2camera.task_done()
 
                         self.q2cloud.put(copy.deepcopy(self.cmd_upload_h264))
 
                         logging.info('Stop recording')
                         return 1
                     else:
-                        self.motion2camera.task_done()
+                        self.q2camera.task_done()
                         logging.warning('Wrong command, continue recording')
                     pass
             return 0
@@ -322,20 +308,19 @@ class Camera(Thread):
             if status:
                 self.take_video(1, init_photo=False)
             else:
-                # time.sleep(3)
                 # retrieve data (blocking)
                 try:
-                    msg = self.motion2camera.get(block=True, timeout=3)
+                    msg = self.q2camera.get(block=True, timeout=3)
                     if msg['cmd'] is 'take_photo':
-                        self.motion2camera.task_done()
-                        self.take_photo(msg['count'], self.period)
+                        self.q2camera.task_done()
+                        self.take_photo(msg['count'])
                         logging.info('Start to capture photos')
                     elif msg['cmd'] is 'take_video':
-                        self.motion2camera.task_done()
+                        self.q2camera.task_done()
                         self.take_video(msg['count'])
                         logging.info('Start to record videos')
                     else:
-                        self.motion2camera.task_done()
+                        self.q2camera.task_done()
                 except queue.Empty:
                     pass
 
