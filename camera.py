@@ -215,6 +215,8 @@ class Camera(Thread):
                                         cv2.CHAIN_APPROX_SIMPLE)
             contours = imutils.grab_contours(contours)
 
+            print(thresh)
+
             # loop over the contours
             for contr in contours:
                 # if the contour is too small, ignore it
