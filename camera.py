@@ -192,9 +192,9 @@ class Camera(Thread):
             gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
             # if the average frame is None, initialize it
-            # if self.avg_capture is None:
-            if self.motion_frame_counter < 2:
-                self.motion_frame_counter += 1
+            if self.avg_capture is None:
+                # if self.motion_frame_counter < 2:
+                #     self.motion_frame_counter += 1
                 print("[INFO] starting background model...")
                 self.avg_capture = gray.copy().astype("float")
                 # self.raw_capture.truncate(0)
@@ -216,7 +216,7 @@ class Camera(Thread):
                                         cv2.CHAIN_APPROX_SIMPLE)
             contours = imutils.grab_contours(contours)
 
-            print(np.max(frame_delta))
+            # print(np.max(frame_delta))
 
             # loop over the contours
             for contr in contours:
@@ -250,7 +250,7 @@ class Camera(Thread):
                 return is_occupied
 
             self.motion_frame_counter += 1
-            if self.motion_frame_counter >= 10:
+            if self.motion_frame_counter >= 5:
                 return is_occupied
 
     def run(self):
