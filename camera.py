@@ -191,7 +191,9 @@ class Camera(Thread):
             gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
             # if the average frame is None, initialize it
-            if self.avg_capture is None:
+            # if self.avg_capture is None:
+            if self.motion_frame_counter < 2:
+                self.motion_frame_counter += 1
                 print("[INFO] starting background model...")
                 self.avg_capture = gray.copy().astype("float")
                 # self.raw_capture.truncate(0)
