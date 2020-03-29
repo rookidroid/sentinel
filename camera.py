@@ -26,6 +26,7 @@ import datetime
 import queue
 import copy
 import logging
+import numpy as np
 
 import imutils
 import cv2
@@ -215,7 +216,7 @@ class Camera(Thread):
                                         cv2.CHAIN_APPROX_SIMPLE)
             contours = imutils.grab_contours(contours)
 
-            print(thresh)
+            print(np.max(thresh))
 
             # loop over the contours
             for contr in contours:
