@@ -21,19 +21,20 @@ from queue import Queue
 from bot import MessageBot
 from camera import Camera
 from cloud import Cloud
+import argparse
 import json
 from telegram.ext import Updater, CallbackContext
 from telegram.ext import InlineQueryHandler, CommandHandler
 import time
 
 
-def get_config():
-    with open("config.json", "r") as read_file:
-        return json.load(read_file)
-
-
 def main():
-    config = get_config()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-c", "--conf", required=True,
+                    help="path to the JSON configuration file")
+    args = vars(ap.parse_args())
+    config = json.load(open(args["conf"]))
+    # config = get_config()
     token = config['bot']['bot_token']
     chat_id = config['bot']['chat_id']
     q2camera = Queue()

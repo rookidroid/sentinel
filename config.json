@@ -1,0 +1,21 @@
+{
+    "bot": {
+        "bot_name": "mybot",
+        "chat_id": 0,
+        "bot_token": "token"
+    },
+    "camera": {
+        "record_resolution": [1280, 960],
+        "detection_resolution": [640, 480],
+        "max_photo_count": 30,
+        "period": 30,
+        "video_length": 90,
+        "camera_warmup_time": 2.5,
+        "delta_thresh": 5,
+        "min_area": 5000
+    },
+    "cloud": {
+        "folder": "edenbridge",
+        "rclone_remote": "gdrive"
+    }
+}
