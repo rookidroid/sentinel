@@ -216,7 +216,7 @@ class Camera(Thread):
                                         cv2.CHAIN_APPROX_SIMPLE)
             contours = imutils.grab_contours(contours)
 
-            print(np.max(thresh))
+            print(np.max(frame_delta))
 
             # loop over the contours
             for contr in contours:
