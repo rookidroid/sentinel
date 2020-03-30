@@ -34,6 +34,7 @@ class MessageBot(Thread):
         self.q2mbot = q2mbot
 
         self.email_handler = Email(config['email'])
+        self.to_add = config['email']['to_add']
 
         self.emoji_robot = u'\U0001F916'
 
@@ -45,7 +46,7 @@ class MessageBot(Thread):
                                caption=msg['file_name'])
         elif msg['server'] == 'email':
             self.email_handler.send_email(
-                self.config['email']['to_add'],
+                self.to_add,
                 '[Front Door] '+msg['date'] + ' ' + msg['time'],
                 'Motion detected',
                 msg_type='plain',
