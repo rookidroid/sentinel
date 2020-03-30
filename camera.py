@@ -99,7 +99,8 @@ class Camera(Thread):
             'file_name': '',
             'extension': '.jpg',
             'date': '',
-            'time': ''
+            'time': '',
+            'server': ''
         }
 
     def take_photo(self, counts):
@@ -136,6 +137,7 @@ class Camera(Thread):
             'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(0)
         self.cmd_send_jpg['date'] = date_str
         self.cmd_send_jpg['time'] = time_str
+        self.cmd_send_jpg['server'] = 'email'
 
         self.camera.start_recording(self.cmd_upload_h264['path'] +
                                     self.cmd_upload_h264['file_name'] +
@@ -160,6 +162,7 @@ class Camera(Thread):
                 int(1 + photo_idx))
             self.cmd_send_jpg['date'] = date_str
             self.cmd_send_jpg['time'] = time_str
+            self.cmd_send_jpg['server'] = 'email'
             self.camera.capture(self.cmd_send_jpg['path'] +
                                 self.cmd_send_jpg['file_name'] +
                                 self.cmd_send_jpg['extension'],
@@ -239,6 +242,7 @@ class Camera(Thread):
                 self.cmd_send_jpg['date'] = date_str
                 self.cmd_send_jpg['time'] = time_str
                 self.cmd_send_jpg['file_name'] = date_str + '_' + time_str
+                self.cmd_send_jpg['server'] = 'telegram'
 
                 cv2.imwrite(self.cmd_send_jpg['path'] +
                             self.cmd_send_jpg['file_name'] +

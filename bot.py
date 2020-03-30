@@ -20,25 +20,37 @@
 from threading import Thread
 from telegram import Bot
 import os
+from email_util import Email
 import logging
 
 
 class MessageBot(Thread):
     def __init__(self, config, q2mbot):
         Thread.__init__(self)
-        self.bot_name = config['bot_name']
-        self.token = config['bot_token']
-        self.bot = Bot(config['bot_token'])
-        self.chat_id = config['chat_id']
+        self.bot_name = config['bot']['bot_name']
+        self.token = config['bot']['bot_token']
+        self.bot = Bot(config['bot']['bot_token'])
+        self.chat_id = config['bot']['chat_id']
         self.q2mbot = q2mbot
+
+        self.email_handler = Email(config['email'])
 
         self.emoji_robot = u'\U0001F916'
 
     def sendImage(self, msg):
-        file = msg['path'] + msg['file_name'] + msg['extension']
-        self.bot.sendPhoto(chat_id=self.chat_id,
-                           photo=open(file, 'rb'),
-                           caption=msg['file_name'])
+        if msg['server'] == 'telegram':
+            file = msg['path'] + msg['file_name'] + msg['extension']
+            self.bot.sendPhoto(chat_id=self.chat_id,
+                               photo=open(file, 'rb'),
+                               caption=msg['file_name'])
+        elif msg['server'] == 'email':
+            self.email_handler.send_email(
+                self.config['email']['to_add'],
+                '[Front Door] '+msg['date'] + ' ' + msg['time'],
+                'Motion detected',
+                msg_type='plain',
+                path=msg['path'] + msg['file_name'] + msg['extension'],
+                file_name=msg['file_name'] + msg['extension'])
         logging.info('Send photo')
         os.remove(file)
         logging.info('Delete photo')

@@ -57,7 +57,7 @@ def main():
         if user_id == chat_id:
             q2camera.put({'cmd': 'take_video', 'count': 1})
 
-    my_bot = MessageBot(config['bot'], q2mbot)
+    my_bot = MessageBot(config, q2mbot)
     camera = Camera(config['camera'], q2camera, q2mbot, q2cloud)
     cloud = Cloud(config['cloud'], q2cloud)
 
