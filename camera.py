@@ -285,7 +285,7 @@ class Camera(Thread):
                         logging.info('Start to capture photos')
                     elif msg['cmd'] is 'take_video':
                         self.q2camera.task_done()
-                        self.take_video(init_photo=False)
+                        self.take_video(init_photo=True)
                         logging.info('Start to record videos')
                     else:
                         self.q2camera.task_done()
