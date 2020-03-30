@@ -118,6 +118,7 @@ class Camera(Thread):
             self.cmd_send_jpg[
                 'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(
                     photo_idx)
+            self.cmd_send_jpg['server'] = 'telegram'
 
             self.camera.capture(self.cmd_send_jpg['path'] +
                                 self.cmd_send_jpg['file_name'] +

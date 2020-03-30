@@ -38,8 +38,8 @@ class MessageBot(Thread):
         self.emoji_robot = u'\U0001F916'
 
     def sendImage(self, msg):
+        file = msg['path'] + msg['file_name'] + msg['extension']
         if msg['server'] == 'telegram':
-            file = msg['path'] + msg['file_name'] + msg['extension']
             self.bot.sendPhoto(chat_id=self.chat_id,
                                photo=open(file, 'rb'),
                                caption=msg['file_name'])
@@ -49,7 +49,7 @@ class MessageBot(Thread):
                 '[Front Door] '+msg['date'] + ' ' + msg['time'],
                 'Motion detected',
                 msg_type='plain',
-                path=msg['path'] + msg['file_name'] + msg['extension'],
+                path=file,
                 file_name=msg['file_name'] + msg['extension'])
         logging.info('Send photo')
         os.remove(file)
