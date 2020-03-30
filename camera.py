@@ -184,14 +184,14 @@ class Camera(Thread):
                 self.raw_capture, format="bgr", use_video_port=True):
             # grab the raw NumPy array representing the image and initialize
             # the timestamp and occupied/unoccupied text
-            frame = frm.array
+            raw_frame = frm.array
 
             # clear the stream in preparation for the next frame
             self.raw_capture.truncate(0)
             text = "Unoccupied"
 
             # resize the frame, convert it to grayscale, and blur it
-            # frame = imutils.resize(frame, width=500)
+            frame = imutils.resize(raw_frame, width=500)
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
@@ -228,15 +228,17 @@ class Camera(Thread):
                 if cv2.contourArea(contr) < self.min_area:
                     continue
 
+                scale_factor = self.det_resolution[0]/500
                 date_str = datetime.datetime.now().strftime('%Y-%m-%d')
                 time_str = datetime.datetime.now().strftime('%H-%M-%S')
                 # draw box and timestamp on frame
                 (x, y, w, h) = cv2.boundingRect(contr)
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 1)
-                cv2.putText(frame, 'Front Door', (10, 25),
+                cv2.rectangle(raw_frame, (scale_factor*x, scale_factor*y),
+                              (scale_factor*(x + w), scale_factor*(y + h)), (0, 255, 0), 1)
+                cv2.putText(raw_frame, 'Front Door', (10, 25),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1)
-                cv2.putText(frame, date_str + '_' + time_str,
-                            (10, frame.shape[0] - 10),
+                cv2.putText(raw_frame, date_str + '_' + time_str,
+                            (10, raw_frame.shape[0] - 10),
                             cv2.FONT_HERSHEY_SIMPLEX,
                             0.5, (0, 0, 255), 1)
 
@@ -248,7 +250,7 @@ class Camera(Thread):
                 cv2.imwrite(self.cmd_send_jpg['path'] +
                             self.cmd_send_jpg['file_name'] +
                             self.cmd_send_jpg['extension'],
-                            frame)
+                            raw_frame)
                 self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
                 # self.cmd_send_jpg['date'] = date_str
