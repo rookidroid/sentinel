@@ -246,14 +246,14 @@ class Camera(Thread):
                             frame)
                 self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
-                self.cmd_send_jpg['date'] = date_str
-                self.cmd_send_jpg['time'] = time_str
-                self.cmd_send_jpg['file_name'] = date_str + '_' + time_str+'_delta'
-                cv2.imwrite(self.cmd_send_jpg['path'] +
-                            self.cmd_send_jpg['file_name'] +
-                            self.cmd_send_jpg['extension'],
-                            frame_delta)
-                self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
+                # self.cmd_send_jpg['date'] = date_str
+                # self.cmd_send_jpg['time'] = time_str
+                # self.cmd_send_jpg['file_name'] = date_str + '_' + time_str+'_delta'
+                # cv2.imwrite(self.cmd_send_jpg['path'] +
+                #             self.cmd_send_jpg['file_name'] +
+                #             self.cmd_send_jpg['extension'],
+                #             frame_delta)
+                # self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
                 is_occupied = True
                 return is_occupied
