@@ -43,7 +43,7 @@ class Camera(Thread):
         self.q2cloud = q2cloud
 
         self.max_photo_count = config['max_photo_count']
-        self.max_video_count = config['max_video_count']
+        # self.max_video_count = config['max_video_count']
         self.period = config['period']
         self.video_length = config['video_length']
         self.video_path = str(self.cwd) + '/videos/'
