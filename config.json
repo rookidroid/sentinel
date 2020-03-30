@@ -17,5 +17,13 @@
     "cloud": {
         "folder": "edenbridge",
         "rclone_remote": "gdrive"
+    },
+    "email": {
+        "smtp_add": "smtp.gmail.com",
+        "smtp_port": 465,
+        "from_add": "example@gmail.com",
+        "to_add": "example@gmail.com",
+        "username": "example@gmail.com",
+        "password": "PASSWORD"
     }
 }
