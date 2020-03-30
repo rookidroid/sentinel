@@ -5,13 +5,13 @@
         "bot_token": "token"
     },
     "camera": {
-        "record_resolution": [1280, 960],
-        "detection_resolution": [640, 480],
+        "record_resolution": [1648, 1232],
+        "detection_resolution": [1648, 1232],
         "max_photo_count": 30,
         "period": 30,
         "video_length": 90,
         "camera_warmup_time": 2.5,
-        "delta_thresh": 5,
+        "delta_thresh": 20,
         "min_area": 5000
     },
     "cloud": {
