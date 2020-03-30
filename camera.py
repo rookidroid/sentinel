@@ -233,8 +233,13 @@ class Camera(Thread):
                 time_str = datetime.datetime.now().strftime('%H-%M-%S')
                 # draw box and timestamp on frame
                 (x, y, w, h) = cv2.boundingRect(contr)
-                cv2.rectangle(raw_frame, (int(scale_factor*x), int(scale_factor*y)),
-                              (int(scale_factor*(x + w)), int(scale_factor*(y + h))), (0, 255, 0), 1)
+                cv2.rectangle(raw_frame,
+                              (int(scale_factor*x),
+                               int(scale_factor*y)),
+                              (int(scale_factor*(x + w)),
+                               int(scale_factor*(y + h))),
+                              (0, 255, 0),
+                              1)
                 cv2.putText(raw_frame, 'Front Door', (10, 25),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1)
                 cv2.putText(raw_frame, date_str + '_' + time_str,
