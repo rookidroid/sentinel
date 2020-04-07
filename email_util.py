@@ -31,7 +31,7 @@ class Email:
         try:
             self.session = smtplib.SMTP_SSL(
                 self.config['smtp_add'],
-                self.config['smtp_port'])
+                self.config['smtp_port'], timeout=100)
             # self.session.ehlo()
             # self.session.login(
             #     self.config['username'], self.config['password'])
