@@ -43,7 +43,6 @@ class Camera(Thread):
         self.q2cloud = q2cloud
 
         self.max_photo_count = config['max_photo_count']
-        # self.max_video_count = config['max_video_count']
         self.period = config['period']
         self.video_length = config['video_length']
         self.video_path = str(self.cwd) + '/videos/'
@@ -118,7 +117,7 @@ class Camera(Thread):
             self.cmd_send_jpg[
                 'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(
                     photo_idx)
-            self.cmd_send_jpg['server'] = 'telegram'
+            self.cmd_send_jpg['server'] = 'email'
 
             self.camera.capture(self.cmd_send_jpg['path'] +
                                 self.cmd_send_jpg['file_name'] +
@@ -188,7 +187,6 @@ class Camera(Thread):
 
             # clear the stream in preparation for the next frame
             self.raw_capture.truncate(0)
-            text = "Unoccupied"
 
             # resize the frame, convert it to grayscale, and blur it
             frame = imutils.resize(raw_frame, width=500)
@@ -219,8 +217,6 @@ class Camera(Thread):
             contours = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
                                         cv2.CHAIN_APPROX_SIMPLE)
             contours = imutils.grab_contours(contours)
-
-            # print(np.max(frame_delta))
 
             # loop over the contours
             for contr in contours:
@@ -257,15 +253,6 @@ class Camera(Thread):
                             self.cmd_send_jpg['extension'],
                             raw_frame)
                 self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
-
-                # self.cmd_send_jpg['date'] = date_str
-                # self.cmd_send_jpg['time'] = time_str
-                # self.cmd_send_jpg['file_name'] = date_str + '_' + time_str+'_delta'
-                # cv2.imwrite(self.cmd_send_jpg['path'] +
-                #             self.cmd_send_jpg['file_name'] +
-                #             self.cmd_send_jpg['extension'],
-                #             frame_delta)
-                # self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
                 is_occupied = True
                 return is_occupied
