@@ -32,9 +32,9 @@ class Email:
             self.session = smtplib.SMTP_SSL(
                 self.config['smtp_add'],
                 self.config['smtp_port'])
-            self.session.ehlo()
-            self.session.login(
-                self.config['username'], self.config['password'])
+            # self.session.ehlo()
+            # self.session.login(
+            #     self.config['username'], self.config['password'])
         except Exception as e:
             # Print any error messages to stdout
             print(e)
@@ -77,11 +77,23 @@ class Email:
             # attach mime to mail_body
             mail_body.attach(mime)
 
-        # Send Mail
-        self.session.sendmail(
-            self.config['from_add'],
-            [to_add],
-            mail_body.as_string())
+        try:
+            # self.session = smtplib.SMTP_SSL(
+            #     self.config['smtp_add'],
+            #     self.config['smtp_port'])
+            self.session.ehlo()
+            self.session.login(
+                self.config['username'], self.config['password'])
+
+            # Send Mail
+            self.session.sendmail(
+                self.config['from_add'],
+                [to_add],
+                mail_body.as_string())
+
+        except Exception as e:
+            # Print any error messages to stdout
+            print(e)
 
     def __del__(self):
         self.session.close()
