@@ -45,7 +45,7 @@ class MessageBot(Thread):
                                photo=open(file, 'rb'),
                                caption=msg['file_name'])
         elif msg['server'] == 'email':
-            # print('send email')
+            print('send email')
             self.email_handler.send_email(
                 self.to_add,
                 '[Front Door] '+msg['date'] + ' ' + msg['time'],
@@ -65,7 +65,7 @@ class MessageBot(Thread):
 
         while True:
             msg = self.q2mbot.get()
-            # print('get send_photo msg')
+            print('get send_photo msg')
             if msg['cmd'] is 'send_photo':
                 self.sendImage(msg)
 
