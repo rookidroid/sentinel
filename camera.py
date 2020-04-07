@@ -197,7 +197,7 @@ class Camera(Thread):
             if self.avg_capture is None:
                 # if self.motion_frame_counter < 2:
                 #     self.motion_frame_counter += 1
-                print("[INFO] starting background model...")
+                # print("[INFO] starting background model...")
                 self.avg_capture = gray.copy().astype("float")
                 # self.raw_capture.truncate(0)
                 continue
@@ -266,7 +266,7 @@ class Camera(Thread):
         print('Camera thread started')
         while True:
             status = self.motion_detection()
-            print(status)
+            # print(status)
             if status:
                 self.take_video(init_photo=False)
             else:
