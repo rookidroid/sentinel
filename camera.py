@@ -124,7 +124,7 @@ class Camera(Thread):
                                 self.cmd_send_jpg['extension'])
             self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
-    def take_video(self, init_photo=True):
+    def take_video(self, init_photo=False):
         self.camera.resolution = self.rec_resolution
 
         date_str = datetime.datetime.now().strftime('%Y-%m-%d')
