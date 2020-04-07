@@ -28,16 +28,16 @@ class Email:
     def __init__(self, config):
         super().__init__()
         self.config = config
-        try:
-            self.session = smtplib.SMTP_SSL(
-                self.config['smtp_add'],
-                self.config['smtp_port'], timeout=100)
+        # try:
+        #     self.session = smtplib.SMTP_SSL(
+        #         self.config['smtp_add'],
+        #         self.config['smtp_port'], timeout=100)
             # self.session.ehlo()
             # self.session.login(
             #     self.config['username'], self.config['password'])
-        except Exception as e:
+        # except Exception as e:
             # Print any error messages to stdout
-            print(e)
+            # print(e)
 
     def init_mail_body(self, to_add, subject):
         # Prepare Mail Body
@@ -78,9 +78,9 @@ class Email:
             mail_body.attach(mime)
 
         try:
-            # self.session = smtplib.SMTP_SSL(
-            #     self.config['smtp_add'],
-            #     self.config['smtp_port'])
+            self.session = smtplib.SMTP_SSL(
+                self.config['smtp_add'],
+                self.config['smtp_port'])
             self.session.ehlo()
             self.session.login(
                 self.config['username'], self.config['password'])
@@ -90,6 +90,8 @@ class Email:
                 self.config['from_add'],
                 [to_add],
                 mail_body.as_string())
+            
+            self.session.quit()
 
         except Exception as e:
             # Print any error messages to stdout
