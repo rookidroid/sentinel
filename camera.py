@@ -65,7 +65,7 @@ class Camera(Thread):
 
         # allow the camera to warmup, then initialize the average frame, last
         # uploaded timestamp, and frame motion counter
-        print("[INFO] warming up...")
+        logging.info('Camera warming up')
         time.sleep(config["camera_warmup_time"])
         self.avg_capture = None
 
@@ -261,7 +261,6 @@ class Camera(Thread):
 
     def run(self):
         logging.info('Camera thread started')
-        print('Camera thread started')
         while True:
             status = self.motion_detection()
             # print(status)
