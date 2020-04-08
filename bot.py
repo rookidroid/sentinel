@@ -20,7 +20,7 @@
 from threading import Thread
 from telegram import Bot
 import os
-from email_util import Email
+from email_util import send_email
 import logging
 
 
@@ -33,8 +33,11 @@ class MessageBot(Thread):
         self.chat_id = config['bot']['chat_id']
         self.q2mbot = q2mbot
 
-        self.email_handler = Email(config['email'])
-        self.to_add = config['email']['to_add']
+        # self.email_handler = Email(config['email'])
+        # self.to_add = config['email']['to_add']
+        self.mail_server = config['email']['server']
+        self.mail_body = config['email']['mail_body']
+        self.attachement = config['email']['attachment']
 
         self.emoji_robot = u'\U0001F916'
 
@@ -46,13 +49,21 @@ class MessageBot(Thread):
                                caption=msg['file_name'])
         elif msg['server'] == 'email':
             print('send email')
-            self.email_handler.send_email(
-                self.to_add,
-                '[Front Door] '+msg['date'] + ' ' + msg['time'],
-                'Motion detected',
-                msg_type='plain',
-                path=file,
-                file_name=msg['file_name'] + msg['extension'])
+            # self.email_handler.send_email(
+            #     self.to_add,
+            #     '[Front Door] '+msg['date'] + ' ' + msg['time'],
+            #     'Motion detected',
+            #     msg_type='plain',
+            #     path=file,
+            #     file_name=msg['file_name'] + msg['extension'])
+
+            self.mail_body['subject'] = '[Front Door] ' + \
+                msg['date'] + ' ' + msg['time']
+            self.mail_body['message'] = 'Motion detected'
+            self.attachement['file_name'] = msg['file_name'] + msg['extension']
+
+            send_email(self.mail_server, self.mail_body, self.attachement)
+
         logging.info('Send photo')
         os.remove(file)
         logging.info('Delete photo')

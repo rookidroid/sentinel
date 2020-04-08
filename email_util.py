@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+from pathlib import Path
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -24,82 +25,65 @@ from email.mime.base import MIMEBase
 from email import encoders
 
 
-class Email:
-    def __init__(self, config):
-        super().__init__()
-        self.config = config
-        # try:
-        #     self.session = smtplib.SMTP_SSL(
-        #         self.config['smtp_add'],
-        #         self.config['smtp_port'], timeout=100)
-            # self.session.ehlo()
-            # self.session.login(
-            #     self.config['username'], self.config['password'])
-        # except Exception as e:
-            # Print any error messages to stdout
-            # print(e)
+def init_mail_body(mail_body, attachment=None):
+    # Prepare Mail Body
+    m_body = MIMEMultipart()
+    m_body['From'] = mail_body['from']
+    m_body['To'] = mail_body['to']
+    m_body['Subject'] = mail_body['subject']
 
-    def init_mail_body(self, to_add, subject):
-        # Prepare Mail Body
-        mail_body = MIMEMultipart()
-        mail_body['From'] = self.config['from_add']
-        mail_body['To'] = to_add
-        mail_body['Subject'] = subject
-        return mail_body
+    msg = MIMEText(mail_body['message'], mail_body['type'])
+    m_body.attach(msg)
 
-    # Call this to send plain text emails.
-    # plain or html
-    def send_email(self, to_add, Subject, txtMessage,
-                   msg_type='plain',
-                   path=None,
-                   file_name=None):
-        mail_body = self.init_mail_body(to_add, Subject)
-        # Attach Mail Message
-        msg = MIMEText(txtMessage, msg_type)
-        mail_body.attach(msg)
+    if attachment is not None:
+        data_folder = Path(attachment['path'])
+        full_path = data_folder / attachment['file_name']
+        # open the file to be sent
+        att = open(full_path, "rb")
 
-        if path is not None:
-            # open the file to be sent
-            attachment = open(path, "rb")
+        # instance of MIMEBase
+        mime = MIMEBase('application', 'octet-stream')
 
-            # instance of MIMEBase
-            mime = MIMEBase('application', 'octet-stream')
+        # change the payload into encoded form
+        mime.set_payload((att).read())
 
-            # change the payload into encoded form
-            mime.set_payload((attachment).read())
+        # encode into base64
+        encoders.encode_base64(mime)
 
-            # encode into base64
-            encoders.encode_base64(mime)
+        mime.add_header('Content-Disposition',
+                        "attachment; filename= %s" % attachment['file_name'])
 
-            mime.add_header('Content-Disposition',
-                            "attachment; filename= %s" % file_name)
+        # attach mime to mail_body
+        m_body.attach(mime)
 
-            # attach mime to mail_body
-            mail_body.attach(mime)
+    return m_body
 
-        try:
-            self.session = smtplib.SMTP_SSL(
-                self.config['smtp_add'],
-                self.config['smtp_port'])
-            self.session.ehlo()
-            self.session.login(
-                self.config['username'], self.config['password'])
+# Call this to send plain text emails.
+# plain or html
 
-            # Send Mail
-            self.session.sendmail(
-                self.config['from_add'],
-                [to_add],
-                mail_body.as_string())
-            
-            self.session.quit()
 
-        except Exception as e:
-            # Print any error messages to stdout
-            print(e)
+def send_email(mail_server, mail_body, attachment=None):
+    body = init_mail_body(mail_body, attachment)
 
-    def __del__(self):
-        self.session.close()
-        del self.session
+    try:
+        session = smtplib.SMTP_SSL(
+            mail_server['smtp_add'],
+            mail_server['smtp_port'])
+        session.ehlo()
+        session.login(
+            mail_server['username'], mail_server['password'])
+
+        # Send Mail
+        session.sendmail(
+            mail_body['from'],
+            [mail_body['to']],
+            body.as_string())
+
+        session.quit()
+
+    except Exception as e:
+        # Print any error messages to stdout
+        print(e)
 
 
 '''

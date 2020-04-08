@@ -21,9 +21,19 @@
     "email": {
         "smtp_add": "smtp.gmail.com",
         "smtp_port": 465,
-        "from_add": "example@gmail.com",
+        "from": "example@gmail.com",
         "to_add": "example@gmail.com",
         "username": "example@gmail.com",
-        "password": "PASSWORD"
+        "password": "PASSWORD",
+        "mail_body":{
+            "to": "rookiepeng@gmail.com",
+            "subject": "",
+            "message": "",
+            "type": "plain"
+        },
+        "attachment":{
+            "path":"./photo",
+            "file_name":""
+        }
     }
 }
