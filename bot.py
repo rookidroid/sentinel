@@ -51,9 +51,8 @@ class MessageBot(Thread):
         self.emoji_robot = u'\U0001F916'
 
     def sendImage(self, msg):
+        file = self.photo_path / (msg['file_name'] + msg['extension'])
         if msg['server'] == 'telegram':
-            file = self.photo_path / (msg['file_name'] + msg['extension'])
-
             self.bot.sendPhoto(chat_id=self.chat_id,
                                photo=open(file, 'rb'),
                                caption='A photo has been taken from your [' +
