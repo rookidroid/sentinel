@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+from pathlib import Path
 from threading import Thread
 from telegram import Bot
 import os
@@ -30,6 +31,7 @@ class MessageBot(Thread):
         self.q2mbot = q2mbot
 
         self.location = config['name']
+        self.photo_path = Path(config['photo_path'])
 
         # telegram bot
         self.bot_config = config['bot']
@@ -49,8 +51,9 @@ class MessageBot(Thread):
         self.emoji_robot = u'\U0001F916'
 
     def sendImage(self, msg):
-        file = msg['path'] + msg['file_name'] + msg['extension']
         if msg['server'] == 'telegram':
+            file = self.photo_path / (msg['file_name'] + msg['extension'])
+
             self.bot.sendPhoto(chat_id=self.chat_id,
                                photo=open(file, 'rb'),
                                caption='A photo has been taken from your [' +
