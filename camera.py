@@ -118,9 +118,9 @@ class Camera(Thread):
                     photo_idx)
             self.cmd_send_jpg['server'] = 'telegram'
 
-            self.camera.capture(
+            self.camera.capture(str(
                 self.photo_path /
-                (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension']))
+                (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])))
 
     def take_video(self, init_photo=False):
         self.camera.resolution = self.rec_resolution
@@ -137,13 +137,13 @@ class Camera(Thread):
         self.cmd_send_jpg['time'] = time_str
         self.cmd_send_jpg['server'] = 'email'
 
-        self.camera.start_recording(self.video_path /
+        self.camera.start_recording(str(self.video_path /
                                     (self.cmd_upload_h264['file_name'] +
-                                     self.cmd_upload_h264['extension']))
+                                     self.cmd_upload_h264['extension'])))
         if init_photo:
-            self.camera.capture(self.photo_path /
+            self.camera.capture(str(self.photo_path /
                                 (self.cmd_send_jpg['file_name'] +
-                                 self.cmd_send_jpg['extension']),
+                                 self.cmd_send_jpg['extension'])),
                                 use_video_port=True)
             self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
@@ -161,9 +161,9 @@ class Camera(Thread):
             self.cmd_send_jpg['date'] = date_str
             self.cmd_send_jpg['time'] = time_str
             self.cmd_send_jpg['server'] = 'email'
-            self.camera.capture(self.photo_path /
+            self.camera.capture(str(self.photo_path /
                                 (self.cmd_send_jpg['file_name'] +
-                                 self.cmd_send_jpg['extension']),
+                                 self.cmd_send_jpg['extension'])),
                                 use_video_port=True)
             self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
