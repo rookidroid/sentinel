@@ -121,6 +121,7 @@ class Camera(Thread):
             self.camera.capture(str(
                 self.photo_path /
                 (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])))
+            self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
     def take_video(self, init_photo=False):
         self.camera.resolution = self.rec_resolution
