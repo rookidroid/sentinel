@@ -36,23 +36,24 @@ import time
 class Camera(Thread):
     def __init__(self, config, q2camera, q2mbot, q2cloud):
         Thread.__init__(self)
-        self.config = config
-        self.cwd = Path().absolute()
+        self.video_path = config['video_path']
+        self.photo_path = config['photo_path']
+
+        self.camera_config = config['camera']
+        # self.cwd = Path().absolute()
         self.q2camera = q2camera
         self.q2mbot = q2mbot
         self.q2cloud = q2cloud
 
-        self.max_photo_count = config['max_photo_count']
-        self.period = config['period']
-        self.video_length = config['video_length']
-        self.video_path = str(self.cwd) + '/videos/'
-        self.photo_path = str(self.cwd) + '/photos/'
+        self.max_photo_count = self.camera_config['max_photo_count']
+        self.period = self.camera_config['period']
+        self.video_length = self.camera_config['video_length']
 
-        self.det_resolution = config['detection_resolution']
-        self.rec_resolution = config['record_resolution']
+        self.det_resolution = self.camera_config['detection_resolution']
+        self.rec_resolution = self.camera_config['record_resolution']
 
-        self.delta_thresh = config['delta_thresh']
-        self.min_area = config['min_area']
+        self.delta_thresh = self.camera_config['delta_thresh']
+        self.min_area = self.camera_config['min_area']
         self.motion_frame_counter = 0
 
         # initialize the camera and grab a reference to the raw camera capture
@@ -66,16 +67,16 @@ class Camera(Thread):
         # allow the camera to warmup, then initialize the average frame, last
         # uploaded timestamp, and frame motion counter
         logging.info('Camera warming up')
-        time.sleep(config["camera_warmup_time"])
+        time.sleep(self.camera_config["camera_warmup_time"])
         self.avg_capture = None
 
         try:
-            os.makedirs(self.video_path)
+            os.makedirs(Path(self.video_path))
         except FileExistsError:
             pass
 
         try:
-            os.makedirs(self.photo_path)
+            os.makedirs(Path(self.photo_path))
         except FileExistsError:
             pass
 

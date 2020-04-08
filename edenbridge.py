@@ -58,8 +58,8 @@ def main():
             q2camera.put({'cmd': 'take_video', 'count': 1})
 
     my_bot = MessageBot(config, q2mbot)
-    camera = Camera(config['camera'], q2camera, q2mbot, q2cloud)
-    cloud = Cloud(config['cloud'], q2cloud)
+    camera = Camera(config, q2camera, q2mbot, q2cloud)
+    cloud = Cloud(config, q2cloud)
 
     my_bot.start()
     camera.start()

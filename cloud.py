@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+from pathlib import Path
 from threading import Thread
 from subprocess import call, Popen
 import os
@@ -27,8 +28,12 @@ class Cloud(Thread):
     def __init__(self, config, q2cloud):
         Thread.__init__(self)
         self.q2cloud = q2cloud
-        self.target_folder = config['folder']
-        self.rclone_remote = config['rclone_remote']
+
+        self.video_path = Path(config['video_path'])
+        self.photo_path = Path(config['photo_path'])
+
+        self.target_folder = config['cloud']['folder']
+        self.rclone_remote = config['cloud']['rclone_remote']
 
     def h264_to_mp4(self, input, output):
         retcode = call(["MP4Box", "-add", input, output])
@@ -37,9 +42,9 @@ class Cloud(Thread):
         else:
             os.remove(input)
 
-    def upload_to_gdrive(self, metadata):
+    def upload_to_gdrive(self, path, metadata):
         Popen([
-            "rclone", "move", metadata['path'], self.rclone_remote + ':' +
+            "rclone", "move", path, self.rclone_remote + ':' +
             self.target_folder + '/' + metadata['date'], "--delete-after",
             "--include", metadata['file_name'] + '.mp4'
         ])
@@ -50,9 +55,10 @@ class Cloud(Thread):
             msg = self.q2cloud.get()
             if msg['cmd'] is 'upload_file':
                 if msg['file_type'] is 'H264':
-                    self.h264_to_mp4(msg['path'] + msg['file_name'] + '.h264',
-                                     msg['path'] + msg['file_name'] + '.mp4')
-                    self.upload_to_gdrive(msg)
+                    self.h264_to_mp4(
+                        self.video_path / (msg['file_name'] + '.h264'),
+                        self.video_path / (msg['file_name'] + '.mp4'))
+                    self.upload_to_gdrive(self.video_path, msg)
 
                 self.q2cloud.task_done()
 
