@@ -62,7 +62,7 @@ class MessageBot(Thread):
             send_email(self.mail_server, self.mail_body, self.attachement)
 
             self.bot.sendMessage(chat_id=self.chat_id,
-                                 text='A photo has been sent to your email.')
+                                 text='"'+msg['file_name'] + msg['extension']+'" has been sent to your email.')
 
         logging.info('Send photo')
         os.remove(file)
