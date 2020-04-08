@@ -72,7 +72,7 @@ def main():
     dp.add_handler(CommandHandler('photo', take_photo))
     dp.add_handler(CommandHandler('video', take_video))
 
-    updater.start_polling()
+    # updater.start_polling()
     updater.idle()
 
 
