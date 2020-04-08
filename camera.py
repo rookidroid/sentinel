@@ -82,7 +82,6 @@ class Camera(Thread):
 
         self.cmd_upload_h264 = {
             'cmd': 'upload_file',
-            'path': self.video_path,
             'file_type': 'H264',
             'file_name': '',
             'extension': '.h264',
@@ -92,7 +91,6 @@ class Camera(Thread):
 
         self.cmd_send_jpg = {
             'cmd': 'send_photo',
-            'path': self.photo_path,
             'file_type': 'JPG',
             'file_name': '',
             'extension': '.jpg',
