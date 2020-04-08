@@ -27,17 +27,22 @@ import logging
 class MessageBot(Thread):
     def __init__(self, config, q2mbot):
         Thread.__init__(self)
-        self.bot_name = config['bot']['bot_name']
-        self.token = config['bot']['bot_token']
-        self.bot = Bot(config['bot']['bot_token'])
-        self.chat_id = config['bot']['chat_id']
         self.q2mbot = q2mbot
 
-        # self.email_handler = Email(config['email'])
-        # self.to_add = config['email']['to_add']
-        self.mail_server = config['email']['server']
-        self.mail_body = config['email']['mail_body']
-        self.attachement = config['email']['attachment']
+        # telegram bot
+        self.bot_config = config['bot']
+        self.bot_name = self.bot_config['bot_name']
+        self.token = self.bot_config['bot_token']
+        self.chat_id = self.bot_config['chat_id']
+
+        self.bot = Bot(self.token)
+
+        # email
+        self.email_config = config['email']
+        self.mail_server = self.email_config['mail_server']
+        self.mail_body = self.email_config['mail_body']
+        self.attachement = dict(path=config['photo_path'],
+                                file_name='')
 
         self.emoji_robot = u'\U0001F916'
 
@@ -47,22 +52,17 @@ class MessageBot(Thread):
             self.bot.sendPhoto(chat_id=self.chat_id,
                                photo=open(file, 'rb'),
                                caption=msg['file_name'])
-        elif msg['server'] == 'email':
-            print('send email')
-            # self.email_handler.send_email(
-            #     self.to_add,
-            #     '[Front Door] '+msg['date'] + ' ' + msg['time'],
-            #     'Motion detected',
-            #     msg_type='plain',
-            #     path=file,
-            #     file_name=msg['file_name'] + msg['extension'])
 
+        elif msg['server'] == 'email':
             self.mail_body['subject'] = '[Front Door] ' + \
                 msg['date'] + ' ' + msg['time']
             self.mail_body['message'] = 'Motion detected'
             self.attachement['file_name'] = msg['file_name'] + msg['extension']
 
             send_email(self.mail_server, self.mail_body, self.attachement)
+
+            self.bot.sendMessage(chat_id=self.chat_id,
+                                 text='A photo has been sent to your email.')
 
         logging.info('Send photo')
         os.remove(file)
