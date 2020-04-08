@@ -24,6 +24,9 @@ import os
 from email_util import send_email
 import logging
 
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+
 
 class MessageBot(Thread):
     def __init__(self, config, q2mbot):
