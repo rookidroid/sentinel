@@ -36,8 +36,8 @@ import time
 class Camera(Thread):
     def __init__(self, config, q2camera, q2mbot, q2cloud):
         Thread.__init__(self)
-        self.video_path = config['video_path']
-        self.photo_path = config['photo_path']
+        self.video_path = Path(config['video_path'])
+        self.photo_path = Path(config['photo_path'])
 
         self.camera_config = config['camera']
         # self.cwd = Path().absolute()
@@ -71,12 +71,12 @@ class Camera(Thread):
         self.avg_capture = None
 
         try:
-            os.makedirs(Path(self.video_path))
+            os.makedirs(self.video_path)
         except FileExistsError:
             pass
 
         try:
-            os.makedirs(Path(self.photo_path))
+            os.makedirs(self.photo_path)
         except FileExistsError:
             pass
 
@@ -118,10 +118,9 @@ class Camera(Thread):
                     photo_idx)
             self.cmd_send_jpg['server'] = 'telegram'
 
-            self.camera.capture(self.cmd_send_jpg['path'] +
-                                self.cmd_send_jpg['file_name'] +
-                                self.cmd_send_jpg['extension'])
-            self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
+            self.camera.capture(
+                self.photo_path /
+                (cmd_send_jpg['file_name'] + cmd_send_jpg['extension']))
 
     def take_video(self, init_photo=False):
         self.camera.resolution = self.rec_resolution
@@ -138,13 +137,13 @@ class Camera(Thread):
         self.cmd_send_jpg['time'] = time_str
         self.cmd_send_jpg['server'] = 'email'
 
-        self.camera.start_recording(self.cmd_upload_h264['path'] +
-                                    self.cmd_upload_h264['file_name'] +
-                                    self.cmd_upload_h264['extension'])
+        self.camera.start_recording(self.video_path /
+                                    (self.cmd_upload_h264['file_name'] +
+                                     self.cmd_upload_h264['extension']))
         if init_photo:
-            self.camera.capture(self.cmd_send_jpg['path'] +
-                                self.cmd_send_jpg['file_name'] +
-                                self.cmd_send_jpg['extension'],
+            self.camera.capture(self.photo_path /
+                                (self.cmd_send_jpg['file_name'] +
+                                 self.cmd_send_jpg['extension']),
                                 use_video_port=True)
             self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
@@ -162,9 +161,9 @@ class Camera(Thread):
             self.cmd_send_jpg['date'] = date_str
             self.cmd_send_jpg['time'] = time_str
             self.cmd_send_jpg['server'] = 'email'
-            self.camera.capture(self.cmd_send_jpg['path'] +
-                                self.cmd_send_jpg['file_name'] +
-                                self.cmd_send_jpg['extension'],
+            self.camera.capture(self.photo_path /
+                                (self.cmd_send_jpg['file_name'] +
+                                 self.cmd_send_jpg['extension']),
                                 use_video_port=True)
             self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
 
