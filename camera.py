@@ -120,7 +120,7 @@ class Camera(Thread):
 
             self.camera.capture(
                 self.photo_path /
-                (cmd_send_jpg['file_name'] + cmd_send_jpg['extension']))
+                (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension']))
 
     def take_video(self, init_photo=False):
         self.camera.resolution = self.rec_resolution
