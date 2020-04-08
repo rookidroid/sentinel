@@ -115,7 +115,7 @@ class Camera(Thread):
             self.cmd_send_jpg[
                 'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(
                     photo_idx)
-            self.cmd_send_jpg['server'] = 'email'
+            self.cmd_send_jpg['server'] = 'telegram'
 
             self.camera.capture(self.cmd_send_jpg['path'] +
                                 self.cmd_send_jpg['file_name'] +
@@ -160,7 +160,7 @@ class Camera(Thread):
                 int(1 + photo_idx))
             self.cmd_send_jpg['date'] = date_str
             self.cmd_send_jpg['time'] = time_str
-            self.cmd_send_jpg['server'] = 'telegram'
+            self.cmd_send_jpg['server'] = 'email'
             self.camera.capture(self.cmd_send_jpg['path'] +
                                 self.cmd_send_jpg['file_name'] +
                                 self.cmd_send_jpg['extension'],
