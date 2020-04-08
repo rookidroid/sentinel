@@ -29,6 +29,8 @@ class MessageBot(Thread):
         Thread.__init__(self)
         self.q2mbot = q2mbot
 
+        self.location = config['name']
+
         # telegram bot
         self.bot_config = config['bot']
         self.bot_name = self.bot_config['bot_name']
@@ -51,18 +53,25 @@ class MessageBot(Thread):
         if msg['server'] == 'telegram':
             self.bot.sendPhoto(chat_id=self.chat_id,
                                photo=open(file, 'rb'),
-                               caption=msg['file_name'])
+                               caption='A photo has been taken from your [' +
+                               self.location +
+                               '] at '+msg['date'] + ' '+msg['time'])
 
         elif msg['server'] == 'email':
             self.mail_body['subject'] = '[Front Door] ' + \
                 msg['date'] + ' ' + msg['time']
-            self.mail_body['message'] = 'Motion detected'
+            self.mail_body['message'] = 'A photo has been taken from your [' +\
+                self.location +\
+                '] at '+msg['date'] + ' '+msg['time']
+
             self.attachement['file_name'] = msg['file_name'] + msg['extension']
 
             send_email(self.mail_server, self.mail_body, self.attachement)
 
             self.bot.sendMessage(chat_id=self.chat_id,
-                                 text='"'+msg['file_name'] + msg['extension']+'" has been sent to your email.')
+                                 text='"'+msg['file_name'] +
+                                      msg['extension'] +
+                                 '" has been sent to your email.')
 
         logging.info('Send photo')
         os.remove(file)
@@ -70,13 +79,13 @@ class MessageBot(Thread):
 
     def run(self):
         logging.info('MyBot thread started')
-        self.bot.sendMessage(chat_id=self.chat_id,
-                             text=self.emoji_robot + self.bot_name +
-                             self.emoji_robot + ' is running...')
+        self.bot.sendMessage(
+            chat_id=self.chat_id,
+            text='Hello! ' + self.emoji_robot + self.bot_name +
+            self.emoji_robot + ' [' + self.location+'] is at your service.')
 
         while True:
             msg = self.q2mbot.get()
-            print('get send_photo msg')
             if msg['cmd'] is 'send_photo':
                 self.sendImage(msg)
 

@@ -68,8 +68,6 @@ class Camera(Thread):
         print("[INFO] warming up...")
         time.sleep(config["camera_warmup_time"])
         self.avg_capture = None
-        # lastUploaded = datetime.datetime.now()
-        # self.motionCounter = 0
 
         try:
             os.makedirs(self.video_path)
@@ -162,7 +160,7 @@ class Camera(Thread):
                 int(1 + photo_idx))
             self.cmd_send_jpg['date'] = date_str
             self.cmd_send_jpg['time'] = time_str
-            self.cmd_send_jpg['server'] = 'email'
+            self.cmd_send_jpg['server'] = 'telegram'
             self.camera.capture(self.cmd_send_jpg['path'] +
                                 self.cmd_send_jpg['file_name'] +
                                 self.cmd_send_jpg['extension'],

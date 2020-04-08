@@ -58,9 +58,6 @@ def init_mail_body(mail_body, attachment=None):
 
     return m_body
 
-# Call this to send plain text emails.
-# plain or html
-
 
 def send_email(mail_server, mail_body, attachment=None):
     body = init_mail_body(mail_body, attachment)
