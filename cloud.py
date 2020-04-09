@@ -56,8 +56,8 @@ class Cloud(Thread):
             if msg['cmd'] is 'upload_file':
                 if msg['file_type'] is 'H264':
                     self.h264_to_mp4(
-                        self.video_path / (msg['file_name'] + '.h264'),
-                        self.video_path / (msg['file_name'] + '.mp4'))
+                        str(self.video_path / (msg['file_name'] + '.h264')),
+                        str(self.video_path / (msg['file_name'] + '.mp4')))
                     self.upload_to_gdrive(self.video_path, msg)
 
                 self.q2cloud.task_done()
