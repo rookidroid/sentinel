@@ -27,7 +27,7 @@ import logging
 logging.basicConfig(
     filename='info.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.DEBUG)
+    level=logging.INFO)
 
 
 class MessageBot(Thread):
