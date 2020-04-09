@@ -1,6 +1,9 @@
 {
+    "name":"Front Door",
+    "photo_path":"./photos/",
+    "video_path":"./videos/",
     "bot": {
-        "bot_name": "mybot",
+        "bot_name": "Edenbridge-Bot",
         "chat_id": 0,
         "bot_token": "token"
     },
@@ -19,21 +22,18 @@
         "rclone_remote": "gdrive"
     },
     "email": {
-        "smtp_add": "smtp.gmail.com",
-        "smtp_port": 465,
-        "from": "example@gmail.com",
-        "to_add": "example@gmail.com",
-        "username": "example@gmail.com",
-        "password": "PASSWORD",
+        "mail_server":{
+            "smtp_add": "smtp.gmail.com",
+            "smtp_port": 465,
+            "username": "user@example.com",
+            "password": "password"
+        },
         "mail_body":{
-            "to": "rookiepeng@gmail.com",
+            "from": "from@example.com",
+            "to": "to@example.com",
             "subject": "",
             "message": "",
             "type": "plain"
-        },
-        "attachment":{
-            "path":"./photo",
-            "file_name":""
         }
     }
 }
