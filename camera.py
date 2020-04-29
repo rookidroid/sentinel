@@ -262,7 +262,7 @@ class Camera(Thread):
         logging.info('Camera thread started')
         while True:
             status = self.motion_detection()
-            status = False
+            # status = False
             # print(status)
             if status:
                 self.take_video(init_photo=False)
