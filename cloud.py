@@ -97,8 +97,8 @@ class Cloud():
                             #     addr[0]+':'+str(addr[1]), data.decode())
                             # print(data.decode())
                             msg = json.loads(data.decode())
-                            if msg['cmd'] is 'upload_file':
-                                if msg['file_type'] is 'H264':
+                            if msg['cmd'] == 'upload_file':
+                                if msg['file_type'] == 'H264':
                                     self.h264_to_mp4(
                                         str(self.video_path / (msg['file_name'] + '.h264')),
                                         str(self.video_path / (msg['file_name'] + '.mp4')))
