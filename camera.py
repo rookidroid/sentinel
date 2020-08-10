@@ -312,7 +312,7 @@ class Camera():
                             data, addr = self.udp_socket.recvfrom(4096)
                         except socket.timeout as t_out:
                             # print('timeout')
-                            logging.info('timeout')
+                            # logging.info('timeout')
                             pass
                         else:
                             if data:
@@ -320,7 +320,7 @@ class Camera():
                                 #     addr[0]+':'+str(addr[1]), data.decode())
                                 # print(data.decode())
                                 msg = json.loads(data.decode())
-                                logging.info(data.decode())
+                                # logging.info(data.decode())
                                 if msg['cmd'] == 'take_photo':
                                     # self.q2camera.task_done()
                                     self.take_photo(msg['count'])
