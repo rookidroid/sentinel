@@ -18,23 +18,31 @@
 """
 
 from pathlib import Path
-from threading import Thread
 from telegram import Bot
 import os
 from email_util import send_email
+import argparse
+import json
+import socket
 import logging
 
 logging.basicConfig(
-    filename='info.log',
+    filename='message_bot.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO)
 
 
-class MessageBot(Thread):
-    def __init__(self, config, q2mbot):
-        Thread.__init__(self)
-        self.q2mbot = q2mbot
+class MessageBot():
+    ERROR = -1
+    LISTEN = 1
+    CONNECTED = 2
+    STOP = 3
 
+    SIG_NORMAL = 0
+    SIG_STOP = 1
+    SIG_DISCONNECT = 2
+
+    def __init__(self, config):
         self.location = config['name']
         self.photo_path = Path(config['photo_path'])
 
@@ -54,6 +62,12 @@ class MessageBot(Thread):
                                 file_name='')
 
         self.emoji_robot = u'\U0001F916'
+
+        self.ip = '127.0.0.1'
+        self.port = self.bot_config['listen_port']
+        self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.udp_socket.settimeout(1)
+        self.signal = self.SIG_NORMAL
 
     def sendImage(self, msg):
         file = self.photo_path / (msg['file_name'] + msg['extension'])
@@ -76,11 +90,6 @@ class MessageBot(Thread):
 
             send_email(self.mail_server, self.mail_body, self.attachement)
 
-            # self.bot.sendMessage(chat_id=self.chat_id,
-            #                      text='"'+msg['file_name'] +
-            #                           msg['extension'] +
-            #                      '" has been sent to your email.')
-
         logging.info('Send photo')
         os.remove(file)
         logging.info('Delete photo')
@@ -92,12 +101,71 @@ class MessageBot(Thread):
             text='Hello! ' + self.emoji_robot + self.bot_name +
             self.emoji_robot + ' [' + self.location+'] is at your service.')
 
-        while True:
-            msg = self.q2mbot.get()
-            if msg['cmd'] is 'send_photo':
-                self.sendImage(msg)
+        # while True:
+            # msg = self.q2mbot.get()
+            # if msg['cmd'] is 'send_photo':
+            #     self.sendImage(msg)
 
-            self.q2mbot.task_done()
+            # self.q2mbot.task_done()
+
+        try:
+            self.udp_socket.bind((self.ip, self.port))
+        except OSError as err:
+            # self.status.emit(self.STOP, '')
+            # print('stopped')
+            logging.error(err)
+        else:
+            # self.status.emit(self.LISTEN, '')
+            # print('listen')
+            while True:
+                if self.signal == self.SIG_NORMAL:
+                    # self.status.emit(self.LISTEN, '')
+                    try:
+                        data, addr = self.udp_socket.recvfrom(4096)
+                    except socket.timeout as t_out:
+                        # print('timeout')
+                        pass
+                    else:
+                        if data:
+                            # self.message.emit(
+                            #     addr[0]+':'+str(addr[1]), data.decode())
+                            msg = json.loads(data.decode())
+                            # print(msg)
+                            if msg['cmd'] == 'send_photo':
+                                 self.sendImage(msg)
+                        else:
+                            # self.status.emit(self.LISTEN, '')
+                            break
+                elif self.signal == self.SIG_STOP:
+                    self.signal = self.SIG_NORMAL
+                    self.udp_socket.close()
+                    # self.status.emit(self.LISTEN, '')
+                    break
+        finally:
+            logging.info('bot UDP stopped')
+            # print('stopped')
+            # self.status.emit(self.STOP, '')
+
+
+def main():
+    # argument parser
+    # ap = argparse.ArgumentParser()
+    # ap.add_argument("-c", "--conf", required=True,
+    #                 help="path to the JSON configuration file")
+    # args = vars(ap.parse_args())
+    # config = json.load(open(args["conf"]))
+
+    config = json.load(open('./front_door.json'))
+
+    token = config['bot']['bot_token']
+    chat_id = config['bot']['chat_id']
+
+    my_bot = MessageBot(config)
+    my_bot.run()
+
+
+if __name__ == '__main__':
+    main()
 
 
 '''

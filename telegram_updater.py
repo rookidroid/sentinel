@@ -17,15 +17,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from queue import Queue
-from bot import MessageBot
-from camera import Camera
-from cloud import Cloud
 import argparse
 import json
 from telegram.ext import Updater, CallbackContext
 from telegram.ext import InlineQueryHandler, CommandHandler
 import time
+import socket
 
 
 def main():
@@ -38,9 +35,16 @@ def main():
 
     token = config['bot']['bot_token']
     chat_id = config['bot']['chat_id']
-    q2camera = Queue()
-    q2mbot = Queue()
-    q2cloud = Queue()
+
+    camera_port = config['camera']['listen_port']
+    bot_port = config['bot']['listen_port']
+    cloud_port = config['cloud']['listen_port']
+
+    udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    def send_udp(msg, port):
+        payload = json.dumps(msg)
+        udp_socket.sendto(payload.encode(), ('127.0.0.1', sport))
 
     def hello(update, context):
         user_id = update.message.chat_id
@@ -50,20 +54,15 @@ def main():
     def take_photo(update, context):
         user_id = update.message.chat_id
         if user_id == chat_id:
-            q2camera.put({'cmd': 'take_photo', 'count': 1})
+            # q2camera.put({'cmd': 'take_photo', 'count': 1})
+            send_udp({'cmd': 'take_photo', 'count': 1}, camera_port)
 
     def take_video(update, context):
         user_id = update.message.chat_id
         if user_id == chat_id:
-            q2camera.put({'cmd': 'take_video', 'count': 1})
+            # q2camera.put({'cmd': 'take_video', 'count': 1})
+            send_udp({'cmd': 'take_video', 'count': 1}, camera_port)
 
-    my_bot = MessageBot(config, q2mbot)
-    camera = Camera(config, q2camera, q2mbot, q2cloud)
-    cloud = Cloud(config, q2cloud)
-
-    my_bot.start()
-    camera.start()
-    cloud.start()
 
     updater = Updater(token, use_context=True)
     dp = updater.dispatcher
