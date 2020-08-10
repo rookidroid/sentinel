@@ -312,6 +312,7 @@ class Camera():
                             data, addr = self.udp_socket.recvfrom(4096)
                         except socket.timeout as t_out:
                             # print('timeout')
+                            logging.info('timeout')
                             pass
                         else:
                             if data:
