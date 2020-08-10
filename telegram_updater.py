@@ -27,11 +27,13 @@ import socket
 
 def main():
     # argument parser
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-c", "--conf", required=True,
-                    help="path to the JSON configuration file")
-    args = vars(ap.parse_args())
-    config = json.load(open(args["conf"]))
+    # ap = argparse.ArgumentParser()
+    # ap.add_argument("-c", "--conf", required=True,
+    #                 help="path to the JSON configuration file")
+    # args = vars(ap.parse_args())
+    # config = json.load(open(args["conf"]))
+
+    config = json.load(open('./front_door.json'))
 
     token = config['bot']['bot_token']
     chat_id = config['bot']['chat_id']
@@ -40,12 +42,12 @@ def main():
     bot_port = config['bot']['listen_port']
     cloud_port = config['cloud']['listen_port']
 
-    # udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def send_udp(udp_socket, msg, port):
-        udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    def send_udp(msg, port):
+        # udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         payload = json.dumps(msg)
-        udp_socket.sendto(payload.encode(), ('127.0.0.1', sport))
+        udp_socket.sendto(payload.encode(), ('127.0.0.1', port))
 
     def hello(update, context):
         user_id = update.message.chat_id
