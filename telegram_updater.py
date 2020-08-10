@@ -21,6 +21,7 @@ import argparse
 import json
 from telegram.ext import Updater, CallbackContext
 from telegram.ext import InlineQueryHandler, CommandHandler
+from telegram.ext import MessageHandler, Filters
 import time
 import socket
 
@@ -49,6 +50,11 @@ def main():
         payload = json.dumps(msg)
         udp_socket.sendto(payload.encode(), ('127.0.0.1', port))
 
+    def echo(update, context):
+        user_id = update.effective_chat.id
+        if user_id == chat_id:
+            context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
+
     def hello(update, context):
         user_id = update.message.chat_id
         if user_id == chat_id:
@@ -70,6 +76,7 @@ def main():
     updater = Updater(token, use_context=True)
     dp = updater.dispatcher
 
+    dp.add_handler(MessageHandler(Filters.text & (~Filters.command), echo))
     dp.add_handler(CommandHandler('hello', hello))
     dp.add_handler(CommandHandler('photo', take_photo))
     dp.add_handler(CommandHandler('video', take_video))
