@@ -1,0 +1,14 @@
+[Unit]
+Description=Cloud Service
+After=multi-user.target
+Conflicts=getty@tty1.service
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+ExecStart=/usr/bin/python3 /home/pi/edenbridge/cloud.py -c /home/pi/edenbridge/front_door.json
+StandardInput=tty-force
+
+[Install]
+WantedBy=multi-user.target
