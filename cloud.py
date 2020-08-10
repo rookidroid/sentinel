@@ -83,40 +83,34 @@ class Cloud():
             logging.error(err)
         else:
             while True:
-                status = self.motion_detection()
-                # status = False
-                # print(status)
-                if status:
-                    self.take_video(init_photo=False)
-                else:
-                    if self.signal == self.SIG_NORMAL:
-                        # self.status.emit(self.LISTEN, '')
-                        try:
-                            data, addr = self.udp_socket.recvfrom(4096)
-                        except socket.timeout as t_out:
-                            # print('timeout')
-                            # logging.info('timeout')
-                            pass
+                if self.signal == self.SIG_NORMAL:
+                    # self.status.emit(self.LISTEN, '')
+                    try:
+                        data, addr = self.udp_socket.recvfrom(4096)
+                    except socket.timeout as t_out:
+                        # print('timeout')
+                        # logging.info('timeout')
+                        pass
+                    else:
+                        if data:
+                            # self.message.emit(
+                            #     addr[0]+':'+str(addr[1]), data.decode())
+                            # print(data.decode())
+                            msg = json.loads(data.decode())
+                            if msg['cmd'] is 'upload_file':
+                                if msg['file_type'] is 'H264':
+                                    self.h264_to_mp4(
+                                        str(self.video_path / (msg['file_name'] + '.h264')),
+                                        str(self.video_path / (msg['file_name'] + '.mp4')))
+                                    self.upload_to_gdrive(self.video_path, msg)
                         else:
-                            if data:
-                                # self.message.emit(
-                                #     addr[0]+':'+str(addr[1]), data.decode())
-                                # print(data.decode())
-                                msg = json.loads(data.decode())
-                                if msg['cmd'] is 'upload_file':
-                                    if msg['file_type'] is 'H264':
-                                        self.h264_to_mp4(
-                                            str(self.video_path / (msg['file_name'] + '.h264')),
-                                            str(self.video_path / (msg['file_name'] + '.mp4')))
-                                        self.upload_to_gdrive(self.video_path, msg)
-                            else:
-                                # self.status.emit(self.LISTEN, '')
-                                break
-                    elif self.signal == self.SIG_STOP:
-                        self.signal = self.SIG_NORMAL
-                        self.udp_socket.close()
-                        # self.status.emit(self.LISTEN, '')
-                        break
+                            # self.status.emit(self.LISTEN, '')
+                            break
+                elif self.signal == self.SIG_STOP:
+                    self.signal = self.SIG_NORMAL
+                    self.udp_socket.close()
+                    # self.status.emit(self.LISTEN, '')
+                    break
                 # msg = self.q2cloud.get()
                 # if msg['cmd'] is 'upload_file':
                 #     if msg['file_type'] is 'H264':
