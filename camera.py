@@ -20,13 +20,13 @@
 import argparse
 import json
 import socket
-from threading import Thread
+
 from pathlib import Path
 import os
 import picamera
 from picamera.array import PiRGBArray
 import datetime
-import queue
+
 import copy
 import logging
 import numpy as np
