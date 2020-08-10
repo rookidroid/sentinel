@@ -36,7 +36,7 @@ import cv2
 import time
 
 logging.basicConfig(
-    filename='camera.log',
+    filename='/home/pi/edenbridge/camera.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO)
 
@@ -365,13 +365,13 @@ class Camera():
 
 def main():
     # argument parser
-    # ap = argparse.ArgumentParser()
-    # ap.add_argument("-c", "--conf", required=True,
-    #                 help="path to the JSON configuration file")
-    # args = vars(ap.parse_args())
-    # config = json.load(open(args["conf"]))
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-c", "--conf", required=True,
+                    help="path to the JSON configuration file")
+    args = vars(ap.parse_args())
+    config = json.load(open(args["conf"]))
 
-    config = json.load(open('./front_door.json'))
+    # config = json.load(open('./front_door.json'))
 
     camera = Camera(config)
     camera.run()

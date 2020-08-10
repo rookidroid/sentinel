@@ -27,7 +27,7 @@ import socket
 import logging
 
 logging.basicConfig(
-    filename='message_bot.log',
+    filename='/home/pi/edenbridge/message_bot.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO)
 
@@ -149,13 +149,13 @@ class MessageBot():
 
 def main():
     # argument parser
-    # ap = argparse.ArgumentParser()
-    # ap.add_argument("-c", "--conf", required=True,
-    #                 help="path to the JSON configuration file")
-    # args = vars(ap.parse_args())
-    # config = json.load(open(args["conf"]))
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-c", "--conf", required=True,
+                    help="path to the JSON configuration file")
+    args = vars(ap.parse_args())
+    config = json.load(open(args["conf"]))
 
-    config = json.load(open('./front_door.json'))
+    # config = json.load(open('./front_door.json'))
 
     token = config['bot']['bot_token']
     chat_id = config['bot']['chat_id']
