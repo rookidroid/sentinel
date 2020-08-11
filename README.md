@@ -4,12 +4,18 @@ A DIY smart camera based on Raspberry Pi, Telegram bot and Google Drive.
 
 ## Hardware
 
-- Raspberry Pi Zero W
+- Raspberry Pi Zero W or Raspberry Pi
 - Camera module
 
 ## Usage
 
-`python3 edenbridge.py &`
+- Shell
+`chmod +x edenbridge.sh`
+`./edenbridge.sh`
+
+- Systemd
+`chmod +x setup.sh`
+`sudo setup.sh`
 
 ## Function
 
