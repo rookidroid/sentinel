@@ -101,13 +101,6 @@ class MessageBot():
             text='Hello! ' + self.emoji_robot + self.bot_name +
             self.emoji_robot + ' [' + self.location+'] is at your service.')
 
-        # while True:
-            # msg = self.q2mbot.get()
-            # if msg['cmd'] is 'send_photo':
-            #     self.sendImage(msg)
-
-            # self.q2mbot.task_done()
-
         try:
             self.udp_socket.bind((self.ip, self.port))
         except OSError as err:

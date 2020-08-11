@@ -316,8 +316,6 @@ class Camera():
                             pass
                         else:
                             if data:
-                                # self.message.emit(
-                                #     addr[0]+':'+str(addr[1]), data.decode())
                                 # print(data.decode())
                                 msg = json.loads(data.decode())
                                 # logging.info(data.decode())
@@ -337,21 +335,6 @@ class Camera():
                         self.udp_socket.close()
                         # self.status.emit(self.LISTEN, '')
                         break
-                    # retrieve data (blocking)
-                    # try:
-                    #     msg = self.q2camera.get(block=True, timeout=3)
-                    #     if msg['cmd'] is 'take_photo':
-                    #         self.q2camera.task_done()
-                    #         self.take_photo(msg['count'])
-                    #         logging.info('Start to capture photos')
-                    #     elif msg['cmd'] is 'take_video':
-                    #         self.q2camera.task_done()
-                    #         self.take_video(init_photo=True)
-                    #         logging.info('Start to record videos')
-                    #     else:
-                    #         self.q2camera.task_done()
-                    # except queue.Empty:
-                    #     pass
         finally:
             # print('stopped')
             logging.info('camera UDP stopped')
