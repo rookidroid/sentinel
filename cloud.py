@@ -100,8 +100,10 @@ class Cloud():
                             if msg['cmd'] == 'upload_file':
                                 if msg['file_type'] == 'H264':
                                     self.h264_to_mp4(
-                                        str(self.video_path / (msg['file_name'] + '.h264')),
-                                        str(self.video_path / (msg['file_name'] + '.mp4')))
+                                        str(self.video_path /
+                                            (msg['file_name'] + '.h264')),
+                                        str(self.video_path /
+                                            (msg['file_name'] + '.mp4')))
                                     self.upload_to_gdrive(self.video_path, msg)
                         else:
                             # self.status.emit(self.LISTEN, '')
@@ -129,6 +131,7 @@ def main():
 
     cloud = Cloud(config)
     cloud.run()
+
 
 if __name__ == '__main__':
     main()

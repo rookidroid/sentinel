@@ -53,7 +53,8 @@ def main():
     def echo(update, context):
         user_id = update.effective_chat.id
         if user_id == chat_id:
-            context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
+            context.bot.send_message(
+                chat_id=update.effective_chat.id, text=update.message.text)
 
     def hello(update, context):
         user_id = update.message.chat_id
@@ -71,7 +72,6 @@ def main():
         if user_id == chat_id:
             # q2camera.put({'cmd': 'take_video', 'count': 1})
             send_udp({'cmd': 'take_video', 'count': 1}, camera_port)
-
 
     updater = Updater(token, use_context=True)
     dp = updater.dispatcher

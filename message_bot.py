@@ -125,7 +125,7 @@ class MessageBot():
                             msg = json.loads(data.decode())
                             # print(msg)
                             if msg['cmd'] == 'send_photo':
-                                 self.sendImage(msg)
+                                self.sendImage(msg)
                         else:
                             # self.status.emit(self.LISTEN, '')
                             break

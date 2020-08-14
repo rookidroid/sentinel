@@ -52,7 +52,6 @@ class Camera():
     SIG_DISCONNECT = 2
 
     def __init__(self, config):
-        
 
         self.video_path = Path(config['video_path'])
         self.photo_path = Path(config['photo_path'])
@@ -142,7 +141,8 @@ class Camera():
 
             self.camera.capture(str(
                 self.photo_path /
-                (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])))
+                (self.cmd_send_jpg['file_name'] +
+                    self.cmd_send_jpg['extension'])))
             # self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
@@ -346,7 +346,9 @@ class Camera():
 
     def send_cloud(self, msg):
         payload = json.dumps(msg)
-        self.udp_socket.sendto(payload.encode(), ('127.0.0.1', self.cloud_port))
+        self.udp_socket.sendto(
+            payload.encode(), ('127.0.0.1', self.cloud_port))
+
 
 def main():
     # argument parser
@@ -360,6 +362,7 @@ def main():
 
     camera = Camera(config)
     camera.run()
+
 
 if __name__ == '__main__':
     main()
