@@ -38,7 +38,7 @@ import time
 logging.basicConfig(
     filename='/home/pi/edenbridge/camera.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.ALL)
+    level=logging.INFO)
 
 
 class Camera():
