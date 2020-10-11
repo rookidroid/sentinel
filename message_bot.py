@@ -29,7 +29,7 @@ import logging
 logging.basicConfig(
     filename='/home/pi/edenbridge/message_bot.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO)
+    level=logging.ALL)
 
 
 class MessageBot():
