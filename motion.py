@@ -87,7 +87,15 @@ class Motion():
 
 
 def main():
-    motion = Motion()
+    # argument parser
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-c", "--conf", required=True,
+                    help="path to the JSON configuration file")
+    args = vars(ap.parse_args())
+    config = json.load(open(args["conf"]))
+
+    # config = json.load(open('./front_door.json'))
+    motion = Motion(config)
 
     motion.start()
 
