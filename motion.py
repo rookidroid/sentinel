@@ -24,7 +24,7 @@ import RPi.GPIO as GPIO
 import socket
 
 import logging
-logging.basicConfig(filename='motion.log', level=logging.INFO)
+logging.basicConfig(filename='/home/pi/edenbridge/motion.log', level=logging.INFO)
 
 
 class Motion():
