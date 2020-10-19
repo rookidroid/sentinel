@@ -24,7 +24,7 @@ import RPi.GPIO as GPIO
 import socket
 
 import logging
-logging.basicConfig(filename='edenbridge.log', level=logging.ERROR)
+logging.basicConfig(filename='motion.log', level=logging.INFO)
 
 
 class Motion():
