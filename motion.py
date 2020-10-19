@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+import argparse
 import time
 import json
 import RPi.GPIO as GPIO
