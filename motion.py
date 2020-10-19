@@ -68,16 +68,19 @@ class Motion():
             # logging.info('Motion detected')
 
             self.send_udp({'cmd': 'take_photo', 'count': 1}, self.camera_port)
-            print('motion detected')
+            # print('motion detected')
+            logging.info('motion detected')
 
         else:
             # self.output_queue.put(self.msg_stop)
             # logging.info('No motion')
-            print('no motion')
+            logging.info('no motion')
+            # print('no motion')
 
     def run(self):
         # logging.info('Motion thread started')
-        print('Motion thread started')
+        # print('Motion thread started')
+        logging.info('Motion thread started')
         GPIO.add_event_detect(self.motion_pin,
                               GPIO.BOTH,
                               callback=self.motion_handle,
