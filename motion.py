@@ -98,7 +98,7 @@ def main():
     # config = json.load(open('./front_door.json'))
     motion = Motion(config)
 
-    motion.start()
+    motion.run()
 
 
 if __name__ == '__main__':
