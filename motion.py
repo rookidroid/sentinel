@@ -87,7 +87,7 @@ class Motion():
                               bouncetime=300)
 
         while True:
-            time.sleep(1e6)
+            time.sleep(1)
 
 
 def main():
