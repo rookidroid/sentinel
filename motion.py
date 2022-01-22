@@ -83,9 +83,7 @@ def main():
     args = vars(ap.parse_args())
     config = json.load(open(args["conf"]))
 
-    # config = json.load(open('./front_door.json'))
     motion = Motion(config)
-
     motion.run()
 
 
