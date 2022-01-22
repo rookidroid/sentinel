@@ -20,7 +20,8 @@
 import argparse
 import time
 import json
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
+from gpiozero import MotionSensor
 import socket
 
 import logging
@@ -52,8 +53,9 @@ class Motion():
         # self.cmd_take_video = {'cmd': 'take_video', 'count': 0}
         # self.msg_stop = {'cmd': 'stop', 'arg': 0}
 
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.motion_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setup(self.motion_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        self.pir = MotionSensor(self.motion_pin)
         # GPIO.setup(self.enable_pin, GPIO.OUT, initial=GPIO.HIGH)
 
     def send_udp(self, msg, port):
@@ -61,33 +63,36 @@ class Motion():
         payload = json.dumps(msg)
         self.udp_socket.sendto(payload.encode(), ('127.0.0.1', port))
 
-    def motion_handle(self, pin):
-        if GPIO.input(pin):
-            # self.output_queue.put(self.cmd_take_video)
-            # self.output_queue.put(self.msg_capture_jpg)
-            # logging.info('Motion detected')
+    # def motion_handle(self, pin):
+    #     if GPIO.input(pin):
+    #         # self.output_queue.put(self.cmd_take_video)
+    #         # self.output_queue.put(self.msg_capture_jpg)
+    #         # logging.info('Motion detected')
 
-            self.send_udp({'cmd': 'take_photo', 'count': 1}, self.camera_port)
-            # print('motion detected')
-            logging.info('motion detected')
+    #         self.send_udp({'cmd': 'take_photo', 'count': 1}, self.camera_port)
+    #         # print('motion detected')
+    #         logging.info('motion detected')
 
-        else:
-            # self.output_queue.put(self.msg_stop)
-            # logging.info('No motion')
-            logging.info('no motion')
-            # print('no motion')
+    #     else:
+    #         # self.output_queue.put(self.msg_stop)
+    #         # logging.info('No motion')
+    #         logging.info('no motion')
+    #         # print('no motion')
 
     def run(self):
         # logging.info('Motion thread started')
         # print('Motion thread started')
         logging.info('Motion thread started')
-        GPIO.add_event_detect(self.motion_pin,
-                              GPIO.BOTH,
-                              callback=self.motion_handle,
-                              bouncetime=300)
+        # GPIO.add_event_detect(self.motion_pin,
+        #                       GPIO.BOTH,
+        #                       callback=self.motion_handle,
+        #                       bouncetime=300)
 
         while True:
-            time.sleep(1e6)
+            self.pir.wait_for_motion()
+            print('motion detected')
+            # time.sleep(1e6)
+
 
 
 def main():
