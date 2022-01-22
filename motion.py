@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
     Project Edenbridge
-    Copyright (C) 2019 - 2020  Zhengyu Peng
+    Copyright (C) 2019 - 2022  Zhengyu Peng
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -46,12 +46,7 @@ class Motion():
         self.port = config['motion']['listen_port']
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-        self.motion_pin = 14
-        # self.enable_pin = config['enable_pin']
-        # self.output_queue = output_queue
-        # self.msg_capture_jpg = {'cmd': 'take_photo', 'count': 0}
-        # self.cmd_take_video = {'cmd': 'take_video', 'count': 0}
-        # self.msg_stop = {'cmd': 'stop', 'arg': 0}
+        self.motion_pin = config['motion']['pir_pin']
 
         # GPIO.setmode(GPIO.BCM)
         # GPIO.setup(self.motion_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -63,34 +58,19 @@ class Motion():
         payload = json.dumps(msg)
         self.udp_socket.sendto(payload.encode(), ('127.0.0.1', port))
 
-    # def motion_handle(self, pin):
-    #     if GPIO.input(pin):
-    #         # self.output_queue.put(self.cmd_take_video)
-    #         # self.output_queue.put(self.msg_capture_jpg)
-    #         # logging.info('Motion detected')
-
-    #         self.send_udp({'cmd': 'take_photo', 'count': 1}, self.camera_port)
-    #         # print('motion detected')
-    #         logging.info('motion detected')
-
-    #     else:
-    #         # self.output_queue.put(self.msg_stop)
-    #         # logging.info('No motion')
-    #         logging.info('no motion')
-    #         # print('no motion')
-
     def run(self):
-        # logging.info('Motion thread started')
         # print('Motion thread started')
         logging.info('Motion thread started')
-        # GPIO.add_event_detect(self.motion_pin,
-        #                       GPIO.BOTH,
-        #                       callback=self.motion_handle,
-        #                       bouncetime=300)
 
         while True:
             self.pir.wait_for_motion()
             print('motion detected')
+            self.send_udp({'cmd': 'take_photo', 'count': 1}, self.camera_port)
+            # print('motion detected')
+            logging.info('motion detected')
+
+            self.pir.wait_for_no_motion()
+            logging.info('no motion')
             # time.sleep(1e6)
 
 
