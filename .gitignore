@@ -110,3 +110,4 @@ venv.bak/
 *.pickle
 
 front_door.json
+garage.json
