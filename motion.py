@@ -25,7 +25,7 @@ from gpiozero import MotionSensor
 import socket
 
 import logging
-logging.basicConfig(filename='/home/pi/edenbridge/motion.log', level=logging.INFO)
+logging.basicConfig(filename='/home/pi/sentinel/motion.log', level=logging.INFO)
 
 
 class Motion():
