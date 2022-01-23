@@ -93,6 +93,13 @@ class MessageBot():
         logging.info('Send photo')
         os.remove(file)
         logging.info('Delete photo')
+    
+    def sendMsg(self, msg):
+        self.bot.sendMessage(chat_id=self.chat_id,
+            text='Motion detected in [' +
+                            self.location +
+                            '] at '+msg['date'] + ' '+msg['time'])
+
 
     def run(self):
         logging.info('MyBot thread started')
@@ -126,6 +133,8 @@ class MessageBot():
                             # print(msg)
                             if msg['cmd'] == 'send_photo':
                                 self.sendImage(msg)
+                            elif msg['cmd'] == 'send_msg':
+                                self.sendMsg(msg)
                         else:
                             # self.status.emit(self.LISTEN, '')
                             break
