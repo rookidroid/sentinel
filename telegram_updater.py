@@ -24,7 +24,12 @@ from telegram.ext import InlineQueryHandler, CommandHandler
 from telegram.ext import MessageHandler, Filters
 import time
 import socket
+import logging
 
+logging.basicConfig(
+    filename='/home/pi/sentinel/telegram.log',
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO)
 
 def main():
     # argument parser
