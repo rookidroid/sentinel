@@ -23,9 +23,11 @@ import json
 # import RPi.GPIO as GPIO
 from gpiozero import MotionSensor
 import socket
+import datetime
 
 import logging
-logging.basicConfig(filename='/home/pi/sentinel/motion.log', level=logging.INFO)
+logging.basicConfig(
+    filename='/home/pi/sentinel/motion.log', level=logging.INFO)
 
 
 class Motion():
@@ -41,6 +43,7 @@ class Motion():
     def __init__(self, config):
 
         self.camera_port = config['camera']['listen_port']
+        self.bot_port = config['bot']['listen_port']
 
         self.ip = '127.0.0.1'
         self.port = config['motion']['listen_port']
@@ -65,14 +68,21 @@ class Motion():
         while True:
             self.pir.wait_for_motion()
             print('motion detected')
+            date_str = datetime.datetime.now().strftime('%Y-%m-%d')
+            time_str = datetime.datetime.now().strftime('%H-%M-%S')
             self.send_udp({'cmd': 'take_photo', 'count': 1}, self.camera_port)
+
+            self.send_udp({
+                'cmd': 'send_msg',
+                'date': date_str,
+                'time': time_str
+            }, self.bot_port)
             # print('motion detected')
             logging.info('motion detected')
 
             self.pir.wait_for_no_motion()
             logging.info('no motion')
             # time.sleep(1e6)
-
 
 
 def main():
