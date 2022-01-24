@@ -137,10 +137,10 @@ class Camera():
                     photo_idx)
             self.cmd_send_jpg['server'] = 'telegram'
 
-            subprocess.run('libcamera-still -o '+str(
+            subprocess.run(["libcamera-still", "-o", str(
                 self.photo_path /
                 (self.cmd_send_jpg['file_name'] +
-                    self.cmd_send_jpg['extension']))+' --shutter 100000 --gain 1 --awbgains 1,1 --immediate')
+                    self.cmd_send_jpg['extension'])),  "--shutter", "100000", "--gain", "1", "--awbgains", "1,1", "--immediate"])
             # self.camera.capture(str(
             #     self.photo_path /
             #     (self.cmd_send_jpg['file_name'] +
