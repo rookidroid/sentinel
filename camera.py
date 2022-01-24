@@ -23,8 +23,6 @@ import socket
 
 from pathlib import Path
 import os
-# import picamera
-# from picamera.array import PiRGBArray
 import datetime
 
 import subprocess
