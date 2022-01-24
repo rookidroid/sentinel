@@ -121,7 +121,7 @@ class Camera():
         }
 
     def take_photo(self, counts):
-        self.camera.resolution = self.rec_resolution
+        # self.camera.resolution = self.rec_resolution
 
         if counts == 0 or counts > self.max_photo_count:
             counts = self.max_photo_count
