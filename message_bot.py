@@ -110,42 +110,32 @@ class MessageBot():
         try:
             self.udp_socket.bind((self.ip, self.port))
         except OSError as err:
-            # self.status.emit(self.STOP, '')
-            # print('stopped')
             logging.error(err)
         else:
-            # self.status.emit(self.LISTEN, '')
-            # print('listen')
             while True:
                 if self.signal == self.SIG_NORMAL:
-                    # self.status.emit(self.LISTEN, '')
                     try:
                         data, addr = self.udp_socket.recvfrom(4096)
                     except socket.timeout as t_out:
-                        # print('timeout')
                         pass
                     else:
                         if data:
-                            # self.message.emit(
-                            #     addr[0]+':'+str(addr[1]), data.decode())
-                            msg = json.loads(data.decode())
-                            # print(msg)
-                            if msg['cmd'] == 'send_photo':
-                                self.sendImage(msg)
-                            elif msg['cmd'] == 'send_msg':
-                                self.sendMsg(msg)
+                            try:
+                                msg = json.loads(data.decode())
+                                if msg['cmd'] == 'send_photo':
+                                    self.sendImage(msg)
+                                elif msg['cmd'] == 'send_msg':
+                                    self.sendMsg(msg)
+                            except Exception:
+                                logging.error(Exception)
                         else:
-                            # self.status.emit(self.LISTEN, '')
                             break
                 elif self.signal == self.SIG_STOP:
                     self.signal = self.SIG_NORMAL
                     self.udp_socket.close()
-                    # self.status.emit(self.LISTEN, '')
                     break
         finally:
             logging.info('bot UDP stopped')
-            # print('stopped')
-            # self.status.emit(self.STOP, '')
 
 
 def main():
