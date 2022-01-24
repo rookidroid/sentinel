@@ -58,18 +58,13 @@ class Motion():
         self.time_end = datetime.time(
             hour=config['motion']['time_end'][0], minute=config['motion']['time_end'][1])
 
-        # GPIO.setmode(GPIO.BCM)
-        # GPIO.setup(self.motion_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         self.pir = MotionSensor(self.motion_pin)
-        # GPIO.setup(self.enable_pin, GPIO.OUT, initial=GPIO.HIGH)
 
     def send_udp(self, msg, port):
-        # udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         payload = json.dumps(msg)
         self.udp_socket.sendto(payload.encode(), ('127.0.0.1', port))
 
     def run(self):
-        # print('Motion thread started')
         logging.info('Motion thread started')
 
         while True:
@@ -104,12 +99,9 @@ class Motion():
                 'date': date_str,
                 'time': time_str
             }, self.bot_port)
-            # print('motion detected')
             logging.info('motion detected')
 
             self.pir.wait_for_no_motion()
-            # logging.info('no motion')
-            # time.sleep(1e6)
 
 
 def main():
