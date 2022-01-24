@@ -77,20 +77,6 @@ class Camera():
         self.bot_port = config['bot']['listen_port']
         self.cloud_port = config['cloud']['listen_port']
 
-        # initialize the camera and grab a reference to the raw camera capture
-        # camera.resolution = tuple(conf["resolution"])
-        # camera.framerate = conf["fps"]
-        # self.camera = picamera.PiCamera(resolution=self.det_resolution)
-        # self.raw_capture = PiRGBArray(
-        #     self.camera,
-        #     size=self.det_resolution)
-
-        # allow the camera to warmup, then initialize the average frame, last
-        # uploaded timestamp, and frame motion counter
-        # logging.info('Camera warming up')
-        # time.sleep(self.camera_config["camera_warmup_time"])
-        # self.avg_capture = None
-
         try:
             os.makedirs(self.video_path)
         except FileExistsError:
@@ -121,8 +107,6 @@ class Camera():
         }
 
     def take_photo(self, counts):
-        # self.camera.resolution = self.rec_resolution
-
         if counts == 0 or counts > self.max_photo_count:
             counts = self.max_photo_count
 
@@ -137,15 +121,14 @@ class Camera():
                     photo_idx)
             self.cmd_send_jpg['server'] = 'telegram'
 
-            subprocess.call(["libcamera-still", "-o", str(
-                self.photo_path /
-                (self.cmd_send_jpg['file_name'] +
-                    self.cmd_send_jpg['extension'])),  "--shutter", "100000", "--gain", "1", "--awbgains", "1,1", "--immediate"])
-            # self.camera.capture(str(
-            #     self.photo_path /
-            #     (self.cmd_send_jpg['file_name'] +
-            #         self.cmd_send_jpg['extension'])))
-            # self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
+            subprocess.call(["libcamera-still", "-o",
+                             str(self.photo_path /
+                                 (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])),
+                             "--shutter", "100000",
+                             "--gain", "1",
+                             "--awbgains", "1,1",
+                             "--immediate"])
+
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
     def take_video(self, init_photo=False):
@@ -192,12 +175,11 @@ class Camera():
                                     (self.cmd_send_jpg['file_name'] +
                                      self.cmd_send_jpg['extension'])),
                                 use_video_port=True)
-            # self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
+
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
         self.camera.stop_recording()
 
-        # self.q2cloud.put(copy.deepcopy(self.cmd_upload_h264))
         self.send_cloud(copy.deepcopy(self.cmd_upload_h264))
 
     def run(self):
