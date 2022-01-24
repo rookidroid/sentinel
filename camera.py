@@ -35,7 +35,7 @@ import logging
 import time
 
 logging.basicConfig(
-    filename='/home/pi/edenbridge/camera.log',
+    filename='/home/pi/sentinel/camera.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO)
 
