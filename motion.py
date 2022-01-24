@@ -81,6 +81,17 @@ class Motion():
                 if current_time - self.timestamp < self.interval:
                     continue
 
+            now_time = datetime.datetime.now().time()
+            if self.time_start < self.time_end:
+                if now_time < self.time_start:
+                    continue
+
+                if now_time > self.time_end:
+                    continue
+            else:
+                if now_time < self.time_start and now_time > self.time_end:
+                    continue
+
             print('motion detected')
             self.timestamp = current_time
 
