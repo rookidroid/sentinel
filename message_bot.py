@@ -93,13 +93,12 @@ class MessageBot():
         logging.info('Send photo')
         os.remove(file)
         logging.info('Delete photo')
-    
+
     def sendMsg(self, msg):
         self.bot.sendMessage(chat_id=self.chat_id,
-            text='Motion detected in [' +
-                            self.location +
-                            '] at '+msg['date'] + ' '+msg['time'])
-
+                             text='Motion detected in [' +
+                             self.location +
+                             '] at '+msg['date'] + ' '+msg['time'])
 
     def run(self):
         logging.info('MyBot thread started')
@@ -156,11 +155,6 @@ def main():
                     help="path to the JSON configuration file")
     args = vars(ap.parse_args())
     config = json.load(open(args["conf"]))
-
-    # config = json.load(open('./front_door.json'))
-
-    token = config['bot']['bot_token']
-    chat_id = config['bot']['chat_id']
 
     my_bot = MessageBot(config)
     my_bot.run()
