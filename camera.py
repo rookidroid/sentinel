@@ -203,16 +203,19 @@ class Camera():
                     else:
                         if data:
                             # print(data.decode())
-                            msg = json.loads(data.decode())
-                            # logging.info(data.decode())
-                            if msg['cmd'] == 'take_photo':
-                                # self.q2camera.task_done()
-                                self.take_photo(msg['count'])
-                                logging.info('Start to capture photos')
-                            elif msg['cmd'] == 'take_video':
-                                # self.q2camera.task_done()
-                                self.take_video(init_photo=True)
-                                logging.info('Start to record videos')
+                            try:
+                                msg = json.loads(data.decode())
+                                # logging.info(data.decode())
+                                if msg['cmd'] == 'take_photo':
+                                    # self.q2camera.task_done()
+                                    self.take_photo(msg['count'])
+                                    logging.info('Start to capture photos')
+                                elif msg['cmd'] == 'take_video':
+                                    # self.q2camera.task_done()
+                                    self.take_video(init_photo=True)
+                                    logging.info('Start to record videos')
+                            except Exception:
+                                logging.error(Exception)
                         else:
                             # self.status.emit(self.LISTEN, '')
                             break
