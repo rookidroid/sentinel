@@ -20,7 +20,6 @@
 import argparse
 import time
 import json
-# import RPi.GPIO as GPIO
 from gpiozero import MotionSensor
 import socket
 import datetime
@@ -50,6 +49,14 @@ class Motion():
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
         self.motion_pin = config['motion']['pir_pin']
+        self.interval = config['motion']['interval']
+
+        self.timestamp = None
+
+        self.time_start = datetime.time(
+            hour=config['motion']['time_start'][0], minute=config['motion']['time_start'][1])
+        self.time_end = datetime.time(
+            hour=config['motion']['time_end'][0], minute=config['motion']['time_end'][1])
 
         # GPIO.setmode(GPIO.BCM)
         # GPIO.setup(self.motion_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -67,7 +74,16 @@ class Motion():
 
         while True:
             self.pir.wait_for_motion()
+
+            current_time = time.time()
+
+            if self.timestamp is not None:
+                if current_time - self.timestamp < self.interval:
+                    continue
+
             print('motion detected')
+            self.timestamp = current_time
+
             date_str = datetime.datetime.now().strftime('%Y-%m-%d')
             time_str = datetime.datetime.now().strftime('%H-%M-%S')
             self.send_udp({'cmd': 'take_photo', 'count': 1}, self.camera_port)
@@ -81,7 +97,7 @@ class Motion():
             logging.info('motion detected')
 
             self.pir.wait_for_no_motion()
-            logging.info('no motion')
+            # logging.info('no motion')
             # time.sleep(1e6)
 
 
