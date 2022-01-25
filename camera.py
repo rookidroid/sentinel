@@ -123,7 +123,7 @@ class Camera():
                              str(self.photo_path /
                                  (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])),
                              "--shutter", "100000",
-                             "--gain", "1",
+                             "--gain", "10",
                              "--awbgains", "1,1",
                              "--immediate"])
 
