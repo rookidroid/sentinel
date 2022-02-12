@@ -126,7 +126,8 @@ class Camera():
                             #  "--shutter", "100000",
                              #  "--gain", "10",
                              #  "--awbgains", "1,1",
-                             "--immediate"])
+                            #  "--immediate"
+                             ])
 
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
