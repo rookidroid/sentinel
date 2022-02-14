@@ -122,12 +122,13 @@ class Camera():
             subprocess.call(["libcamera-still", "-o",
                              str(self.photo_path /
                                  (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])),
-                            #  "--nopreview",
+                             "--nopreview",
+                             "--denoise", "cdn_off",
                             #  "--shutter", "100000",
                              #  "--gain", "10",
                              #  "--awbgains", "1,1",
-                             "--ev",  "0.5",
-                             "--immediate"
+                            #  "--ev",  "0.5",
+                            #  "--immediate"
                              ])
             # time.sleep(1)
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
