@@ -126,8 +126,8 @@ class Camera():
                              "--flush",
                              "--denoise", "cdn_fast",
                             #  "--shutter", "100000",
-                             #  "--gain", "10",
-                             #  "--awbgains", "1,1",
+                              "--gain", "1",
+                              "--awbgains", "1,1",
                             #  "--ev",  "0.5",
                             #  "--immediate"
                              ])
