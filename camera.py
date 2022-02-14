@@ -126,9 +126,10 @@ class Camera():
                             #  "--shutter", "100000",
                              #  "--gain", "10",
                              #  "--awbgains", "1,1",
+                             "--ev",  "0.5",
                              "--immediate"
                              ])
-            time.sleep(1)
+            # time.sleep(1)
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
     def take_video(self, init_photo=False):
