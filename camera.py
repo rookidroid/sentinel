@@ -125,6 +125,7 @@ class Camera():
                              "--nopreview",
                              "--flush",
                              "--denoise", "cdn_fast",
+                             "--exposure", "night",
                             #  "--shutter", "100000",
                             #   "--gain", "1",
                             #   "--awbgains", "1,1",
