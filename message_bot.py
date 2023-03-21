@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
     Project Edenbridge
-    Copyright (C) 2019 - 2020  Zhengyu Peng
+    Copyright (C) 2019 - PRESENT  Zhengyu Peng
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+import asyncio
 from pathlib import Path
 from telegram import Bot
 import os
@@ -27,9 +28,9 @@ import socket
 import logging
 
 logging.basicConfig(
-    filename='/home/pi/sentinel/message_bot.log',
+    filename='/home/rookie/sentinel/message_bot.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO)
+    level=logging.ERROR)
 
 
 class MessageBot():
@@ -69,7 +70,7 @@ class MessageBot():
         self.udp_socket.settimeout(1)
         self.signal = self.SIG_NORMAL
 
-    def sendImage(self, msg):
+    async def sendImage(self, msg):
         file = self.photo_path / (msg['file_name'] + msg['extension'])
         if msg['server'] == 'telegram':
             self.bot.sendPhoto(chat_id=self.chat_id,
@@ -94,18 +95,20 @@ class MessageBot():
         os.remove(file)
         logging.info('Delete photo')
 
-    def sendMsg(self, msg):
-        self.bot.sendMessage(chat_id=self.chat_id,
-                             text='Motion detected in [' +
-                             self.location +
-                             '] at '+msg['date'] + ' '+msg['time'])
+    async def sendMsg(self, msg):
+        async with self.bot:
+            await self.bot.sendMessage(chat_id=self.chat_id,
+                                       text='Motion detected in [' +
+                                       self.location +
+                                       '] at '+msg['date'] + ' '+msg['time'])
 
-    def run(self):
+    async def run(self):
         logging.info('MyBot thread started')
-        self.bot.sendMessage(
-            chat_id=self.chat_id,
-            text='Hello! ' + self.emoji_robot + self.bot_name +
-            self.emoji_robot + ' [' + self.location+'] is at your service.')
+        async with self.bot:
+            await self.bot.sendMessage(
+                chat_id=self.chat_id,
+                text='Hello! ' + self.emoji_robot + self.bot_name +
+                self.emoji_robot + ' [' + self.location+'] is at your service.')
 
         try:
             self.udp_socket.bind((self.ip, self.port))
@@ -138,7 +141,7 @@ class MessageBot():
             logging.info('bot UDP stopped')
 
 
-def main():
+async def main():
     # argument parser
     ap = argparse.ArgumentParser()
     ap.add_argument("-c", "--conf", required=True,
@@ -146,12 +149,14 @@ def main():
     args = vars(ap.parse_args())
     config = json.load(open(args["conf"]))
 
+    # config = json.load(open('./garage.json'))
+
     my_bot = MessageBot(config)
-    my_bot.run()
+    await my_bot.run()
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
 
 
 '''
