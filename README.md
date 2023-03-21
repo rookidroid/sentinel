@@ -29,4 +29,9 @@ In additional, you can ask the camera to take a photo or a video anytime through
 
 git python3-pip
 
+sudo apt install -y python3-picamera2 --no-install-recommends
+
 python-telegram-bot
+
+mosquitto
+
