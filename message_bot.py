@@ -73,7 +73,8 @@ class MessageBot():
     async def sendImage(self, msg):
         file = self.photo_path / (msg['file_name'] + msg['extension'])
         if msg['server'] == 'telegram':
-            await self.bot.sendPhoto(chat_id=self.chat_id,
+            async with self.bot:
+                await self.bot.sendPhoto(chat_id=self.chat_id,
                                photo=open(file, 'rb'),
                                caption='A photo has been taken from your [' +
                                self.location +
