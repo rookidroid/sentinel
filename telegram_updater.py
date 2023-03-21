@@ -19,9 +19,9 @@
 
 import argparse
 import json
-from telegram.ext import Updater, CallbackContext
-from telegram.ext import InlineQueryHandler, CommandHandler
-from telegram.ext import MessageHandler, Filters
+
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 import time
 import socket
 import logging
@@ -29,7 +29,8 @@ import logging
 logging.basicConfig(
     filename='/home/pi/sentinel/telegram.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO)
+    level=logging.ERROR)
+
 
 def main():
     # argument parser
@@ -39,7 +40,7 @@ def main():
     args = vars(ap.parse_args())
     config = json.load(open(args["conf"]))
 
-    # config = json.load(open('./front_door.json'))
+    # config = json.load(open('./garage.json'))
 
     token = config['bot']['bot_token']
     chat_id = config['bot']['chat_id']
@@ -61,33 +62,31 @@ def main():
             context.bot.send_message(
                 chat_id=update.effective_chat.id, text=update.message.text)
 
-    def hello(update, context):
-        user_id = update.message.chat_id
-        if user_id == chat_id:
-            context.bot.sendMessage(chat_id=user_id, text='Hello!')
+    async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if update.effective_chat.id == chat_id:
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
 
-    def take_photo(update, context):
-        user_id = update.message.chat_id
-        if user_id == chat_id:
-            # q2camera.put({'cmd': 'take_photo', 'count': 1})
+    async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if update.effective_chat.id == chat_id:
+            await context.bot.send_message(chat_id=update.effective_chat.id, text="Hello!")
+
+    async def take_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if update.effective_chat.id == chat_id:
             send_udp({'cmd': 'take_photo', 'count': 1}, camera_port)
 
-    def take_video(update, context):
-        user_id = update.message.chat_id
-        if user_id == chat_id:
-            # q2camera.put({'cmd': 'take_video', 'count': 1})
+    async def take_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if update.effective_chat.id == chat_id:
             send_udp({'cmd': 'take_video', 'count': 1}, camera_port)
 
-    updater = Updater(token, use_context=True)
-    dp = updater.dispatcher
+    application = Application.builder().token(token).build()
 
-    dp.add_handler(MessageHandler(Filters.text & (~Filters.command), echo))
-    dp.add_handler(CommandHandler('hello', hello))
-    dp.add_handler(CommandHandler('photo', take_photo))
-    dp.add_handler(CommandHandler('video', take_video))
+    application.add_handler(CommandHandler('hello', hello))
+    application.add_handler(CommandHandler('photo', take_photo))
+    application.add_handler(CommandHandler('video', take_video))
+    application.add_handler(MessageHandler(
+        filters.TEXT & ~filters.COMMAND, echo))
 
-    updater.start_polling()
-    updater.idle()
+    application.run_polling()
 
 
 if __name__ == '__main__':

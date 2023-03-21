@@ -26,7 +26,7 @@ import datetime
 
 import logging
 logging.basicConfig(
-    filename='/home/pi/sentinel/motion.log', level=logging.INFO)
+    filename='/home/pi/sentinel/motion.log', level=logging.ERROR)
 
 
 class Motion():

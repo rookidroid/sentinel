@@ -28,7 +28,7 @@ import logging
 logging.basicConfig(
     filename='/home/pi/edenbridge/cloud.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO)
+    level=logging.ERROR)
 
 
 class Cloud():

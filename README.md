@@ -25,3 +25,8 @@ When the motion is detected by the camera
 - A video clip will be recorded and uploaded to Google Drive
 
 In additional, you can ask the camera to take a photo or a video anytime through Telegram
+
+
+git python3-pip
+
+python-telegram-bot
