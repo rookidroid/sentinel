@@ -78,8 +78,7 @@ class MessageBot():
                                photo=open(file, 'rb'),
                                caption='A photo has been taken from your [' +
                                self.location +
-                               '] at '+msg['date'] + ' '+msg['time'],
-                               timeout=100)
+                               '] at '+msg['date'] + ' '+msg['time'])
 
         elif msg['server'] == 'email':
             self.mail_body['subject'] = '[Front Door] ' + \
