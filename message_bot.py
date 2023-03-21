@@ -105,6 +105,7 @@ class MessageBot():
 
     def run(self):
         logging.info('MyBot thread started')
+        print('MyBot thread started')
         # async with self.bot:
         #     await self.bot.sendMessage(
         #         chat_id=self.chat_id,
@@ -140,10 +141,11 @@ class MessageBot():
                     self.udp_socket.close()
                     break
         finally:
+            print('bot UDP stopped')
             logging.info('bot UDP stopped')
 
 
-async def main():
+def main():
     # argument parser
     # ap = argparse.ArgumentParser()
     # ap.add_argument("-c", "--conf", required=True,
@@ -158,7 +160,8 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    # asyncio.run(main())
+    main()
 
 
 '''
