@@ -103,13 +103,13 @@ class MessageBot():
                                        self.location +
                                        '] at '+msg['date'] + ' '+msg['time'])
 
-    async def run(self):
+    def run(self):
         logging.info('MyBot thread started')
-        async with self.bot:
-            await self.bot.sendMessage(
-                chat_id=self.chat_id,
-                text='Hello! ' + self.emoji_robot + self.bot_name +
-                self.emoji_robot + ' [' + self.location+'] is at your service.')
+        # async with self.bot:
+        #     await self.bot.sendMessage(
+        #         chat_id=self.chat_id,
+        #         text='Hello! ' + self.emoji_robot + self.bot_name +
+        #         self.emoji_robot + ' [' + self.location+'] is at your service.')
 
         try:
             self.udp_socket.bind((self.ip, self.port))
@@ -154,7 +154,7 @@ async def main():
     config = json.load(open('./garage.json'))
 
     my_bot = MessageBot(config)
-    await my_bot.run()
+    my_bot.run()
 
 
 if __name__ == '__main__':
