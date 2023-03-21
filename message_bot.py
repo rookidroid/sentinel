@@ -113,7 +113,6 @@ class MessageBot():
         try:
             self.udp_socket.bind((self.ip, self.port))
         except OSError as err:
-            print(err)
             logging.error(err)
         else:
             while True:
