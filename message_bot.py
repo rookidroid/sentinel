@@ -72,6 +72,7 @@ class MessageBot():
 
     async def sendImage(self, msg):
         file = self.photo_path / (msg['file_name'] + msg['extension'])
+        print(file)
         if msg['server'] == 'telegram':
             async with self.bot:
                 await self.bot.sendPhoto(chat_id=self.chat_id,
@@ -109,10 +110,6 @@ class MessageBot():
                 chat_id=self.chat_id,
                 text='Hello! ' + self.emoji_robot + self.bot_name +
                 self.emoji_robot + ' [' + self.location+'] is at your service.')
-            await self.bot.sendPhoto(chat_id=self.chat_id,
-                                     photo=open('/home/pi/sentinel/zp_blue.png', 'rb'),
-                                     caption='A photo has been taken from your [' +
-                                     self.location)
 
         try:
             self.udp_socket.bind((self.ip, self.port))
@@ -130,6 +127,7 @@ class MessageBot():
                             try:
                                 msg = json.loads(data.decode())
                                 if msg['cmd'] == 'send_photo':
+                                    print('send photo')
                                     self.sendImage(msg)
                                 elif msg['cmd'] == 'send_msg':
                                     self.sendMsg(msg)
@@ -147,13 +145,13 @@ class MessageBot():
 
 async def main():
     # argument parser
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-c", "--conf", required=True,
-                    help="path to the JSON configuration file")
-    args = vars(ap.parse_args())
-    config = json.load(open(args["conf"]))
+    # ap = argparse.ArgumentParser()
+    # ap.add_argument("-c", "--conf", required=True,
+    #                 help="path to the JSON configuration file")
+    # args = vars(ap.parse_args())
+    # config = json.load(open(args["conf"]))
 
-    # config = json.load(open('./garage.json'))
+    config = json.load(open('./garage.json'))
 
     my_bot = MessageBot(config)
     await my_bot.run()
