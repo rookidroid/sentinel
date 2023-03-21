@@ -72,7 +72,6 @@ class MessageBot():
 
     async def sendImage(self, msg):
         file = self.photo_path / (msg['file_name'] + msg['extension'])
-        print(file)
         if msg['server'] == 'telegram':
             async with self.bot:
                 await self.bot.sendPhoto(chat_id=self.chat_id,
@@ -92,9 +91,9 @@ class MessageBot():
 
             send_email(self.mail_server, self.mail_body, self.attachement)
 
-        # logging.info('Send photo')
-        # os.remove(file)
-        # logging.info('Delete photo')
+        logging.info('Send photo')
+        os.remove(file)
+        logging.info('Delete photo')
 
     async def sendMsg(self, msg):
         async with self.bot:
@@ -105,7 +104,6 @@ class MessageBot():
 
     async def run(self):
         logging.info('MyBot thread started')
-        print('MyBot thread started')
         async with self.bot:
             await self.bot.sendMessage(
                 chat_id=self.chat_id,
@@ -129,7 +127,6 @@ class MessageBot():
                             try:
                                 msg = json.loads(data.decode())
                                 if msg['cmd'] == 'send_photo':
-                                    print('send photo')
                                     await self.sendImage(msg)
                                 elif msg['cmd'] == 'send_msg':
                                     await self.sendMsg(msg)
@@ -142,19 +139,18 @@ class MessageBot():
                     self.udp_socket.close()
                     break
         finally:
-            print('bot UDP stopped')
             logging.info('bot UDP stopped')
 
 
 async def main():
     # argument parser
-    # ap = argparse.ArgumentParser()
-    # ap.add_argument("-c", "--conf", required=True,
-    #                 help="path to the JSON configuration file")
-    # args = vars(ap.parse_args())
-    # config = json.load(open(args["conf"]))
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-c", "--conf", required=True,
+                    help="path to the JSON configuration file")
+    args = vars(ap.parse_args())
+    config = json.load(open(args["conf"]))
 
-    config = json.load(open('./garage.json'))
+    # config = json.load(open('./garage.json'))
 
     my_bot = MessageBot(config)
     await my_bot.run()
