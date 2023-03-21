@@ -109,6 +109,11 @@ class MessageBot():
                 chat_id=self.chat_id,
                 text='Hello! ' + self.emoji_robot + self.bot_name +
                 self.emoji_robot + ' [' + self.location+'] is at your service.')
+            await self.bot.sendPhoto(chat_id=self.chat_id,
+                                     photo=open('/home/pi/sentinel/zp_blue.png', 'rb'),
+                                     caption='A photo has been taken from your [' +
+                                     self.location +
+                                     '] at '+msg['date'] + ' '+msg['time'])
 
         try:
             self.udp_socket.bind((self.ip, self.port))
