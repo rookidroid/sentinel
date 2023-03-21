@@ -75,10 +75,10 @@ class MessageBot():
         if msg['server'] == 'telegram':
             async with self.bot:
                 await self.bot.sendPhoto(chat_id=self.chat_id,
-                               photo=open(file, 'rb'),
-                               caption='A photo has been taken from your [' +
-                               self.location +
-                               '] at '+msg['date'] + ' '+msg['time'])
+                                         photo=open(file, 'rb'),
+                                         caption='A photo has been taken from your [' +
+                                         self.location +
+                                         '] at '+msg['date'] + ' '+msg['time'])
 
         elif msg['server'] == 'email':
             self.mail_body['subject'] = '[Front Door] ' + \
@@ -91,9 +91,9 @@ class MessageBot():
 
             send_email(self.mail_server, self.mail_body, self.attachement)
 
-        logging.info('Send photo')
-        os.remove(file)
-        logging.info('Delete photo')
+        # logging.info('Send photo')
+        # os.remove(file)
+        # logging.info('Delete photo')
 
     async def sendMsg(self, msg):
         async with self.bot:
