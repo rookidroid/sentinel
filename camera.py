@@ -157,7 +157,7 @@ class Camera():
 
         self.picam2.start_and_record_video(str(self.video_path /
                                                (self.cmd_upload_h264['file_name'] +
-                                                self.cmd_upload_h264['extension'])), duration=5)
+                                                self.cmd_upload_h264['extension'])), duration=20)
 
         # self.camera.start_recording(str(self.video_path /
         #                                 (self.cmd_upload_h264['file_name'] +
