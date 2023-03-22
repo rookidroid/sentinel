@@ -33,5 +33,6 @@ sudo apt install -y python3-picamera2 --no-install-recommends
 
 python-telegram-bot
 
-mosquitto
+sudo apt install -y ffmpeg
+
 
