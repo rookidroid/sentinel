@@ -25,7 +25,7 @@ from pathlib import Path
 import os
 import datetime
 
-from picamera2 import Picamera2
+from picamera2 import Picamera2, Preview
 
 import subprocess
 
@@ -78,6 +78,7 @@ class Camera():
         self.cloud_port = config['cloud']['listen_port']
 
         self.picam2 = Picamera2()
+        self.picam2.start_preview(Preview.NULL)
 
         try:
             os.makedirs(self.video_path)
