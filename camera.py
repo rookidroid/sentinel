@@ -140,8 +140,8 @@ class Camera():
 
             self.picam2.start_and_capture_file(str(self.photo_path /
                                                    (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])),
-                                                   delay=0,
-                                                   show_preview=False)
+                                               delay=0,
+                                               show_preview=False)
             # time.sleep(1)
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
@@ -257,13 +257,13 @@ class Camera():
 
 def main():
     # argument parser
-    # ap = argparse.ArgumentParser()
-    # ap.add_argument("-c", "--conf", required=True,
-    #                 help="path to the JSON configuration file")
-    # args = vars(ap.parse_args())
-    # config = json.load(open(args["conf"]))
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-c", "--conf", required=True,
+                    help="path to the JSON configuration file")
+    args = vars(ap.parse_args())
+    config = json.load(open(args["conf"]))
 
-    config = json.load(open('./garage.json'))
+    # config = json.load(open('./garage.json'))
 
     camera = Camera(config)
     camera.run()
