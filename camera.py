@@ -146,55 +146,54 @@ class Camera():
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
     def take_video(self, init_photo=False):
-        self.camera.resolution = self.rec_resolution
+        self.take_photo(1)
+        # self.camera.resolution = self.rec_resolution
 
         date_str = datetime.datetime.now().strftime('%Y-%m-%d')
         time_str = datetime.datetime.now().strftime('%H-%M-%S')
-        self.cmd_upload_h264['file_name'] = time_str + '_' + 'video' + str(0)
+        self.cmd_upload_h264['file_name'] = time_str + '_' + 'video'
         self.cmd_upload_h264['date'] = date_str
         self.cmd_upload_h264['time'] = time_str
 
-        self.cmd_send_jpg[
-            'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(0)
-        self.cmd_send_jpg['date'] = date_str
-        self.cmd_send_jpg['time'] = time_str
-        self.cmd_send_jpg['server'] = 'email'
+        self.picam2.start_and_record_video(str(self.video_path /
+                                               (self.cmd_upload_h264['file_name'] +
+                                                self.cmd_upload_h264['extension'])), duration=5)
 
-        self.camera.start_recording(str(self.video_path /
-                                        (self.cmd_upload_h264['file_name'] +
-                                         self.cmd_upload_h264['extension'])))
-        if init_photo:
-            self.camera.capture(str(self.photo_path /
-                                    (self.cmd_send_jpg['file_name'] +
-                                     self.cmd_send_jpg['extension'])),
-                                use_video_port=True)
-            # self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
-            self.send_bot(copy.deepcopy(self.cmd_send_jpg))
+        # self.camera.start_recording(str(self.video_path /
+        #                                 (self.cmd_upload_h264['file_name'] +
+        #                                  self.cmd_upload_h264['extension'])))
+        # if init_photo:
+        #     self.camera.capture(str(self.photo_path /
+        #                             (self.cmd_send_jpg['file_name'] +
+        #                              self.cmd_send_jpg['extension'])),
+        #                         use_video_port=True)
+        #     # self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
+        #     self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
-        for photo_idx in range(0, int(self.video_length / self.period)):
-            time.sleep(self.period)
-            date_str = datetime.datetime.now().strftime('%Y-%m-%d')
-            time_str = datetime.datetime.now().strftime('%H-%M-%S')
-            self.cmd_send_jpg['file_name'] = date_str + \
-                '_' + \
-                time_str + \
-                '_' + \
-                'photo' + \
-                str(
-                int(1 + photo_idx))
-            self.cmd_send_jpg['date'] = date_str
-            self.cmd_send_jpg['time'] = time_str
-            self.cmd_send_jpg['server'] = 'email'
-            self.camera.capture(str(self.photo_path /
-                                    (self.cmd_send_jpg['file_name'] +
-                                     self.cmd_send_jpg['extension'])),
-                                use_video_port=True)
+        # for photo_idx in range(0, int(self.video_length / self.period)):
+        #     time.sleep(self.period)
+        #     date_str = datetime.datetime.now().strftime('%Y-%m-%d')
+        #     time_str = datetime.datetime.now().strftime('%H-%M-%S')
+        #     self.cmd_send_jpg['file_name'] = date_str + \
+        #         '_' + \
+        #         time_str + \
+        #         '_' + \
+        #         'photo' + \
+        #         str(
+        #         int(1 + photo_idx))
+        #     self.cmd_send_jpg['date'] = date_str
+        #     self.cmd_send_jpg['time'] = time_str
+        #     self.cmd_send_jpg['server'] = 'email'
+        #     self.camera.capture(str(self.photo_path /
+        #                             (self.cmd_send_jpg['file_name'] +
+        #                              self.cmd_send_jpg['extension'])),
+        #                         use_video_port=True)
 
-            self.send_bot(copy.deepcopy(self.cmd_send_jpg))
+        #     self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
-        self.camera.stop_recording()
+        # self.camera.stop_recording()
 
-        self.send_cloud(copy.deepcopy(self.cmd_upload_h264))
+        # self.send_cloud(copy.deepcopy(self.cmd_upload_h264))
 
     def run(self):
         logging.info('Camera thread started')
