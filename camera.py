@@ -94,7 +94,7 @@ class Camera():
             'cmd': 'upload_file',
             'file_type': 'H264',
             'file_name': '',
-            'extension': '.h264',
+            'extension': '.mp4',
             'date': '',
             'time': ''
         }
