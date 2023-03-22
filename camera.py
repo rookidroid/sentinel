@@ -25,6 +25,8 @@ from pathlib import Path
 import os
 import datetime
 
+from picamera2 import Picamera2
+
 import subprocess
 
 import copy
@@ -75,6 +77,8 @@ class Camera():
         self.bot_port = config['bot']['listen_port']
         self.cloud_port = config['cloud']['listen_port']
 
+        self.picam2 = Picamera2()
+
         try:
             os.makedirs(self.video_path)
         except FileExistsError:
@@ -119,19 +123,22 @@ class Camera():
                     photo_idx)
             self.cmd_send_jpg['server'] = 'telegram'
 
-            subprocess.call(["libcamera-still", "-o",
-                             str(self.photo_path /
-                                 (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])),
-                             "--nopreview",
-                             "--flush",
-                             "--denoise", "cdn_fast",
-                            #  "--exposure", "night",
-                            #  "--shutter", "100000",
-                            #   "--gain", "1",
-                            #   "--awbgains", "1,1",
-                            #  "--ev",  "0.5",
-                             "--immediate"
-                             ])
+            # subprocess.call(["libcamera-still", "-o",
+            #                  str(self.photo_path /
+            #                      (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])),
+            #                  "--nopreview",
+            #                  "--flush",
+            #                  "--denoise", "cdn_fast",
+            #                 #  "--exposure", "night",
+            #                 #  "--shutter", "100000",
+            #                 #   "--gain", "1",
+            #                 #   "--awbgains", "1,1",
+            #                 #  "--ev",  "0.5",
+            #                  "--immediate"
+            #                  ])
+            
+            self.picam2.start_and_capture_file(str(self.photo_path /
+                                 (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])))
             # time.sleep(1)
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
