@@ -80,6 +80,10 @@ class Camera():
         self.picam2 = Picamera2()
         self.picam2.start_preview(Preview.NULL)
 
+        self.picam2.start_and_capture_file('test.jpg',
+                                               delay=0,
+                                               show_preview=False)
+
         try:
             os.makedirs(self.video_path)
         except FileExistsError:
@@ -140,7 +144,7 @@ class Camera():
 
             self.picam2.start_and_capture_file(str(self.photo_path /
                                                    (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])),
-                                               delay=0,
+                                               initial_delay=0,
                                                show_preview=False)
             # time.sleep(1)
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
