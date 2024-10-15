@@ -27,7 +27,7 @@ import socket
 import logging
 
 logging.basicConfig(
-    filename='/home/pi/sentinel/telegram.log',
+    filename='/home/rookie/sentinel/telegram.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.ERROR)
 

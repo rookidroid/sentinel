@@ -26,7 +26,7 @@ import os
 import logging
 
 logging.basicConfig(
-    filename='/home/pi/edenbridge/cloud.log',
+    filename='/home/rookie/sentinel/cloud.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.ERROR)
 

@@ -4,11 +4,9 @@ sudo systemctl daemon-reload
 sudo systemctl enable message_bot
 sudo systemctl enable camera
 sudo systemctl enable telegram_updater
-sudo systemctl enable cloud
 sudo systemctl enable motion
 
 sudo systemctl start message_bot
 sudo systemctl start camera
 sudo systemctl start telegram_updater
-sudo systemctl start cloud
 sudo systemctl start motion

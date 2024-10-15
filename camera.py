@@ -35,7 +35,7 @@ import logging
 import time
 
 logging.basicConfig(
-    filename='/home/pi/sentinel/camera.log',
+    filename='/home/rookie/sentinel/camera.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.ERROR)
 
@@ -262,7 +262,7 @@ def main():
     args = vars(ap.parse_args())
     config = json.load(open(args["conf"]))
 
-    # config = json.load(open('./garage.json'))
+    # config = json.load(open('./front_door.json'))
 
     camera = Camera(config)
     camera.run()

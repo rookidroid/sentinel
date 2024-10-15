@@ -28,7 +28,7 @@ import socket
 import logging
 
 logging.basicConfig(
-    filename='/home/pi/sentinel/message_bot.log',
+    filename='/home/rookie/sentinel/message_bot.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.ERROR)
 

@@ -5,9 +5,9 @@ Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
-User=pi
-Group=pi
-ExecStart=/usr/bin/python3 /home/pi/edenbridge/message_bot.py -c /home/pi/edenbridge/front_door.json
+User=rookie
+Group=rookie
+ExecStart=/usr/bin/python3 /home/rookie/sentinel/message_bot.py -c /home/rookie/sentinel/front_door.json
 StandardInput=tty-force
 
 [Install]
