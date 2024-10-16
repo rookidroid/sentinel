@@ -7,14 +7,12 @@ Help()
    echo "Syntax: setup.sh --config=[/path/to/config.json]"
    echo "options:"
    echo "   --help	    Show the usages of the parameters"
-   echo "   --config	Path to the config json file"
+   echo "   --config	  Path to the config json file"
    echo
 }
 
-# CONFIG="./config.json"
-
 if [[ $# -eq 0 ]] ; then
-    echo "Please check --help for usage"
+    echo "Unknown option, please check --help for usage"
     exit 1
 fi
 
