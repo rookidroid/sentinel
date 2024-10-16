@@ -8,7 +8,7 @@ sudo cp "$service_dir"/* /lib/systemd/system/
 sudo systemctl daemon-reload
 
 echo "enable services"
-cd service_dir
+cd "$service_dir"
 for entry in ./
 do
   echo "$entry"
