@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-    Project Edenbridge
-    Copyright (C) 2019 - PRESENT  Zhengyu Peng
+    Project Sentinel
+    Copyright (C) 2019 - PRESENT  rookidroid.com
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -162,29 +162,3 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.run(main())
-
-
-'''
-
-    `                      `
-    -:.                  -#:
-    -//:.              -###:
-    -////:.          -#####:
-    -/:.://:.      -###++##:
-    ..   `://:-  -###+. :##:
-           `:/+####+.   :##:
-    .::::::::/+###.     :##:
-    .////-----+##:    `:###:
-     `-//:.   :##:  `:###/.
-       `-//:. :##:`:###/.
-         `-//:+######/.
-           `-/+####/.
-             `+##+.
-              :##:
-              :##:
-              :##:
-              :##:
-              :##:
-               .+:
-
-'''

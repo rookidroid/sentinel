@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-    Project Edenbridge
-    Copyright (C) 2019 - 2020  Zhengyu Peng
+    Project Sentinel
+    Copyright (C) 2019 - PRESENT  rookidroid.com
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,24 +17,19 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
+
+import copy
+import logging
+
 import argparse
 import json
 import socket
 
 from pathlib import Path
-import os
 import datetime
 
 from picamera2 import Picamera2, Preview
-
-import subprocess
-
-import copy
-import logging
-
-import time
-
-import os
 
 
 pwd = os.path.dirname(os.path.realpath(__file__))
@@ -50,6 +45,44 @@ logging.basicConfig(
 
 
 class Camera:
+    """
+    A class to manage the camera module.
+
+    ...
+
+    Attributes
+    ----------
+    ERROR : int
+        Error status code.
+    LISTEN : int
+        Listen status code.
+    CONNECTED : int
+        Connected status code.
+    STOP : int
+        Stop status code.
+    SIG_NORMAL : int
+        Normal signal code.
+    SIG_STOP : int
+        Stop signal code.
+    SIG_DISCONNECT : int
+        Disconnect signal code.
+
+    Methods
+    -------
+    take_photo(counts):
+        Takes a specified number of photos.
+    take_video(init_photo=False):
+        Records a video.
+    run():
+        Starts the camera module.
+    message_handling_loop():
+        Handles incoming messages.
+    send_bot(msg):
+        Sends a message to the bot.
+    send_cloud(msg):
+        Sends a message to the cloud.
+    """
+
     ERROR = -1
     LISTEN = 1
     CONNECTED = 2
@@ -60,6 +93,14 @@ class Camera:
     SIG_DISCONNECT = 2
 
     def __init__(self, config):
+        """
+        Initializes the camera module.
+
+        Parameters
+        ----------
+        config : dict
+            The configuration dictionary.
+        """
 
         self.video_path = Path(config["video_path"])
         self.photo_path = Path(config["photo_path"])
@@ -81,7 +122,6 @@ class Camera:
         self.port = self.camera_config["listen_port"]
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udp_socket.settimeout(3)
-        self.signal = self.SIG_NORMAL
 
         self.bot_port = config["bot"]["listen_port"]
         self.cloud_port = config["cloud"]["listen_port"]
@@ -121,6 +161,13 @@ class Camera:
         }
 
     def take_photo(self, counts):
+        """Takes a specified number of photos.
+
+        Parameters
+        ----------
+        counts : int
+            The number of photos to take.
+        """
         if counts == 0 or counts > self.max_photo_count:
             counts = self.max_photo_count
 
@@ -135,20 +182,6 @@ class Camera:
             )
             self.cmd_send_jpg["server"] = "telegram"
 
-            # subprocess.call(["libcamera-still", "-o",
-            #                  str(self.photo_path /
-            #                      (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])),
-            #                  "--nopreview",
-            #                  "--flush",
-            #                  "--denoise", "cdn_fast",
-            #                 #  "--exposure", "night",
-            #                 #  "--shutter", "100000",
-            #                 #   "--gain", "1",
-            #                 #   "--awbgains", "1,1",
-            #                 #  "--ev",  "0.5",
-            #                  "--immediate"
-            #                  ])
-
             self.picam2.start_and_capture_file(
                 str(
                     self.photo_path
@@ -157,12 +190,18 @@ class Camera:
                 delay=1,
                 show_preview=False,
             )
-            # time.sleep(1)
+
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
     def take_video(self, init_photo=False):
+        """Records a video.
+
+        Parameters
+        ----------
+        init_photo : bool, optional
+            Whether to take a photo before recording the video, by default False.
+        """
         self.take_photo(1)
-        # self.camera.resolution = self.rec_resolution
 
         date_str = datetime.datetime.now().strftime("%Y-%m-%d")
         time_str = datetime.datetime.now().strftime("%H-%M-%S")
@@ -218,73 +257,73 @@ class Camera:
         # self.send_cloud(copy.deepcopy(self.cmd_upload_h264))
 
     def run(self):
+        """Starts the camera module."""
         logging.info("Camera thread started")
         try:
             self.udp_socket.bind((self.ip, self.port))
         except OSError as err:
-            # self.status.emit(self.STOP, '')
-            # print('stopped')
             logging.error(err)
         else:
-            # self.status.emit(self.LISTEN, '')
-            # print('listen')
-            while True:
-                if self.signal == self.SIG_NORMAL:
-                    # self.status.emit(self.LISTEN, '')
-                    try:
-                        data, addr = self.udp_socket.recvfrom(4096)
-                    except socket.timeout as t_out:
-                        # print('timeout')
-                        # logging.info('timeout')
-                        pass
-                    else:
-                        if data:
-                            # print(data.decode())
-                            try:
-                                msg = json.loads(data.decode())
-                                # logging.info(data.decode())
-                                if msg["cmd"] == "take_photo":
-                                    # self.q2camera.task_done()
-                                    self.take_photo(msg["count"])
-                                    logging.info("Start to capture photos")
-                                elif msg["cmd"] == "take_video":
-                                    # self.q2camera.task_done()
-                                    self.take_video(init_photo=True)
-                                    logging.info("Start to record videos")
-                            except Exception:
-                                logging.error(Exception)
-                        else:
-                            # self.status.emit(self.LISTEN, '')
-                            break
-                elif self.signal == self.SIG_STOP:
-                    self.signal = self.SIG_NORMAL
-                    self.udp_socket.close()
-                    # self.status.emit(self.LISTEN, '')
-                    break
+            self.message_handling_loop()
         finally:
-            # print('stopped')
             logging.info("camera UDP stopped")
-            # self.status.emit(self.STOP, '')
+
+    def message_handling_loop(self):
+        """Handles incoming messages."""
+        while True:
+            try:
+                data, _ = self.udp_socket.recvfrom(4096)
+            except socket.timeout as t_out:
+                logging.info(t_out)
+            else:
+                if data:
+                    try:
+                        msg = json.loads(data.decode())
+                        # logging.info(data.decode())
+                        if msg["cmd"] == "take_photo":
+                            self.take_photo(msg["count"])
+                            logging.info("Start to capture photos")
+                        elif msg["cmd"] == "take_video":
+                            self.take_video(init_photo=True)
+                            logging.info("Start to record videos")
+                    except Exception:
+                        logging.error(Exception)
+                else:
+                    continue
 
     def send_bot(self, msg):
+        """Sends a message to the bot.
+
+        Parameters
+        ----------
+        msg : dict
+            The message to send.
+        """
         payload = json.dumps(msg)
         self.udp_socket.sendto(payload.encode(), ("127.0.0.1", self.bot_port))
 
     def send_cloud(self, msg):
+        """Sends a message to the cloud.
+
+        Parameters
+        ----------
+        msg : dict
+            The message to send.
+        """
         payload = json.dumps(msg)
         self.udp_socket.sendto(payload.encode(), ("127.0.0.1", self.cloud_port))
 
 
 def main():
+    """Main function"""
     # argument parser
     ap = argparse.ArgumentParser()
     ap.add_argument(
         "-c", "--conf", required=True, help="path to the JSON configuration file"
     )
     args = vars(ap.parse_args())
-    config = json.load(open(args["conf"]))
-
-    # config = json.load(open('./front_door.json'))
+    with open(args["conf"], "r", encoding="utf-8") as read_file:
+        config = json.load(read_file)
 
     camera = Camera(config)
     camera.run()

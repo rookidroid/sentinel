@@ -38,7 +38,7 @@ for idx, service_file_name in enumerate(service_files):
     with open(
         os.path.join(service_folder, service_file_name + ".service"),
         "w",
-        encoding="utf8",
+        encoding="utf-8",
     ) as fp:
         fp.write("[Unit]\n")
         fp.write("Description=" + service_file_name + "\n")
