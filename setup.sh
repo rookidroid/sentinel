@@ -11,6 +11,6 @@ echo "enable services"
 for entry in "$service_dir"/*
 do
   echo "$entry"
-  sudo systemctl enable "$entry"
-  sudo systemctl start "$entry"
+#   sudo systemctl enable "$entry"
+#   sudo systemctl start "$entry"
 done
