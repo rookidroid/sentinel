@@ -1,6 +1,38 @@
+Help()
+{
+   # Display Help
+   echo
+   echo "Usages:"
+   echo
+   echo "Syntax: setup.sh --config=[/path/to/config.json]"
+   echo "options:"
+   echo "   --help	    Show the usages of the parameters"
+   echo "   --config	Path to the config json file"
+   echo
+}
+
+CONFIG="./config.json"
+
+for i in "$@"; do
+  case $i in
+    --help*)
+      Help
+      exit;;
+    --config=*)
+      CONFIG="${i#*=}"
+      shift # past argument
+      ;;
+    --*)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+    *)
+      ;;
+  esac
+done
 
 echo "create service files"
-python3 create_services.py
+python3 create_services.py --config "$CONFIG"
 
 echo "copy service files to /lib/systemd/system"
 service_dir=./service/

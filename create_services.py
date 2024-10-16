@@ -1,5 +1,14 @@
 import getpass
 import os, shutil
+import argparse
+
+ap = argparse.ArgumentParser()
+ap.add_argument(
+    "-c", "--config", required=False, help="Path to the config json file"
+)
+args, unknown = ap.parse_known_args()
+
+config_file = os.path.dirname(os.path.realpath(args.config))
 
 pwd = os.path.dirname(os.path.realpath(__file__))
 service_folder = "./service"
@@ -41,7 +50,7 @@ for idx, service_file_name in enumerate(service_files):
         "ExecStart=/usr/bin/python3 "
         + os.path.join(pwd, service_file_name + ".py")
         + " -c "
-        + os.path.join(pwd, "front_door.json")
+        + config_file
         + "\n"
     )
     fp.write("StandardInput=tty-force\n")
