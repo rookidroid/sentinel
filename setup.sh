@@ -11,7 +11,7 @@ Help()
    echo
 }
 
-CONFIG="./config.json"
+# CONFIG="./config.json"
 
 for i in "$@"; do
   case $i in
@@ -30,6 +30,8 @@ for i in "$@"; do
       ;;
   esac
 done
+
+echo "$CONFIG"
 
 echo "create service files"
 python3 create_services.py --config "$CONFIG"
