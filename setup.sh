@@ -9,10 +9,12 @@ sudo systemctl daemon-reload
 
 echo "enable services"
 cd "$service_dir"
-for entry in ./
+service_names=`ls`
+for eachfile in $service_names
 do
-  echo "$entry"
+  echo "$eachfile"
 #   sudo systemctl enable "$entry"
 #   sudo systemctl start "$entry"
 done
+cd ..
 
