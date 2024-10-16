@@ -8,9 +8,15 @@ sudo cp "$service_dir"/* /lib/systemd/system/
 sudo systemctl daemon-reload
 
 echo "enable services"
-for entry in "$service_dir"/*
+# for entry in "$service_dir"/*
+# do
+#   echo "$entry"
+# #   sudo systemctl enable "$entry"
+# #   sudo systemctl start "$entry"
+# done
+
+service_names=`ls "$service_dir"/*.service`
+for eachfile in $service_names
 do
-  echo "$entry"
-#   sudo systemctl enable "$entry"
-#   sudo systemctl start "$entry"
+   echo $eachfile
 done
