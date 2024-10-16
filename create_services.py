@@ -9,7 +9,7 @@ ap.add_argument(
 args, unknown = ap.parse_known_args()
 
 print(args)
-config_file = os.path.join(os.path.dirname(os.path.realpath(args.config)), args.config)
+config_file = os.path.realpath(args.config)
 print(config_file)
 
 pwd = os.path.dirname(os.path.realpath(__file__))
