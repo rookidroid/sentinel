@@ -147,6 +147,7 @@ class MessageBot():
 
 
 async def main():
+    """Main function"""
     # argument parser
     ap = argparse.ArgumentParser()
     ap.add_argument("-c", "--conf", required=True,

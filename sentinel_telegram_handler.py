@@ -46,6 +46,8 @@ logging.basicConfig(
 
 
 def main():
+    """Main function"""
+
     # argument parser
     ap = argparse.ArgumentParser()
     ap.add_argument(
@@ -55,28 +57,15 @@ def main():
     with open(args["conf"], "r", encoding="utf-8") as read_file:
         config = json.load(read_file)
 
-    # config = json.load(open('./garage.json'))
-
-    token = config["bot"]["bot_token"]
     chat_id = config["bot"]["chat_id"]
 
     camera_port = config["camera"]["listen_port"]
-    bot_port = config["bot"]["listen_port"]
-    cloud_port = config["cloud"]["listen_port"]
 
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def send_udp(msg, port):
-        # udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         payload = json.dumps(msg)
         udp_socket.sendto(payload.encode(), ("127.0.0.1", port))
-
-    def echo(update, context):
-        user_id = update.effective_chat.id
-        if user_id == chat_id:
-            context.bot.send_message(
-                chat_id=update.effective_chat.id, text=update.message.text
-            )
 
     async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if update.effective_chat.id == chat_id:
@@ -98,7 +87,7 @@ def main():
         if update.effective_chat.id == chat_id:
             send_udp({"cmd": "take_video", "count": 1}, camera_port)
 
-    application = Application.builder().token(token).build()
+    application = Application.builder().token(config["bot"]["bot_token"]).build()
 
     application.add_handler(CommandHandler("hello", hello))
     application.add_handler(CommandHandler("photo", take_photo))
