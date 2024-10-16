@@ -9,13 +9,6 @@ A DIY smart camera based on Raspberry Pi, Telegram bot and Google Drive.
 
 ## Usage
 
-- Shell
-`chmod +x edenbridge.sh`
-`./edenbridge.sh`
-
-- Systemd
-`chmod +x setup.sh`
-`sudo setup.sh`
 
 ## Function
 
@@ -26,12 +19,8 @@ When the motion is detected by the camera
 
 In additional, you can ask the camera to take a photo or a video anytime through Telegram
 
-
 git python3-pip
 
 sudo apt install -y python3-picamera2 --no-install-recommends
-libopenblas-base
 
 python-telegram-bot
-
-sudo apt install -y ffmpeg

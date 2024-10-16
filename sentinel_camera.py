@@ -87,6 +87,8 @@ class Camera:
         self.cloud_port = config["cloud"]["listen_port"]
 
         self.picam2 = Picamera2()
+        cam_config = self.picam2.create_still_configuration()
+        self.picam2.configure(cam_config)
         self.picam2.start_preview(Preview.NULL)
 
         try:
@@ -152,7 +154,7 @@ class Camera:
                     self.photo_path
                     / (self.cmd_send_jpg["file_name"] + self.cmd_send_jpg["extension"])
                 ),
-                delay=0,
+                delay=1,
                 show_preview=False,
             )
             # time.sleep(1)
