@@ -23,10 +23,12 @@ for i in "$@"; do
       shift # past argument
       ;;
     --*)
-      echo "Unknown option $1"
+      echo "Unknown option $1, Please check --help for usage"
       exit 1
       ;;
     *)
+      echo "Please check --help for usage"
+      exit 1
       ;;
   esac
 done

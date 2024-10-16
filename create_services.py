@@ -3,9 +3,7 @@ import os, shutil
 import argparse
 
 ap = argparse.ArgumentParser()
-ap.add_argument(
-    "-c", "--config", required=False, help="Path to the config json file"
-)
+ap.add_argument("-c", "--config", required=True, help="Path to the config json file")
 args, unknown = ap.parse_known_args()
 
 config_file = os.path.realpath(args.config)
@@ -37,25 +35,29 @@ for filename in os.listdir(service_folder):
 
 
 for idx, service_file_name in enumerate(service_files):
-    fp = open(os.path.join(service_folder, service_file_name + ".service"), "w")
-    fp.write("[Unit]\n")
-    fp.write("Description=" + service_file_name + "\n")
-    fp.write("After=multi-user.target\n")
-    fp.write("Conflicts=getty@tty1.service\n\n")
-    fp.write("[Service]\n")
-    fp.write("Type=simple\n")
-    fp.write("User=" + user + "\n")
-    fp.write("Group=" + user + "\n")
-    fp.write(
-        "ExecStart=/usr/bin/python3 "
-        + os.path.join(pwd, service_file_name + ".py")
-        + " -c "
-        + config_file
-        + "\n"
-    )
-    fp.write("StandardInput=tty-force\n")
-    fp.write("Restart=always\n")
-    fp.write("RestartSec=5s\n\n")
-    fp.write("[Install]\n")
-    fp.write("WantedBy=multi-user.target\n\n")
-    fp.close()
+    with open(
+        os.path.join(service_folder, service_file_name + ".service"),
+        "w",
+        encoding="utf8",
+    ) as fp:
+        fp.write("[Unit]\n")
+        fp.write("Description=" + service_file_name + "\n")
+        fp.write("After=multi-user.target\n")
+        fp.write("Conflicts=getty@tty1.service\n\n")
+        fp.write("[Service]\n")
+        fp.write("Type=simple\n")
+        fp.write("User=" + user + "\n")
+        fp.write("Group=" + user + "\n")
+        fp.write(
+            "ExecStart=/usr/bin/python3 "
+            + os.path.join(pwd, service_file_name + ".py")
+            + " -c "
+            + config_file
+            + "\n"
+        )
+        fp.write("StandardInput=tty-force\n")
+        fp.write("Restart=always\n")
+        fp.write("RestartSec=5s\n\n")
+        fp.write("[Install]\n")
+        fp.write("WantedBy=multi-user.target\n\n")
+        fp.close()
