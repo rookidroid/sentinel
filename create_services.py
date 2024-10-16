@@ -50,5 +50,3 @@ for idx, service_file_name in enumerate(service_files):
     fp.write("[Install]\n")
     fp.write("WantedBy=multi-user.target\n\n")
     fp.close()
-
-print(service_files)
