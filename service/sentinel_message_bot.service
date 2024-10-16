@@ -1,0 +1,17 @@
+[Unit]
+Description=sentinel_message_bot
+After=multi-user.target
+Conflicts=getty@tty1.service
+
+[Service]
+Type=simple
+User=rooki
+Group=rooki
+ExecStart=/usr/bin/python3 C:\Users\rooki\Documents\GitHub\rookidroid\sentinel\sentinel_message_bot.py -c C:\Users\rooki\Documents\GitHub\rookidroid\sentinel\front_door.json
+StandardInput=tty-force
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+
