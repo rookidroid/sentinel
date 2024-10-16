@@ -13,6 +13,11 @@ Help()
 
 # CONFIG="./config.json"
 
+if [[ $# -eq 0 ]] ; then
+    echo "Please check --help for usage"
+    exit 1
+fi
+
 for i in "$@"; do
   case $i in
     --help*)
