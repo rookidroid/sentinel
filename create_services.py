@@ -8,7 +8,9 @@ ap.add_argument(
 )
 args, unknown = ap.parse_known_args()
 
+print(args)
 config_file = os.path.dirname(os.path.realpath(args.config))
+print(config_file)
 
 pwd = os.path.dirname(os.path.realpath(__file__))
 service_folder = "./service"
