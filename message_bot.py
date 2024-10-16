@@ -27,8 +27,13 @@ import json
 import socket
 import logging
 
+pwd = os.path.dirname(os.path.realpath(__file__))
+log_folder = os.path.join(pwd, "log")
+if not os.path.exists(log_folder):
+    os.makedirs(log_folder)
+
 logging.basicConfig(
-    filename='/home/rookie/sentinel/message_bot.log',
+    filename=os.path.join(log_folder, "message_bot.log"),
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.ERROR)
 

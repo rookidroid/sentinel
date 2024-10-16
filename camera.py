@@ -34,13 +34,22 @@ import logging
 
 import time
 
+import os
+
+
+pwd = os.path.dirname(os.path.realpath(__file__))
+log_folder = os.path.join(pwd, "log")
+if not os.path.exists(log_folder):
+    os.makedirs(log_folder)
+
 logging.basicConfig(
-    filename='/home/rookie/sentinel/camera.log',
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.ERROR)
+    filename=os.path.join(log_folder, "camera.log"),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.ERROR,
+)
 
 
-class Camera():
+class Camera:
     ERROR = -1
     LISTEN = 1
     CONNECTED = 2
@@ -52,30 +61,30 @@ class Camera():
 
     def __init__(self, config):
 
-        self.video_path = Path(config['video_path'])
-        self.photo_path = Path(config['photo_path'])
+        self.video_path = Path(config["video_path"])
+        self.photo_path = Path(config["photo_path"])
 
-        self.camera_config = config['camera']
+        self.camera_config = config["camera"]
 
-        self.max_photo_count = self.camera_config['max_photo_count']
-        self.period = self.camera_config['period']
-        self.video_length = self.camera_config['video_length']
+        self.max_photo_count = self.camera_config["max_photo_count"]
+        self.period = self.camera_config["period"]
+        self.video_length = self.camera_config["video_length"]
 
-        self.det_resolution = self.camera_config['detection_resolution']
-        self.rec_resolution = self.camera_config['record_resolution']
+        self.det_resolution = self.camera_config["detection_resolution"]
+        self.rec_resolution = self.camera_config["record_resolution"]
 
-        self.delta_thresh = self.camera_config['delta_thresh']
-        self.min_area = self.camera_config['min_area']
+        self.delta_thresh = self.camera_config["delta_thresh"]
+        self.min_area = self.camera_config["min_area"]
         self.motion_frame_counter = 0
 
-        self.ip = '127.0.0.1'
-        self.port = self.camera_config['listen_port']
+        self.ip = "127.0.0.1"
+        self.port = self.camera_config["listen_port"]
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udp_socket.settimeout(3)
         self.signal = self.SIG_NORMAL
 
-        self.bot_port = config['bot']['listen_port']
-        self.cloud_port = config['cloud']['listen_port']
+        self.bot_port = config["bot"]["listen_port"]
+        self.cloud_port = config["cloud"]["listen_port"]
 
         self.picam2 = Picamera2()
         self.picam2.start_preview(Preview.NULL)
@@ -91,22 +100,22 @@ class Camera():
             pass
 
         self.cmd_upload_h264 = {
-            'cmd': 'upload_file',
-            'file_type': 'H264',
-            'file_name': '',
-            'extension': '.mp4',
-            'date': '',
-            'time': ''
+            "cmd": "upload_file",
+            "file_type": "H264",
+            "file_name": "",
+            "extension": ".mp4",
+            "date": "",
+            "time": "",
         }
 
         self.cmd_send_jpg = {
-            'cmd': 'send_photo',
-            'file_type': 'JPG',
-            'file_name': '',
-            'extension': '.jpg',
-            'date': '',
-            'time': '',
-            'server': ''
+            "cmd": "send_photo",
+            "file_type": "JPG",
+            "file_name": "",
+            "extension": ".jpg",
+            "date": "",
+            "time": "",
+            "server": "",
         }
 
     def take_photo(self, counts):
@@ -114,15 +123,15 @@ class Camera():
             counts = self.max_photo_count
 
         for photo_idx in range(0, counts):
-            date_str = datetime.datetime.now().strftime('%Y-%m-%d')
-            time_str = datetime.datetime.now().strftime('%H-%M-%S')
+            date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+            time_str = datetime.datetime.now().strftime("%H-%M-%S")
 
-            self.cmd_send_jpg['date'] = date_str
-            self.cmd_send_jpg['time'] = time_str
-            self.cmd_send_jpg[
-                'file_name'] = date_str + '_' + time_str + '_' + 'photo' + str(
-                    photo_idx)
-            self.cmd_send_jpg['server'] = 'telegram'
+            self.cmd_send_jpg["date"] = date_str
+            self.cmd_send_jpg["time"] = time_str
+            self.cmd_send_jpg["file_name"] = (
+                date_str + "_" + time_str + "_" + "photo" + str(photo_idx)
+            )
+            self.cmd_send_jpg["server"] = "telegram"
 
             # subprocess.call(["libcamera-still", "-o",
             #                  str(self.photo_path /
@@ -138,10 +147,14 @@ class Camera():
             #                  "--immediate"
             #                  ])
 
-            self.picam2.start_and_capture_file(str(self.photo_path /
-                                                   (self.cmd_send_jpg['file_name'] + self.cmd_send_jpg['extension'])),
-                                               delay=0,
-                                               show_preview=False)
+            self.picam2.start_and_capture_file(
+                str(
+                    self.photo_path
+                    / (self.cmd_send_jpg["file_name"] + self.cmd_send_jpg["extension"])
+                ),
+                delay=0,
+                show_preview=False,
+            )
             # time.sleep(1)
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
@@ -149,15 +162,22 @@ class Camera():
         self.take_photo(1)
         # self.camera.resolution = self.rec_resolution
 
-        date_str = datetime.datetime.now().strftime('%Y-%m-%d')
-        time_str = datetime.datetime.now().strftime('%H-%M-%S')
-        self.cmd_upload_h264['file_name'] = time_str + '_' + 'video'
-        self.cmd_upload_h264['date'] = date_str
-        self.cmd_upload_h264['time'] = time_str
+        date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+        time_str = datetime.datetime.now().strftime("%H-%M-%S")
+        self.cmd_upload_h264["file_name"] = time_str + "_" + "video"
+        self.cmd_upload_h264["date"] = date_str
+        self.cmd_upload_h264["time"] = time_str
 
-        self.picam2.start_and_record_video(str(self.video_path /
-                                               (self.cmd_upload_h264['file_name'] +
-                                                self.cmd_upload_h264['extension'])), duration=20)
+        self.picam2.start_and_record_video(
+            str(
+                self.video_path
+                / (
+                    self.cmd_upload_h264["file_name"]
+                    + self.cmd_upload_h264["extension"]
+                )
+            ),
+            duration=20,
+        )
 
         # self.camera.start_recording(str(self.video_path /
         #                                 (self.cmd_upload_h264['file_name'] +
@@ -196,7 +216,7 @@ class Camera():
         # self.send_cloud(copy.deepcopy(self.cmd_upload_h264))
 
     def run(self):
-        logging.info('Camera thread started')
+        logging.info("Camera thread started")
         try:
             self.udp_socket.bind((self.ip, self.port))
         except OSError as err:
@@ -221,14 +241,14 @@ class Camera():
                             try:
                                 msg = json.loads(data.decode())
                                 # logging.info(data.decode())
-                                if msg['cmd'] == 'take_photo':
+                                if msg["cmd"] == "take_photo":
                                     # self.q2camera.task_done()
-                                    self.take_photo(msg['count'])
-                                    logging.info('Start to capture photos')
-                                elif msg['cmd'] == 'take_video':
+                                    self.take_photo(msg["count"])
+                                    logging.info("Start to capture photos")
+                                elif msg["cmd"] == "take_video":
                                     # self.q2camera.task_done()
                                     self.take_video(init_photo=True)
-                                    logging.info('Start to record videos')
+                                    logging.info("Start to record videos")
                             except Exception:
                                 logging.error(Exception)
                         else:
@@ -241,24 +261,24 @@ class Camera():
                     break
         finally:
             # print('stopped')
-            logging.info('camera UDP stopped')
+            logging.info("camera UDP stopped")
             # self.status.emit(self.STOP, '')
 
     def send_bot(self, msg):
         payload = json.dumps(msg)
-        self.udp_socket.sendto(payload.encode(), ('127.0.0.1', self.bot_port))
+        self.udp_socket.sendto(payload.encode(), ("127.0.0.1", self.bot_port))
 
     def send_cloud(self, msg):
         payload = json.dumps(msg)
-        self.udp_socket.sendto(
-            payload.encode(), ('127.0.0.1', self.cloud_port))
+        self.udp_socket.sendto(payload.encode(), ("127.0.0.1", self.cloud_port))
 
 
 def main():
     # argument parser
     ap = argparse.ArgumentParser()
-    ap.add_argument("-c", "--conf", required=True,
-                    help="path to the JSON configuration file")
+    ap.add_argument(
+        "-c", "--conf", required=True, help="path to the JSON configuration file"
+    )
     args = vars(ap.parse_args())
     config = json.load(open(args["conf"]))
 
@@ -268,30 +288,5 @@ def main():
     camera.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
-'''
-
-    `                      `
-    -:.                  -#:
-    -//:.              -###:
-    -////:.          -#####:
-    -/:.://:.      -###++##:
-    ..   `://:-  -###+. :##:
-           `:/+####+.   :##:
-    .::::::::/+###.     :##:
-    .////-----+##:    `:###:
-     `-//:.   :##:  `:###/.
-       `-//:. :##:`:###/.
-         `-//:+######/.
-           `-/+####/.
-             `+##+.
-              :##:
-              :##:
-              :##:
-              :##:
-              :##:
-               .+:
-
-'''

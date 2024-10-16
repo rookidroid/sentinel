@@ -20,13 +20,23 @@
 import argparse
 import time
 import json
+import os
 from gpiozero import MotionSensor
 import socket
 import datetime
 
 import logging
+
+pwd = os.path.dirname(os.path.realpath(__file__))
+log_folder = os.path.join(pwd, "log")
+if not os.path.exists(log_folder):
+    os.makedirs(log_folder)
+
 logging.basicConfig(
-    filename='/home/rookie/sentinel/motion.log', level=logging.ERROR)
+    filename=os.path.join(log_folder, "motion.log"),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.ERROR,
+)
 
 
 class Motion():

@@ -25,13 +25,19 @@ from subprocess import call, Popen
 import os
 import logging
 
+pwd = os.path.dirname(os.path.realpath(__file__))
+log_folder = os.path.join(pwd, "log")
+if not os.path.exists(log_folder):
+    os.makedirs(log_folder)
+
 logging.basicConfig(
-    filename='/home/rookie/sentinel/cloud.log',
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.ERROR)
+    filename=os.path.join(log_folder, "cloud.log"),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.ERROR,
+)
 
 
-class Cloud():
+class Cloud:
     ERROR = -1
     LISTEN = 1
     CONNECTED = 2
@@ -43,18 +49,18 @@ class Cloud():
 
     def __init__(self, config):
 
-        self.video_path = Path(config['video_path'])
-        self.photo_path = Path(config['photo_path'])
+        self.video_path = Path(config["video_path"])
+        self.photo_path = Path(config["photo_path"])
 
-        self.target_folder = config['cloud']['folder']
-        self.rclone_remote = config['cloud']['rclone_remote']
+        self.target_folder = config["cloud"]["folder"]
+        self.rclone_remote = config["cloud"]["rclone_remote"]
 
-        self.camera_port = config['camera']['listen_port']
-        self.bot_port = config['bot']['listen_port']
-        self.cloud_port = config['cloud']['listen_port']
+        self.camera_port = config["camera"]["listen_port"]
+        self.bot_port = config["bot"]["listen_port"]
+        self.cloud_port = config["cloud"]["listen_port"]
 
-        self.ip = '127.0.0.1'
-        self.port = config['cloud']['listen_port']
+        self.ip = "127.0.0.1"
+        self.port = config["cloud"]["listen_port"]
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udp_socket.settimeout(10)
         self.signal = self.SIG_NORMAL
@@ -67,14 +73,20 @@ class Cloud():
             os.remove(input)
 
     def upload_to_gdrive(self, path, metadata):
-        Popen([
-            "rclone", "move", path, self.rclone_remote + ':' +
-            self.target_folder + '/' + metadata['date'], "--delete-after",
-            "--include", metadata['file_name'] + '.mp4'
-        ])
+        Popen(
+            [
+                "rclone",
+                "move",
+                path,
+                self.rclone_remote + ":" + self.target_folder + "/" + metadata["date"],
+                "--delete-after",
+                "--include",
+                metadata["file_name"] + ".mp4",
+            ]
+        )
 
     def run(self):
-        logging.info('Cloud thread started')
+        logging.info("Cloud thread started")
         try:
             self.udp_socket.bind((self.ip, self.port))
         except OSError as err:
@@ -97,13 +109,18 @@ class Cloud():
                             #     addr[0]+':'+str(addr[1]), data.decode())
                             # print(data.decode())
                             msg = json.loads(data.decode())
-                            if msg['cmd'] == 'upload_file':
-                                if msg['file_type'] == 'H264':
+                            if msg["cmd"] == "upload_file":
+                                if msg["file_type"] == "H264":
                                     self.h264_to_mp4(
-                                        str(self.video_path /
-                                            (msg['file_name'] + '.h264')),
-                                        str(self.video_path /
-                                            (msg['file_name'] + '.mp4')))
+                                        str(
+                                            self.video_path
+                                            / (msg["file_name"] + ".h264")
+                                        ),
+                                        str(
+                                            self.video_path
+                                            / (msg["file_name"] + ".mp4")
+                                        ),
+                                    )
                                     self.upload_to_gdrive(self.video_path, msg)
                         else:
                             # self.status.emit(self.LISTEN, '')
@@ -115,15 +132,16 @@ class Cloud():
                     break
         finally:
             # print('stopped')
-            logging.info('cloud UDP stopped')
+            logging.info("cloud UDP stopped")
             # self.status.emit(self.STOP, '')
 
 
 def main():
     # argument parser
     ap = argparse.ArgumentParser()
-    ap.add_argument("-c", "--conf", required=True,
-                    help="path to the JSON configuration file")
+    ap.add_argument(
+        "-c", "--conf", required=True, help="path to the JSON configuration file"
+    )
     args = vars(ap.parse_args())
     config = json.load(open(args["conf"]))
 
@@ -133,10 +151,10 @@ def main():
     cloud.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 
-'''
+"""
 
     `                      `
     -:.                  -#:
@@ -159,4 +177,4 @@ if __name__ == '__main__':
               :##:
                .+:
 
-'''
+"""

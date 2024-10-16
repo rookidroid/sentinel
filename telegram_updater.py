@@ -19,100 +19,93 @@
 
 import argparse
 import json
+import os
 
 from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
 import time
 import socket
 import logging
 
+pwd = os.path.dirname(os.path.realpath(__file__))
+log_folder = os.path.join(pwd, "log")
+if not os.path.exists(log_folder):
+    os.makedirs(log_folder)
+
 logging.basicConfig(
-    filename='/home/rookie/sentinel/telegram.log',
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.ERROR)
+    filename=os.path.join(log_folder, "telegram.log"),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.ERROR,
+)
 
 
 def main():
     # argument parser
     ap = argparse.ArgumentParser()
-    ap.add_argument("-c", "--conf", required=True,
-                    help="path to the JSON configuration file")
+    ap.add_argument(
+        "-c", "--conf", required=True, help="path to the JSON configuration file"
+    )
     args = vars(ap.parse_args())
     config = json.load(open(args["conf"]))
 
     # config = json.load(open('./garage.json'))
 
-    token = config['bot']['bot_token']
-    chat_id = config['bot']['chat_id']
+    token = config["bot"]["bot_token"]
+    chat_id = config["bot"]["chat_id"]
 
-    camera_port = config['camera']['listen_port']
-    bot_port = config['bot']['listen_port']
-    cloud_port = config['cloud']['listen_port']
+    camera_port = config["camera"]["listen_port"]
+    bot_port = config["bot"]["listen_port"]
+    cloud_port = config["cloud"]["listen_port"]
 
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def send_udp(msg, port):
         # udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         payload = json.dumps(msg)
-        udp_socket.sendto(payload.encode(), ('127.0.0.1', port))
+        udp_socket.sendto(payload.encode(), ("127.0.0.1", port))
 
     def echo(update, context):
         user_id = update.effective_chat.id
         if user_id == chat_id:
             context.bot.send_message(
-                chat_id=update.effective_chat.id, text=update.message.text)
+                chat_id=update.effective_chat.id, text=update.message.text
+            )
 
     async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if update.effective_chat.id == chat_id:
-            await context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text=update.message.text
+            )
 
     async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if update.effective_chat.id == chat_id:
-            await context.bot.send_message(chat_id=update.effective_chat.id, text="Hello!")
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text="Hello!"
+            )
 
     async def take_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if update.effective_chat.id == chat_id:
-            send_udp({'cmd': 'take_photo', 'count': 1}, camera_port)
+            send_udp({"cmd": "take_photo", "count": 1}, camera_port)
 
     async def take_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if update.effective_chat.id == chat_id:
-            send_udp({'cmd': 'take_video', 'count': 1}, camera_port)
+            send_udp({"cmd": "take_video", "count": 1}, camera_port)
 
     application = Application.builder().token(token).build()
 
-    application.add_handler(CommandHandler('hello', hello))
-    application.add_handler(CommandHandler('photo', take_photo))
-    application.add_handler(CommandHandler('video', take_video))
-    application.add_handler(MessageHandler(
-        filters.TEXT & ~filters.COMMAND, echo))
+    application.add_handler(CommandHandler("hello", hello))
+    application.add_handler(CommandHandler("photo", take_photo))
+    application.add_handler(CommandHandler("video", take_video))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     application.run_polling()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
-'''
-
-    `                      `
-    -:.                  -#:
-    -//:.              -###:
-    -////:.          -#####:
-    -/:.://:.      -###++##:
-    ..   `://:-  -###+. :##:
-           `:/+####+.   :##:
-    .::::::::/+###.     :##:
-    .////-----+##:    `:###:
-     `-//:.   :##:  `:###/.
-       `-//:. :##:`:###/.
-         `-//:+######/.
-           `-/+####/.
-             `+##+.
-              :##:
-              :##:
-              :##:
-              :##:
-              :##:
-               .+:
-
-'''
