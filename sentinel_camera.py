@@ -50,23 +50,6 @@ class Camera:
 
     ...
 
-    Attributes
-    ----------
-    ERROR : int
-        Error status code.
-    LISTEN : int
-        Listen status code.
-    CONNECTED : int
-        Connected status code.
-    STOP : int
-        Stop status code.
-    SIG_NORMAL : int
-        Normal signal code.
-    SIG_STOP : int
-        Stop signal code.
-    SIG_DISCONNECT : int
-        Disconnect signal code.
-
     Methods
     -------
     take_photo(counts):
@@ -83,15 +66,6 @@ class Camera:
         Sends a message to the cloud.
     """
 
-    ERROR = -1
-    LISTEN = 1
-    CONNECTED = 2
-    STOP = 3
-
-    SIG_NORMAL = 0
-    SIG_STOP = 1
-    SIG_DISCONNECT = 2
-
     def __init__(self, config):
         """
         Initializes the camera module.
@@ -107,19 +81,7 @@ class Camera:
 
         self.camera_config = config["camera"]
 
-        self.max_photo_count = self.camera_config["max_photo_count"]
-        self.period = self.camera_config["period"]
-        self.video_length = self.camera_config["video_length"]
-
-        self.det_resolution = self.camera_config["detection_resolution"]
-        self.rec_resolution = self.camera_config["record_resolution"]
-
-        self.delta_thresh = self.camera_config["delta_thresh"]
-        self.min_area = self.camera_config["min_area"]
-        self.motion_frame_counter = 0
-
         self.ip = "127.0.0.1"
-        self.port = self.camera_config["listen_port"]
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udp_socket.settimeout(3)
 
@@ -127,8 +89,7 @@ class Camera:
         self.cloud_port = config["cloud"]["listen_port"]
 
         self.picam2 = Picamera2()
-        cam_config = self.picam2.create_still_configuration()
-        self.picam2.configure(cam_config)
+        self.picam2.configure(self.picam2.create_still_configuration())
         self.picam2.start_preview(Preview.NULL)
 
         try:
@@ -168,8 +129,8 @@ class Camera:
         counts : int
             The number of photos to take.
         """
-        if counts == 0 or counts > self.max_photo_count:
-            counts = self.max_photo_count
+        if counts == 0 or counts > self.camera_config["max_photo_count"]:
+            counts = self.camera_config["max_photo_count"]
 
         for photo_idx in range(0, counts):
             date_str = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -193,7 +154,7 @@ class Camera:
 
             self.send_bot(copy.deepcopy(self.cmd_send_jpg))
 
-    def take_video(self, init_photo=False):
+    def take_video(self):
         """Records a video.
 
         Parameters
@@ -217,50 +178,14 @@ class Camera:
                     + self.cmd_upload_h264["extension"]
                 )
             ),
-            duration=20,
+            duration=self.camera_config["video_length"],
         )
-
-        # self.camera.start_recording(str(self.video_path /
-        #                                 (self.cmd_upload_h264['file_name'] +
-        #                                  self.cmd_upload_h264['extension'])))
-        # if init_photo:
-        #     self.camera.capture(str(self.photo_path /
-        #                             (self.cmd_send_jpg['file_name'] +
-        #                              self.cmd_send_jpg['extension'])),
-        #                         use_video_port=True)
-        #     # self.q2mbot.put(copy.deepcopy(self.cmd_send_jpg))
-        #     self.send_bot(copy.deepcopy(self.cmd_send_jpg))
-
-        # for photo_idx in range(0, int(self.video_length / self.period)):
-        #     time.sleep(self.period)
-        #     date_str = datetime.datetime.now().strftime('%Y-%m-%d')
-        #     time_str = datetime.datetime.now().strftime('%H-%M-%S')
-        #     self.cmd_send_jpg['file_name'] = date_str + \
-        #         '_' + \
-        #         time_str + \
-        #         '_' + \
-        #         'photo' + \
-        #         str(
-        #         int(1 + photo_idx))
-        #     self.cmd_send_jpg['date'] = date_str
-        #     self.cmd_send_jpg['time'] = time_str
-        #     self.cmd_send_jpg['server'] = 'email'
-        #     self.camera.capture(str(self.photo_path /
-        #                             (self.cmd_send_jpg['file_name'] +
-        #                              self.cmd_send_jpg['extension'])),
-        #                         use_video_port=True)
-
-        #     self.send_bot(copy.deepcopy(self.cmd_send_jpg))
-
-        # self.camera.stop_recording()
-
-        # self.send_cloud(copy.deepcopy(self.cmd_upload_h264))
 
     def run(self):
         """Starts the camera module."""
         logging.info("Camera thread started")
         try:
-            self.udp_socket.bind((self.ip, self.port))
+            self.udp_socket.bind((self.ip, self.camera_config["listen_port"]))
         except OSError as err:
             logging.error(err)
         else:
@@ -284,10 +209,10 @@ class Camera:
                             self.take_photo(msg["count"])
                             logging.info("Start to capture photos")
                         elif msg["cmd"] == "take_video":
-                            self.take_video(init_photo=True)
+                            self.take_video()
                             logging.info("Start to record videos")
-                    except Exception:
-                        logging.error(Exception)
+                    except Exception as exp:  # pylint: disable=broad-exception-caught
+                        logging.error(exp)
                 else:
                     continue
 

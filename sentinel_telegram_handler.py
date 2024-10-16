@@ -20,6 +20,8 @@
 import argparse
 import json
 import os
+import socket
+import logging
 
 from telegram import Update
 from telegram.ext import (
@@ -29,9 +31,7 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
-import time
-import socket
-import logging
+
 
 pwd = os.path.dirname(os.path.realpath(__file__))
 log_folder = os.path.join(pwd, "log")

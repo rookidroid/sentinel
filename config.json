@@ -8,32 +8,7 @@
         "bot_token": "token"
     },
     "camera": {
-        "record_resolution": [1648, 1232],
-        "detection_resolution": [1648, 1232],
         "max_photo_count": 30,
-        "period": 30,
-        "video_length": 90,
-        "camera_warmup_time": 2.5,
-        "delta_thresh": 20,
-        "min_area": 5000
-    },
-    "cloud": {
-        "folder": "edenbridge",
-        "rclone_remote": "gdrive"
-    },
-    "email": {
-        "mail_server":{
-            "smtp_add": "smtp.gmail.com",
-            "smtp_port": 465,
-            "username": "user@example.com",
-            "password": "password"
-        },
-        "mail_body":{
-            "from": "from@example.com",
-            "to": "to@example.com",
-            "subject": "",
-            "message": "",
-            "type": "plain"
-        }
+        "video_length": 20
     }
 }
