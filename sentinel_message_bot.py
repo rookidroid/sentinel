@@ -152,7 +152,8 @@ async def main():
     ap.add_argument("-c", "--conf", required=True,
                     help="path to the JSON configuration file")
     args = vars(ap.parse_args())
-    config = json.load(open(args["conf"]))
+    with open(args["conf"], "r", encoding="utf-8") as read_file:
+        config = json.load(read_file)
 
     # config = json.load(open('./garage.json'))
 
