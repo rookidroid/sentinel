@@ -13,8 +13,8 @@ service_names=`ls`
 for eachfile in $service_names
 do
   echo "$eachfile"
-#   sudo systemctl enable "$entry"
-#   sudo systemctl start "$entry"
+  sudo systemctl enable "$eachfile"
+  sudo systemctl start "$eachfile"
 done
 cd ..
 
