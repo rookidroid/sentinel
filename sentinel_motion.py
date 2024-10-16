@@ -21,11 +21,11 @@ import argparse
 import time
 import json
 import os
-from gpiozero import MotionSensor
 import socket
 import datetime
-
 import logging
+
+from gpiozero import MotionSensor
 
 pwd = os.path.dirname(os.path.realpath(__file__))
 log_folder = os.path.join(pwd, "log")
@@ -39,7 +39,7 @@ logging.basicConfig(
 )
 
 
-class Motion():
+class Motion:
     ERROR = -1
     LISTEN = 1
     CONNECTED = 2
@@ -51,31 +51,34 @@ class Motion():
 
     def __init__(self, config):
 
-        self.camera_port = config['camera']['listen_port']
-        self.bot_port = config['bot']['listen_port']
+        self.camera_port = config["camera"]["listen_port"]
+        self.bot_port = config["bot"]["listen_port"]
 
-        self.ip = '127.0.0.1'
-        self.port = config['motion']['listen_port']
+        self.ip = "127.0.0.1"
+        self.port = config["motion"]["listen_port"]
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-        self.motion_pin = config['motion']['pir_pin']
-        self.interval = config['motion']['interval']
+        self.motion_pin = config["motion"]["pir_pin"]
+        self.interval = config["motion"]["interval"]
 
         self.timestamp = None
 
         self.time_start = datetime.time(
-            hour=config['motion']['time_start'][0], minute=config['motion']['time_start'][1])
+            hour=config["motion"]["time_start"][0],
+            minute=config["motion"]["time_start"][1],
+        )
         self.time_end = datetime.time(
-            hour=config['motion']['time_end'][0], minute=config['motion']['time_end'][1])
+            hour=config["motion"]["time_end"][0], minute=config["motion"]["time_end"][1]
+        )
 
         self.pir = MotionSensor(self.motion_pin)
 
     def send_udp(self, msg, port):
         payload = json.dumps(msg)
-        self.udp_socket.sendto(payload.encode(), ('127.0.0.1', port))
+        self.udp_socket.sendto(payload.encode(), ("127.0.0.1", port))
 
     def run(self):
-        logging.info('Motion thread started')
+        logging.info("Motion thread started")
 
         while True:
             self.pir.wait_for_motion()
@@ -97,28 +100,28 @@ class Motion():
                 if now_time < self.time_start and now_time > self.time_end:
                     continue
 
-            print('motion detected')
+            print("motion detected")
             self.timestamp = current_time
 
-            date_str = datetime.datetime.now().strftime('%Y-%m-%d')
-            time_str = datetime.datetime.now().strftime('%H-%M-%S')
-            self.send_udp({'cmd': 'take_photo', 'count': 1}, self.camera_port)
+            date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+            time_str = datetime.datetime.now().strftime("%H-%M-%S")
+            self.send_udp({"cmd": "take_photo", "count": 1}, self.camera_port)
 
-            self.send_udp({
-                'cmd': 'send_msg',
-                'date': date_str,
-                'time': time_str
-            }, self.bot_port)
-            logging.info('motion detected')
+            self.send_udp(
+                {"cmd": "send_msg", "date": date_str, "time": time_str}, self.bot_port
+            )
+            logging.info("motion detected")
 
             self.pir.wait_for_no_motion()
 
 
 def main():
+    """Main function"""
     # argument parser
     ap = argparse.ArgumentParser()
-    ap.add_argument("-c", "--conf", required=True,
-                    help="path to the JSON configuration file")
+    ap.add_argument(
+        "-c", "--conf", required=True, help="path to the JSON configuration file"
+    )
     args = vars(ap.parse_args())
     with open(args["conf"], "r", encoding="utf-8") as read_file:
         config = json.load(read_file)
@@ -127,5 +130,5 @@ def main():
     motion.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

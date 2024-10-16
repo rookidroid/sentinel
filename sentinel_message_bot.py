@@ -17,15 +17,16 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
 import asyncio
 from pathlib import Path
-from telegram import Bot
-import os
-from email_util import send_email
 import argparse
 import json
 import socket
 import logging
+
+from telegram import Bot
+
 
 pwd = os.path.dirname(os.path.realpath(__file__))
 log_folder = os.path.join(pwd, "log")
@@ -34,11 +35,12 @@ if not os.path.exists(log_folder):
 
 logging.basicConfig(
     filename=os.path.join(log_folder, "message_bot.log"),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.ERROR)
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.ERROR,
+)
 
 
-class MessageBot():
+class MessageBot:
     ERROR = -1
     LISTEN = 1
     CONNECTED = 2
@@ -49,71 +51,68 @@ class MessageBot():
     SIG_DISCONNECT = 2
 
     def __init__(self, config):
-        self.location = config['name']
-        self.photo_path = Path(config['photo_path'])
+        self.location = config["name"]
+        self.photo_path = Path(config["photo_path"])
 
         # telegram bot
-        self.bot_config = config['bot']
-        self.bot_name = self.bot_config['bot_name']
-        self.token = self.bot_config['bot_token']
-        self.chat_id = self.bot_config['chat_id']
+        self.bot_config = config["bot"]
+        self.bot_name = self.bot_config["bot_name"]
+        self.token = self.bot_config["bot_token"]
+        self.chat_id = self.bot_config["chat_id"]
 
         self.bot = Bot(self.token)
 
-        # email
-        self.email_config = config['email']
-        self.mail_server = self.email_config['mail_server']
-        self.mail_body = self.email_config['mail_body']
-        self.attachement = dict(path=config['photo_path'],
-                                file_name='')
+        self.emoji_robot = "\U0001F916"
 
-        self.emoji_robot = u'\U0001F916'
-
-        self.ip = '127.0.0.1'
-        self.port = self.bot_config['listen_port']
+        self.ip = "127.0.0.1"
+        self.port = self.bot_config["listen_port"]
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udp_socket.settimeout(1)
-        self.signal = self.SIG_NORMAL
 
     async def sendImage(self, msg):
-        file = self.photo_path / (msg['file_name'] + msg['extension'])
-        if msg['server'] == 'telegram':
+        file = self.photo_path / (msg["file_name"] + msg["extension"])
+        if msg["server"] == "telegram":
             async with self.bot:
-                await self.bot.sendPhoto(chat_id=self.chat_id,
-                                         photo=open(file, 'rb'),
-                                         caption='A photo has been taken from your [' +
-                                         self.location +
-                                         '] at '+msg['date'] + ' '+msg['time'])
+                await self.bot.sendPhoto(
+                    chat_id=self.chat_id,
+                    photo=open(file, "rb"),
+                    caption="A photo has been taken from your ["
+                    + self.location
+                    + "] at "
+                    + msg["date"]
+                    + " "
+                    + msg["time"],
+                )
 
-        elif msg['server'] == 'email':
-            self.mail_body['subject'] = '[Front Door] ' + \
-                msg['date'] + ' ' + msg['time']
-            self.mail_body['message'] = 'A photo has been taken from your [' +\
-                self.location +\
-                '] at '+msg['date'] + ' '+msg['time']
-
-            self.attachement['file_name'] = msg['file_name'] + msg['extension']
-
-            send_email(self.mail_server, self.mail_body, self.attachement)
-
-        logging.info('Send photo')
+        logging.info("Send photo")
         os.remove(file)
-        logging.info('Delete photo')
+        logging.info("Delete photo")
 
     async def sendMsg(self, msg):
         async with self.bot:
-            await self.bot.sendMessage(chat_id=self.chat_id,
-                                       text='Motion detected in [' +
-                                       self.location +
-                                       '] at '+msg['date'] + ' '+msg['time'])
+            await self.bot.sendMessage(
+                chat_id=self.chat_id,
+                text="Motion detected in ["
+                + self.location
+                + "] at "
+                + msg["date"]
+                + " "
+                + msg["time"],
+            )
 
     async def run(self):
-        logging.info('MyBot thread started')
+        logging.info("MyBot thread started")
         async with self.bot:
             await self.bot.sendMessage(
                 chat_id=self.chat_id,
-                text='Hello! ' + self.emoji_robot + self.bot_name +
-                self.emoji_robot + ' [' + self.location+'] is at your service.')
+                text="Hello! "
+                + self.emoji_robot
+                + self.bot_name
+                + self.emoji_robot
+                + " ["
+                + self.location
+                + "] is at your service.",
+            )
 
         try:
             self.udp_socket.bind((self.ip, self.port))
@@ -121,46 +120,42 @@ class MessageBot():
             logging.error(err)
         else:
             while True:
-                if self.signal == self.SIG_NORMAL:
-                    try:
-                        data, addr = self.udp_socket.recvfrom(4096)
-                    except socket.timeout as t_out:
-                        pass
+                try:
+                    data, _ = self.udp_socket.recvfrom(4096)
+                except socket.timeout as t_out:
+                    logging.info(t_out)
+                else:
+                    if data:
+                        try:
+                            msg = json.loads(data.decode())
+                            if msg["cmd"] == "send_photo":
+                                await self.sendImage(msg)
+                            elif msg["cmd"] == "send_msg":
+                                await self.sendMsg(msg)
+                        except (
+                            Exception  # pylint: disable=broad-exception-caught
+                        ) as exp:
+                            logging.error(exp)
                     else:
-                        if data:
-                            try:
-                                msg = json.loads(data.decode())
-                                if msg['cmd'] == 'send_photo':
-                                    await self.sendImage(msg)
-                                elif msg['cmd'] == 'send_msg':
-                                    await self.sendMsg(msg)
-                            except Exception:
-                                logging.error(Exception)
-                        else:
-                            break
-                elif self.signal == self.SIG_STOP:
-                    self.signal = self.SIG_NORMAL
-                    self.udp_socket.close()
-                    break
+                        continue
         finally:
-            logging.info('bot UDP stopped')
+            logging.info("bot UDP stopped")
 
 
 async def main():
     """Main function"""
     # argument parser
     ap = argparse.ArgumentParser()
-    ap.add_argument("-c", "--conf", required=True,
-                    help="path to the JSON configuration file")
+    ap.add_argument(
+        "-c", "--conf", required=True, help="path to the JSON configuration file"
+    )
     args = vars(ap.parse_args())
     with open(args["conf"], "r", encoding="utf-8") as read_file:
         config = json.load(read_file)
-
-    # config = json.load(open('./garage.json'))
 
     my_bot = MessageBot(config)
     await my_bot.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())
