@@ -3,12 +3,21 @@
     "photo_path":"./photos/",
     "video_path":"./videos/",
     "bot": {
-        "bot_name": "Edenbridge-Bot",
+        "bot_name": "Sentinel-Bot",
         "chat_id": 0,
-        "bot_token": "token"
+        "bot_token": "token",
+        "listen_port": 6660
+    },
+    "motion": {
+        "listen_port": 6663,
+        "pir_pin":14,
+        "interval":5,
+        "time_start":[6, 1],
+        "time_end":[6, 0]
     },
     "camera": {
         "max_photo_count": 30,
-        "video_length": 20
+        "video_length": 20,
+        "listen_port": 6661
     }
 }
