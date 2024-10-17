@@ -43,7 +43,7 @@ You will also need to find your Telegram **Chat ID**.
 
 ### 5. Configuration
 
-Edit the `config.json`. Update `bot_name`, `bot_token` and `chat_id` with the ones obtianed from step 4.
+Edit the `config.json` file by updating the `bot_name`, `bot_token`, and `chat_id` fields with the corresponding values obtained in Step 4.
 
 ### 6. Setup Services
 
@@ -51,6 +51,8 @@ Edit the `config.json`. Update `bot_name`, `bot_token` and `chat_id` with the on
 chmod +x setup.sh
 ./setup.sh --config=./config.json
 ```
+
+After setting up, you will receive a greeting message from the Telegram Bot.
 
 ## Usage
 
