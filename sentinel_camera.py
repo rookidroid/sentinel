@@ -86,7 +86,7 @@ class Camera:
         self.udp_socket.settimeout(3)
 
         self.bot_port = config["bot"]["listen_port"]
-        self.cloud_port = config["cloud"]["listen_port"]
+        # self.cloud_port = config["cloud"]["listen_port"]
 
         self.picam2 = Picamera2()
         self.picam2.configure(self.picam2.create_still_configuration())
@@ -227,16 +227,16 @@ class Camera:
         payload = json.dumps(msg)
         self.udp_socket.sendto(payload.encode(), ("127.0.0.1", self.bot_port))
 
-    def send_cloud(self, msg):
-        """Sends a message to the cloud.
+    # def send_cloud(self, msg):
+    #     """Sends a message to the cloud.
 
-        Parameters
-        ----------
-        msg : dict
-            The message to send.
-        """
-        payload = json.dumps(msg)
-        self.udp_socket.sendto(payload.encode(), ("127.0.0.1", self.cloud_port))
+    #     Parameters
+    #     ----------
+    #     msg : dict
+    #         The message to send.
+    #     """
+    #     payload = json.dumps(msg)
+    #     self.udp_socket.sendto(payload.encode(), ("127.0.0.1", self.cloud_port))
 
 
 def main():
